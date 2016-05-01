@@ -10,12 +10,12 @@ t = linspace(0,24,N);
 %% Initialize e_l, e_r
 pd = makedist('Normal');
 e = 0.2 + pdf(pd,(t-12)/sqrt(12)); % gaussian radiance distribution during the day
-mu = 0.2; % unsertanty interval width parameter
+mu = 0.2; % uncertanty interval width parameter
 e_l = e*(1-mu);
 e_u = e*(1+mu);
 %% Initialize optimization model
 x0 = e; % Starting guess for pattern search
-objfct = @(x) big_objective(x,e_l,e_u,cost,penalty,epsilon); % Objective function
+objfct = @(x) big_objective(x,e_l,e_u,cost,penalty,epsilon); % Objective function for RO
 
 % constraints, see "First approach with RO" for explanation
 x_max = 0.55; % tba
