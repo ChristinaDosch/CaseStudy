@@ -15,12 +15,12 @@ e_l = e*(1-mu);
 e_u = e*(1+mu);
 %% Initialize optimization model for RO
 x0 = e; % Starting guess for pattern search
-objfct = @(x) big_objective(x,e_l,e_u,cost,penalty,epsilon); % Objective function for RO
+%objfct = @(x) big_objective(x,e_l,e_u,cost,penalty,epsilon); % Objective function for RO
 
 
 %% Initialize optimization model for SO
-H1=@(y) normcdf((1+epsilon)*y; %normal distribution function
-H2=@(y) normcdf((1-epsilon)*y;
+H1=@(y) normcdf((1+epsilon)*y); %normal distribution function
+H2=@(y) normcdf((1-epsilon)*y);
 objfct = @(x) obj_SO_closed_form(x,H1,H2,cost,penalty,epsilon);
 
 %% constraints, see "First approach with RO" for explanation
