@@ -19,7 +19,12 @@ e_u = e*(1+mu);
 x0 = e; % Starting guess for pattern search
 objfct = @(x) big_objective(x,e_l,e_u,cost,penalty,epsilon); % Objective function for RO
 
-% constraints, see "First approach with RO" for explanation
+%% Initialize optimization model for SO
+H1=@(y) normcdf((1+epsilon)*y,5,30); %normal distribution function, mu and sigma might be added
+H2=@(y) normcdf((1-epsilon)*y,5,30);
+objfct = @(x) obj_SO_closed_form(x,H1,H2,cost,penalty,epsilon);
+
+%% Constraints, see "First approach with RO" for explanation
 x_min = 0;  % tba
 x_max = 0.55; % tba
 delta = 0.04; % tba
