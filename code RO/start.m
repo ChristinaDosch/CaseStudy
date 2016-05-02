@@ -7,17 +7,23 @@ epsilon = 0.1;
 penalty = @(x) x*2; % linear penalty
 N = 24*1; % one hour schedule
 t = linspace(0,24,N);
-%% Initialize e_l, e_r
+%% Initialize e_l, e_r for RO
 pd = makedist('Normal');
 e = 0.2 + pdf(pd,(t-12)/sqrt(12)); % gaussian radiance distribution during the day
 mu = 0.2; % uncertanty interval width parameter
 e_l = e*(1-mu);
 e_u = e*(1+mu);
-%% Initialize optimization model
+%% Initialize optimization model for RO
 x0 = e; % Starting guess for pattern search
 objfct = @(x) big_objective(x,e_l,e_u,cost,penalty,epsilon); % Objective function for RO
 
-% constraints, see "First approach with RO" for explanation
+
+%% Initialize optimization model for SO
+H1=@(y) normcdf((1+epsilon)*y;
+H2=@(y) normcdf((1-epsilon)*y;
+objfct = @(x) obj_SO_closed_form(x,H1,H2,cost,penalty,epsilon);
+
+%% constraints, see "First approach with RO" for explanation
 x_max = 0.55; % tba
 delta = 0.025; % tba
 B = [-eye(N-1) zeros(N-1,1)] + [zeros(N-1,1) eye(N-1)];
