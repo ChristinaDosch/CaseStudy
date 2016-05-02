@@ -21,7 +21,7 @@ x_opt = (penalty(e_u) + cost*e_l)/...                                       % Is
 x1 = e_u/(1+epsilon);                                                       % Is an intersection point of cost*(e_u-(1+epsilon)x) and the X-axis
 x2 = e_l/(1-epsilon);                                                       % Is an intersection point of penalty*((1-epsilon)x-e_l) and the X-axis
 [y, ~] = medium_objective(x,e_l,e_u,cost,penalty,epsilon);                  % y = F(x,e_l,e_u)
-
+y = -y;
 %% Plot
 figure, hold on
 plot(x,y)                                                                   % plot of F(x,e_l,e_u)
@@ -38,10 +38,10 @@ plot(x1*(1+epsilon), y1, 'r>')                                              % up
 
 % confidence interval of p
 % if x2<x1
-    plot([e_l e_u], [0 0], 'Color', 'black', 'LineWidth', 2)                    % plot the interval [e_l,e_r] as a line
-    plot(e_l, 0, 'Color', 'black', 'Marker', '<', 'MarkerSize', 10)             % lower bound
-    plot(e_u, 0, 'Color', 'black', 'Marker', '>', 'MarkerSize', 10)             % upper bound
-    plot((e_l+e_u)/2, 0, 'ko')                                                  % center
+    plot([e_l(1) e_u(1)], [0 0], 'Color', 'black', 'LineWidth', 2)                    % plot the interval [e_l,e_r] as a line
+    plot(e_l(1), 0, 'Color', 'black', 'Marker', '<', 'MarkerSize', 10)             % lower bound
+    plot(e_u(1), 0, 'Color', 'black', 'Marker', '>', 'MarkerSize', 10)             % upper bound
+    plot((e_l(1)+e_u(1))/2, 0, 'ko')                                                  % center
 % end
 
 % axis labels
