@@ -22,5 +22,5 @@ s = size(x);
 if size(e,2) ~= s(2), error('Sizes of x and p do not match'); end
 %% Calculation
 E = ones(s(1),1) * e;                                                       % E is an n by m matrix with e in each column
-obj = max(zeros(s), x*(1-epsilon) - E) * cost + ...
-      penalty(max(zeros(s), E - x*(1+epsilon)));                            % just evaluating the formula
+obj = penalty(max(zeros(s), x*(1-epsilon) - E)) + ...
+      max(zeros(s), E - x*(1+epsilon))*cost - E*cost;                       % just evaluating the formula
