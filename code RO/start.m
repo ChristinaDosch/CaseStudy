@@ -2,7 +2,7 @@
 % 2.) Performing robust optimization.
 % 3.) Plotting solutions and data
 %% Initialize parameters
-cost = 1;
+cost = 2;
 epsilon = 0.1;
 penalty = @(x) x*2; % linear penalty
 N = 24*1; % one hour schedule
@@ -19,8 +19,8 @@ x0 = e; % Starting guess for pattern search
 
 
 %% Initialize optimization model for SO
-H1=@(y) normcdf((1+epsilon)*y); %normal distribution function
-H2=@(y) normcdf((1-epsilon)*y);
+H1=@(y) normcdf((1+epsilon)*y,5,30); %normal distribution function, mu and sigma might be added
+H2=@(y) normcdf((1-epsilon)*y,5,30);
 objfct = @(x) obj_SO_closed_form(x,H1,H2,cost,penalty,epsilon);
 
 %% constraints, see "First approach with RO" for explanation
