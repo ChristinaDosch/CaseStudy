@@ -37,7 +37,7 @@ obj_caseU = small_objective(x,e_u,cost,penalty,epsilon);
 obj = max(obj_caseL, obj_caseU);
 
 % Gradient
-x_opt = ...                                                    % Is an intersection point of two lines:
+x_opt = ...                                                                 % Is an intersection point of two lines:
         (penalty(e_u) + cost*e_l)/(cost*(1-epsilon) + penalty(1+epsilon));  % penalty*((1-epsilon)x-e_l) and cost*(e_u-(1+epsilon)x)
 x1 = ones(s(1),1)*e_u/(1+epsilon);                                          % Is an intersection point of cost*(e_u-(1+epsilon)x) and the X-axis
 x2 = ones(s(1),1)*e_l/(1-epsilon);                                          % Is an intersection point of penalty*((1-epsilon)x-e_l) and the X-axis
