@@ -19,7 +19,7 @@ objfct = @(x) big_objective(x,e_l,e_u,cost,penalty,epsilon); % Objective functio
 
 
 %% Initialize optimization model for SO
-H1=@(y) normcdf((1+epsilon)*y;
+H1=@(y) normcdf((1+epsilon)*y; %normal distribution function
 H2=@(y) normcdf((1-epsilon)*y;
 objfct = @(x) obj_SO_closed_form(x,H1,H2,cost,penalty,epsilon);
 
