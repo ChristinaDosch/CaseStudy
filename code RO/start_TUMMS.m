@@ -29,10 +29,10 @@ i_good = find(obj == min(obj));
 %% max/min cost days
 figure, hold on
 xi = 0:0.1:24;
-yi = pchip(t, E(i_good,:), xi); % best wether realization (interpolation)
-plot(xi, yi, 'b')               % best wether realization (plot)
-yi = pchip(t, E(i_bad ,:), xi); % worst wether realization (interpolation)
-plot(xi, yi, 'r')               % worst wether realization (plot)
+yi = pchip(t, E(i_good,:), xi); % best weather realization (interpolation)
+plot(xi, yi, 'b')               % best weather realization (plot)
+yi = pchip(t, E(i_bad ,:), xi); % worst weather realization (interpolation)
+plot(xi, yi, 'r')               % worst weather realization (plot)
 plot(t, x, 'k*',...             % schedule
      [t; t], [e_l; e_u], 'k+-.')% uncertainty intervals
 
@@ -54,7 +54,7 @@ hold off
 figure, hold on
 % plot
 plot(t, x, 'r*')                               % schedule
-plot(t, E(1:10:end,:), 'ok', 'MarkerSize', 1)  % wether realizations
+plot(t, E(1:10:end,:), 'ok', 'MarkerSize', 1)  % weather realizations
 plot([t; t], [e_l; e_u], 'k+-.')               % uncertainty intervals
 % size
 xlim([0 24])
