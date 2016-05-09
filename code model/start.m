@@ -1,42 +1,44 @@
-% This script contains the entire simulation using RO, conducting the following steps: 
-% 1.) Initialization of common parameters and constraints (independent of ansatz)
-% 2.) Initialization of parameters and obj. function corresponding to RO
-% 3.) Performing optimization using RO
-% 4.) Plotting solutions and data
-
-%% 1.) Initialize parameters
+% 1.) Initialization of parameters, objective function and constraints.
+% 2.) Performing robust optimization.
+% 3.) Plotting solutions and data
+%% Initialize parameters
 cost = 1;
 epsilon = 0.05;
 penalty = @(x) x*2; % linear penalty
 N = 1 + 24*1; % one hour schedule
 t = linspace(0,24,N);
 
-% Constraints
-[x_min, x_max, delta, A, b] = constraints(N);
-
-%% 2.) Initialize e_l, e_r for RO
+%% Initialize e_l, e_r for RO
 pd = makedist('Normal');
 e = 0.2 + pdf(pd,(t-12)/sqrt(12)); % gaussian radiance distribution during the day
 mu = 0.1; % uncertanty interval width parameter
 e_l = e*(1-mu);
 e_u = e*(1+mu);
 
-% Initialize optimization model for RO
+%% Initialize optimization model for RO
 x0 = e; % Starting guess for pattern search
 objfct = @(x) big_objective(x,e_l,e_u,cost,penalty,epsilon); % Objective function for RO
 
 %% Initialize optimization model for SO
-%H1=@(y) normcdf((1+epsilon)*y,5,30); %normal distribution function, mu and sigma might be added
-%H2=@(y) normcdf((1-epsilon)*y,5,30);
-%objfct = @(x) obj_SO_closed_form(x,H1,H2,cost,penalty,epsilon);
+H1=@(y) normcdf((1+epsilon)*y,5,30); %normal distribution function, mu and sigma might be added
+H2=@(y) normcdf((1-epsilon)*y,5,30);
+objfct = @(x) obj_SO_closed_form(x,H1,H2,cost,penalty,epsilon);
 
-%% 3.) Performing optimization using RO
+%% Constraints, see "First approach with RO" for explanation
+x_min = 0;  % tba
+x_max = 0.55; % tba
+delta = 0.04; % tba
+B = [-eye(N-1) zeros(N-1,1)] + [zeros(N-1,1) eye(N-1)];
+A = [B; -B];
+b = ones(2*(N-1),1)*delta;
+
+%% Performing optimization
 % [x_opt, obj_opt] = ga(objfct,N,A,b,[],[],0,x_max); % genetic algorithm
 tic
 [x_opt, obj_opt] = patternsearch(objfct,x0,A,b,[],[],x_min*ones(1,N),x_max*ones(1,N)); % pattern search
 toc
 
-%% 4.) Plot the solutions and data
+%% Plot the solutions and data
 figure, hold on
 plot(t,x_opt,'*r',... % solution computed by ga or patternsearch
      t,(1+epsilon)*x_opt,'^r',...
