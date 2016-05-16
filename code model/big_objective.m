@@ -1,4 +1,4 @@
-function [obj, grad] = big_objective(x,e_l,e_u,cost,penalty,epsilon)
+function [obj, grad] = big_objective(x,e_l,e_u,cost,penalty,epsilon,P)
 % [obj, grad] = BIG_OBJECTIVE(x,p_l,p_u,cost,penalty,nu)
 % Calculates the objective function as in (4) from "First approach with RO"
 % and its gradient.
@@ -15,6 +15,7 @@ function [obj, grad] = big_objective(x,e_l,e_u,cost,penalty,epsilon)
 %                                   act on matrices
 %       epsilon - pos. scalar << 1  defines the width of the no-penalty
 %                                   interval [x(1-epsilon),x(1+epsilon)]
+%       P - scalar                  nominal power of PV element
 %
 % Output:
 %       obj - n by 1 vector         obj(i) = sum_j
@@ -24,6 +25,6 @@ function [obj, grad] = big_objective(x,e_l,e_u,cost,penalty,epsilon)
 %                                               gradF(x(i,j),e_l(j),e_r(j))
 %                                   With F from medium_objective
 %% Calculation
-[obj, grad] = medium_objective(x,e_l,e_u,cost,penalty,epsilon);
+[obj, grad] = medium_objective(x,e_l,e_u,cost,penalty,epsilon,P);
 obj = sum(obj,2);
 grad = sum(grad,2);

@@ -41,7 +41,7 @@ obj = max(obj_caseL, obj_caseU);
 x_opt = ...                                                                 % Is an intersection point of two lines:
         (penalty(e_u) + cost*e_l)/(cost*(1-epsilon) + penalty(1+epsilon));  % penalty*((1-epsilon)x-e_l) and cost*(e_u-(1+epsilon)x)
 x1 = ones(s(1),1)*(e_u - epsilon*P);                                        % Is an intersection point of cost*(e_u-(x+epsilon*P) and the X-axis
-x2 = ones(s(1),1)*(e_l + epsilon*P);                                        % Is an intersection point of penalty*((x-epsilon*P)-e_l) and the X-axis
+x2 = ones(s(1),1)*(e_l + epsilon*P);                                          % Is an intersection point of penalty*((x-epsilon*P)-e_l) and the X-axis
 grad = NaN(s);                                                              % Initialization of grad, it will remain NaN at the kinks of function
 grad(x<x_opt & x<x1) = cost;                                                % The WC-scenario: we provide more then scheduled
 grad(x1<x & x<x2) = 0;                                                      % Interval [e_l,e_r] is covered by the no-penalty interval

@@ -4,12 +4,13 @@
 % 3.) Performing optimization using RO
 % 4.) Plotting solutions and data
 
-%If follows the documentation in "Ansatz 2: Robust Optimization"
+%It follows the documentation in "Ansatz 2: Robust Optimization"
 
 %% 1.) Initialize parameters
 cost = 1;
 epsilon = 0.05;
 penalty = @(x) x*2; % linear penalty
+P = 3.8;
 N = 1 + 24*1; % one hour schedule
 t = linspace(0,24,N);
 
@@ -25,7 +26,7 @@ e_u = e*(1+mu);
 
 % Initialize optimization model for RO
 x0 = e; % Starting guess for pattern search
-objfct = @(x) big_objective(x,e_l,e_u,cost,penalty,epsilon); % Objective function for RO
+objfct = @(x) big_objective(x,e_l,e_u,cost,penalty,epsilon,P); % Objective function for RO
 
 %% Initialize optimization model for SO
 %H1=@(y) normcdf((1+epsilon)*y,5,30); %normal distribution function, mu and sigma might be added

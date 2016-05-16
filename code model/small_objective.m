@@ -1,4 +1,4 @@
-function obj = small_objective(x,e,cost,penalty,epsilon)
+function obj = small_objective(x,e,cost,penalty,epsilon,P)
 % obj = SMALL_OBJECTIVE(x,e,cost,penalty,epsilon)
 % Calculates a simple 1d cost function f(x,e).
 %
@@ -12,6 +12,7 @@ function obj = small_objective(x,e,cost,penalty,epsilon)
 %                                   on matrices
 %       epsilon - pos. scalar << 1  defines the width of the no-penalty
 %                                   interval [x(1-epsilon),x(1+epsilon)]
+%       P - scalar                  nominal power of PV element
 %
 % Output:
 %       obj - n by m matrix         obj(i,j) =
@@ -22,5 +23,5 @@ s = size(x);
 if size(e,2) ~= s(2), error('Sizes of x and p do not match'); end
 %% Calculation
 E = ones(s(1),1) * e;                                                       % E is an n by m matrix with e in each column
-obj = penalty(max(zeros(s), x*(1-epsilon) - E)) + ...
-      max(zeros(s), E - x*(1+epsilon))*cost - E*cost;                       % just evaluating the formula
+obj = penalty(max(zeros(s), (x - epsilon*P) - E)) + ...
+      max(zeros(s), E - (x + epsilon*P))*cost - E*cost;                       % just evaluating the formula
