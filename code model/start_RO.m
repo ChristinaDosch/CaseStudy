@@ -28,11 +28,6 @@ e_u = e*(1+mu);
 x0 = e; % Starting guess for pattern search
 objfct = @(x) big_objective(x,e_l,e_u,cost,penalty,epsilon,P); % Objective function for RO
 
-%% Initialize optimization model for SO
-%H1=@(y) normcdf((1+epsilon)*y,5,30); %normal distribution function, mu and sigma might be added
-%H2=@(y) normcdf((1-epsilon)*y,5,30);
-%objfct = @(x) obj_SO_closed_form(x,H1,H2,cost,penalty,epsilon);
-
 %% 3.) Performing optimization using RO
 % [x_opt, obj_opt] = ga(objfct,N,A,b,[],[],0,x_max); % genetic algorithm
 tic
