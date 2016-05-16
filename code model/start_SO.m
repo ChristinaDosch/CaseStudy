@@ -21,9 +21,19 @@ t = linspace(0,24,T);
 
 %% 2.) Initialize optimization model for SO
 
-mu = 5; sigma = 30; % mu and sigma for normal distribution, still random
-H = @(y) normcdf(y,mu,sigma); %distribution function for E, here: normal distribution function
-exp = 5*ones(T,1); %expected value E[E]
+% multivariate normal distribution
+mu = 5*ones(T,1); sigma = 30*ones(T,1); % mu and sigma for normal distributions, still random
+H = cell(T); % array of function handles, H(i) contains function handle on cdf for E_i
+for i=1:T
+    H{i} = @(y) normcdf(y,mu(i),sigma(i));
+end    
+
+exp = mu;
+
+% all E_i independently distributed
+%mu = 5; sigma = 30; % mu and sigma for normal distribution, still random
+%H = @(y) normcdf(y,mu,sigma); %distribution function for E, here: normal distribution function
+%exp = 5*ones(T,1); %expected value E[E]
 
 objfct = @(x) obj_SO_closed_form(x,H,exp,cost,penalty,epsilon,P); %objective function using the closed-form version of SO
 

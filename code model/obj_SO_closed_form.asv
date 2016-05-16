@@ -15,26 +15,46 @@ function [obj,grad] = obj_SO_closed_form(x,H,exp,cost,penalty,epsilon,P)
 %       P: scalar                   nominal power of PV element
 %
 % Output:
-%       obj: scalar                 obj = sum_j             F(x(i,j),e_l(j),e_r(j))
+%       obj: scalar                 obj = sum_i F^{(i)}(x(i),e(i))
 %       grad: scalar
-%                                   grad(i) = sum_j
-%                                               gradF(x(i,j),e_l(j),e_r(j))
-%                                   With F from medium_objective
 
 T = size(exp,1);
-int1 = zeros(T,1);
+int1 = zeros(T,1); % is going to be a vector containing the intervals int_0^x(i) H_i(z+epsilon*P)dz
 int2 = zeros(T,1);
 
-H1=@(z) H(z+epsilon*P);
-H2=@(z) H(z-epsilon*P);
+H_help=zeros(T,1);  % is going to be a vector containing H_i(epsilon*P)
+H1_help=zeros(T,1); % is going to be a vector containing H_i(x(i)+epsilon*P)
+H2_help=zeros(T,1); % is going to be a vector containing H_i(x(i)-epsilon*P)
+
 for i=1:T
+H1=@(z) H{i}(z+epsilon*P);
+H2=@(z) H{i}(z-epsilon*P);  
+
 int1(i) = integral(H1,0,x(i));
 int2(i) = integral(H2,0,x(i));
+
+H_help(i)=H1(0);
+H1_help(i)=H1(x(i));
+H2_help(i)=H2(x(i));
+    
 end
 
-obj = - cost*epsilon*P*ones(T,1) - cost*H(epsilon*P)*(exp - epsilon*P*ones(T,1)) - cost*x + cost*int1 + penalty(int2);
+obj = - cost*epsilon*P*ones(T,1) - cost*(H_help.*(exp - epsilon*P*ones(T,1))) - cost*x + cost*int1 + penalty(int2);
 
-grad = -cost*ones(T,1) + cost*H1(x)*ones(T,1) + penalty(H2(x));
+grad = -cost*ones(T,1) + cost*H1_help + penalty(H2_help);
+
+
+
+%H1=@(z) H(z+epsilon*P);
+%H2=@(z) H(z-epsilon*P);
+%for i=1:T
+%int1(i) = integral(H1,0,x(i));
+%int2(i) = integral(H2,0,x(i));
+%end
+
+%obj = - cost*epsilon*P*ones(T,1) - cost*H(epsilon*P)*(exp - epsilon*P*ones(T,1)) - cost*x + cost*int1 + penalty(int2);
+
+%grad = -cost*ones(T,1) + cost*H1(x)*ones(T,1) + penalty(H2(x));
 
 end
 
