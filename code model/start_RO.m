@@ -11,11 +11,11 @@ cost = 1;
 epsilon = 0.05;
 penalty = @(x) x*2; % linear penalty
 P = 3.8;
-N = 1 + 24*1; % one hour schedule
-t = linspace(0,24,N);
+T = 1 + 24*1; % one hour schedule
+t = linspace(0,24,T);
 
 % Constraints
-[x_min, x_max, delta, A, b] = constraints(N);
+[x_min, x_max, delta, A, b] = constraints(T);
 
 %% 2.) Initialize e_l, e_r for RO
 pd = makedist('Normal');
@@ -36,7 +36,7 @@ objfct = @(x) big_objective(x,e_l,e_u,cost,penalty,epsilon,P); % Objective funct
 %% 3.) Performing optimization using RO
 % [x_opt, obj_opt] = ga(objfct,N,A,b,[],[],0,x_max); % genetic algorithm
 tic
-[x_opt, obj_opt] = patternsearch(objfct,x0,A,b,[],[],x_min*ones(1,N),x_max*ones(1,N)); % pattern search
+[x_opt, obj_opt] = patternsearch(objfct,x0,A,b,[],[],x_min*ones(1,T),x_max*ones(1,T)); % pattern search
 toc
 
 %% 4.) Plot the solutions and data
