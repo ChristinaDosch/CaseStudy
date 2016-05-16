@@ -15,8 +15,11 @@ function [obj,grad] = obj_SO_closed_form(x,H,exp,cost,penalty,epsilon,P)
 %       P: scalar                   nominal power of PV element
 %
 % Output:
-%       obj: scalar                 obj = sum_i F^{(i)}(x(i),e(i))
+%       obj: scalar                 obj = sum_j             F(x(i,j),e_l(j),e_r(j))
 %       grad: scalar
+%                                   grad(i) = sum_j
+%                                               gradF(x(i,j),e_l(j),e_r(j))
+%                                   With F from medium_objective
 
 T = size(exp,1);
 int1 = zeros(T,1);

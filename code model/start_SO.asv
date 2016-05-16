@@ -21,10 +21,8 @@ t = linspace(0,24,T);
 
 %% 2.) Initialize optimization model for SO
 
-mu = 5; sigma = 30; % mu and sigma for normal distribution, still random
-H = @(y) normcdf(y,mu,sigma); %distribution function for E, here: normal distribution function
-exp = 5*ones(T,1); %expected value E[E]
-
+H = @(y) normcdf(y,5,30); %distribution function for E, here: normal distribution function, mu and sigma are still random
+exp = 5*ones(T,1);        %expected value E[E]
 objfct = @(x) obj_SO_closed_form(x,H,exp,cost,penalty,epsilon,P); %objective function using the closed-form version of SO
 
 %% 3.) Performing optimization using SO
