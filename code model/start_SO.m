@@ -10,19 +10,22 @@
 cost = 1;
 epsilon = 0.05;
 penalty = @(x) x*2; % linear penalty
-N = 1; % one hour schedule
-t = linspace(0,24,N);
+P=3.8; %nominal power of PV-element
+T = 1; % one hour schedule
+t = linspace(0,24,T);
 
 % Constraints
-[x_min, x_max, delta, A, b] = constraints(N);
+[x_min, x_max, delta, A, b] = constraints(T);
 
 %% 2.) Initialize optimization model for SO
-H1=@(y) normcdf((1+epsilon)*y,5,30); %normal distribution function, mu and sigma might be added
-H2=@(y) normcdf((1-epsilon)*y,5,30);
-objfct = @(x) obj_SO_closed_form(x,H1,H2,cost,penalty,epsilon); %objective function using the closed-form version of SO
+
+H=@(y) normcdf(y,5,30); %distribution function for E, here: normal distribution function, mu and sigma are still random
+exp=5;                  %expected value E[E]
+objfct = @(x) obj_SO_closed_form(x,H,exp,cost,penalty,epsilon,P); %objective function using the closed-form version of SO
 
 %% 3.) Performing optimization using SO
 % [x_opt, obj_opt] = ga(objfct,N,A,b,[],[],0,x_max); % genetic algorithm
+x0=0;
 tic
-[x_opt, obj_opt] = patternsearch(objfct,x0,A,b,[],[],x_min*ones(1,N),x_max*ones(1,N)); % pattern search
+[x_opt, obj_opt] = patternsearch(objfct,x0,A,b,[],[],x_min*ones(1,T),x_max*ones(1,T)); % pattern search
 toc
