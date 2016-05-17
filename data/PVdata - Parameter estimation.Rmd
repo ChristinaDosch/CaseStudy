@@ -1,0 +1,79 @@
+---
+title: "PV data - Parameter estimation"
+author: "Martina Kuchlbauer"
+date: "Tuesday, May 17, 2016"
+output: pdf_document
+---
+
+
+```{r, include=FALSE,cache=FALSE}
+PVdata <- read.csv("~/Uni/8. Semester/Case Studies/CaseStudy/data/PVdata2csv.csv", header=FALSE) #load data
+
+library(mvnmle) #package for parameter estimation
+library(MASS)
+```
+
+```{r}
+PV1<-PVdata[1:1440,1] #24*60=1440
+for (i in 1:30) {
+  PV1<-cbind(PV1,PVdata[((i*1440)+1):((i+1)*1440),1])
+}
+PV1<-t(PV1)
+```
+
+
+1. Normal distribution\
+
+
+We obtain an estimation for the values of expectation and the covariance matrix under the assumption of a normal distribution for the values every hour: 
+
+```{r}
+PV1h<-matrix(rep(0,744),nrow=31) #hourly values -> take means
+for(i in 1:31){
+  for (j in 1:24){
+    PV1h[i,j]<-mean(PV1[i,((j-1)*60+1):(j*60)])
+  }
+}
+
+estimates_n_dep<-mlest(PV1h) #under assumption of no independence: hourly means and covariance matrix
+
+estimates_n_dep$muhat
+estimates_n_dep$sigmahat
+```
+
+Using the package above it is not possible to analyse a multivariate normal distribution with more than 50 variables, hence we continue the analysis with the assumption of independently distributed variables for every 15 minutes. 
+
+
+```{r}
+PV1quh<-matrix(rep(0,(744*4)),nrow=31) #quarter hourly values -> take means
+for(i in 1:31){
+  for (j in 1:(24*4)){
+    PV1quh[i,j]<-mean(PV1[i,((j-1)*15+1):(j*15)])
+  }
+}
+
+estimates_n_ind<-matrix(rep(0,2*96),nrow=2) #under assumption of independence
+for (i in 1:(24*4)){
+  estimates_n_ind[1,i]<-fitdistr(PV1quh[,i],"normal")$estimate[1] #estimate of mean (mu)
+  estimates_n_ind[2,i]<-fitdistr(PV1quh[,i],"normal")$estimate[2] #estimate of std error (sigma)
+  }
+estimates_n_ind
+
+```
+
+2. Weibull distribution\
+
+We assume independently distributed values for every 15 minutes and estimate $a$ and $b$ called the shape parameter and the scale parameter.
+
+```{r}
+estimates_w_ind<-matrix(rep(0,2*96),nrow=2) #under assumption of independence
+for (i in 1:(24*4)){
+  estimates_w_ind[1,i]<-fitdistr(PV1quh[,i],"normal")$estimate[1] #estimate of shape paramter
+  estimates_w_ind[2,i]<-fitdistr(PV1quh[,i],"normal")$estimate[2] #estimate of scale parameter
+  }
+estimates_w_ind
+```
+
+
+
+
