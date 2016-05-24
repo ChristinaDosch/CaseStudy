@@ -1,5 +1,5 @@
 ---
-title: "PV data - Parameter estimation"
+title: "PV data - Parameter estimation and sample generation"
 author: "Martina Kuchlbauer"
 date: "Tuesday, May 17, 2016"
 output: pdf_document
@@ -7,12 +7,14 @@ output: pdf_document
 
 
 ```{r, include=FALSE,cache=FALSE}
-PVdata <- read.csv("~/Uni/8. Semester/Case Studies/CaseStudy/data/PVdata2csv.csv", header=FALSE) #load data
+PVdata <- read.csv("~/Uni/8.Semester/CaseStudies/CaseStudy/data/PVdata2csv.csv", header=FALSE) #load data
 
 library(mvnmle) #package for parameter estimation
 library(MASS)
 ```
 
+We consider the first column of the data given in PVdata2.csv. 
+Let's generate a matrix where each line represents a day and each column represents one minute of this day: 
 ```{r}
 PV1<-PVdata[1:1440,1] #24*60=1440
 for (i in 1:30) {
@@ -24,6 +26,7 @@ PV1<-t(PV1)
 
 1. Normal distribution\
 
+1.1 Parameter estimation - multivariate (dependent) for 1h intervals\
 
 We obtain an estimation for the values of expectation and the covariance matrix under the assumption of a normal distribution for the values every hour: 
 
@@ -37,9 +40,13 @@ for(i in 1:31){
 
 estimates_n_dep<-mlest(PV1h) #under assumption of no independence: hourly means and covariance matrix
 
-estimates_n_dep$muhat
-estimates_n_dep$sigmahat
+estimates_n_dep$muhat #estimate of mean (mu)
+estimates_n_dep$sigmahat #estimate of covariance matrix (sigma)
 ```
+
+
+1.2 Parameter estimation - independent for 15min intervals\
+
 
 Using the package above it is not possible to analyse a multivariate normal distribution with more than 50 variables, hence we continue the analysis with the assumption of independently distributed variables for every 15 minutes. 
 
@@ -61,7 +68,57 @@ estimates_n_ind
 
 ```
 
+1.3 Sample generation - dependent for 1h intervals\
+
+```{r}
+# sigma<-estimates_n_dep$sigmahat #24x24 matrix
+# mu<-estimates_n_dep$muhat
+# A<-chol(sigma)
+# 
+# N<-10000 #sample size
+# 
+# rn<-rep(0,24)
+# Nstdsample<-matrix(rep(0,24*N),ncol=24) #matrix to store std norm sample
+# for (i in 1:N){
+#   rn<-rnorm(24)
+#   Nstdsample[i,]<-rn
+# }
+# 
+# Nsample<-matrix(rep(0,24*N),ncol=24)#matrix to store N(mu,sigma) sample
+# for(i in 1:N){
+#   Rea<-rep(0,24)
+#   Nstd<-Nstdsample[i,]
+#   Rea<-t(A)%*%Nstd+mu
+#   Nsample[i,]<-Rea
+# }
+
+N<-1000
+Nsample<-mvrnorm(n=N, estimates_n_dep$muhat, estimates_n_dep$sigmahat)
+
+
+test<-mlest(Nsample)
+diffmu<-estimates_n_dep$muhat-test$muhat
+diffsigma<-estimates_n_dep$sigmahat-test$sigmahat
+max(diffmu)
+max(diffsigma)
+```
+
+
+
+1.3 Sample generation - independent for 15min intervals\
+
+```{r}
+N<-10000
+N_ind_sample<-matrix(rep(0,24*4*N), ncol=24*4)
+for(i in 1:N){
+N_ind_sample[i,]<-rnorm(24*4,estimates_n_ind[1,], estimates_n_ind[2,])
+}
+```
+
+
 2. Weibull distribution\
+
+2.1 Parameter estimation - independent for 15min intervals\
 
 We assume independently distributed values for every 15 minutes and estimate $a$ and $b$ called the shape parameter and the scale parameter.
 
