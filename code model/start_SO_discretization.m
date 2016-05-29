@@ -10,7 +10,7 @@ cost = 1;
 epsilon = 0.05;
 penalty = @(x) x.^2; % quadratic penalty
 P = 3.8; % nominal power
-T = 1440; % every minute schedule for a day
+T = 1440; % every-minute-schedule for a day
 
 %% Constraints
 x_min = 0;  
@@ -24,15 +24,17 @@ b = ones(2*(T-1),1)*delta;
 
 K = 372; % number of realizations
 E = reshape(PVdata2,372,1440); % array of K realizations (one per row) with data per minute of one day, respectively
-F = cell(K,1);
-for k = 1:K % determine revenue function F(x,e^k) for every e^1,...,e^K
-e = E(k,:);
-F(k) = { @(x) obj_SO_discr(x,e,cost,penalty,epsilon,P)};
+
+F = cell(K,1); %F(k) contains F(x,e^k)
+% determine revenue function F(x,e^k) for every e^1,...,e^K:
+for k = 1:K
+e = E(k,:); % contains the k^th realization
+F(k) = {@(x) obj_SO_discr(x,e,cost,penalty,epsilon,P)}; 
 end
 
 objfct = @(x) 1/K * sum(cellfun(@(f)f(x),F)); % weighted (all weights=1/K) sum of F(x,e^k)
 
 %% Performing optimization
 tic
-[x_opt, obj_opt] = fmincon(objfct,x0,A,b,[],[],x_min*ones(1,T),x_max*ones(1,T)); % pattern search
+[x_opt, obj_opt] = fmincon(objfct,x0,A,b,[],[],x_min*ones(1,T),x_max*ones(1,T)); 
 toc
