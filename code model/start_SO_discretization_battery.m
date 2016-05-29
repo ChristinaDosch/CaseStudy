@@ -23,10 +23,10 @@ b = ones(2*(T-1),1)*delta;
 
 %% Example scenarios
 
-%K = 372; % number of realizations
-%E = reshape(PVdata2,372,1440); % array of K realizations (one per row) with data per minute of one day, respectively
-K = 31;
-E = reshape(PVdata2(:,1),31,1440); % array of 31 realizations with minute values from January
+K = 372; % number of realizations
+E = reshape(PVdata2,372,1440); % array of K realizations (one per row) with data per minute of one day, respectively
+%K = 31;
+%E = reshape(PVdata2(:,1),31,1440); % array of 31 realizations with minute values from January
 F = cell(K,1);
 
 
@@ -34,7 +34,7 @@ F = cell(K,1);
 
 for k = 1:K % determine revenue function F(x,\tilde{x}^k) for every k=1,...,K
 x_tilde = @(x) battery(E(k,:),x,C); %\tilde{x}^k
-F(k) = { @(x) revenue(x,x_tilde(x),cost,penalty,epsilon,P)};
+F(k) = { @(x) obj_SO_discr(x,x_tilde(x),cost,penalty,epsilon,P)};
 end
 
 objfct = @(x) 1/K * sum(cellfun(@(f)f(x),F)); % weighted (all weights=1/K) sum of F(x,e^k)

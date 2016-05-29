@@ -27,7 +27,7 @@ E = reshape(PVdata2,372,1440); % array of K realizations (one per row) with data
 F = cell(K,1);
 for k = 1:K % determine revenue function F(x,e^k) for every e^1,...,e^K
 e = E(k,:);
-F(k) = { @(x) revenue(x,e,cost,penalty,epsilon,P)};
+F(k) = { @(x) obj_SO_discr(x,e,cost,penalty,epsilon,P)};
 end
 
 objfct = @(x) 1/K * sum(cellfun(@(f)f(x),F)); % weighted (all weights=1/K) sum of F(x,e^k)

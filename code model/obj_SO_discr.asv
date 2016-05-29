@@ -1,8 +1,9 @@
-function obj = revenue(x,e,cost,penalty,epsilon,P)
+function obj = obj_SO_discr(x,e,cost,penalty,epsilon,P)
 % obj = REVENUE(x,e,cost,penalty,P)
 % Calculates the objective function F(x,E) as in 1.5 Objective function
-% Since F(x,E) = \sum_{i=1}^T F^{(i)}(x_i,E_i) (see also 1.5), revenue
-% calls small_objective and returns the sum of all values
+% Since F(x,E) = \sum_{i=1}^T F^{(i)}(x_i,E_i) (see also 1.5), obj_SO_discr
+% calculates the revenue values F^{(i)}(x_i,E_i) for all time steps 
+% and returns the sum of all values
 % 
 % Input:
 %       x - n by m matrix           x(i,j) corresponds to the j's hour of
@@ -19,6 +20,13 @@ function obj = revenue(x,e,cost,penalty,epsilon,P)
 % Output:
 %       obj - n by 1 vector         obj(i) = sum_j
 %                                               F(x(i,j),e(j))
+
+%% Check the size of x and e
+s = size(x);
+if size(e,2) ~= s(2), error('Sizes of x and p do not match'); end
 %% Calculation
-obj = small_objective(x,e,cost,penalty,epsilon,P);
-obj = sum(obj,2);
+E = ones(s(1),1) * e;                                                       % E is an n by m matrix with e in each column
+obj = penalty(max(zeros(s), (x - epsilon*P) - E)) + ...
+      max(zeros(s), E - (x + epsilon*P))*cost - E*cost;                     % just evaluating the formula
+
+obj = sum(obj,2); % sum of all single 
