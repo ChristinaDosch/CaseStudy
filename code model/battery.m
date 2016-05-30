@@ -13,7 +13,7 @@ function [x_tilde] = battery(e, x, C)
 
 %% Check the size of x and e
 T = size(x,2);
-if size(e,2) ~= s, error('Sizes of x and e do not match'); end
+if size(e,2) ~= T, error('Sizes of x and e do not match'); end
 
 %% Calculation
 % In the following, I drop the "tilde" in the variable names for reasons of

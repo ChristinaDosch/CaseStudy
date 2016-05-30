@@ -6,12 +6,8 @@
 %       * general penalty function (also quadratic is possible)
 
 %% Initialize parameters
-cost = 1;
-epsilon = 0.05;
-penalty = @(x) x.^2; % quadratic penalty
-P = 3.8; % nominal power of the PV element
-C = 2.6; % battery capacity
-T = 1440; % every minute schedule for a day
+[T, P, cost, penalty, epsilon, t, mu, sigma, lambda] = init_parameters;
+C = 2.6; % battery capacity (to be included in init_parameters)
 
 %% Constraints
 x_min = 0;  
@@ -31,7 +27,7 @@ F = cell(K,1);
 % determine revenue function F(x,\tilde{x}^k) for every k=1,...,K:
 for k = 1:K 
 x_tilde = @(x) battery(E(k,:),x,C); % compute \tilde{x}^k
-F(k) = { @(x) obj_SO_discr(x,X_tilde(x),cost,penalty,epsilon,P)};
+F(k) = { @(x) obj_SO_discr(x,x_tilde(x),cost,penalty,epsilon,P)};
 end
 
 objfct = @(x) 1/K * sum(cellfun(@(f)f(x),F)); % weighted (all weights=1/K) sum of F(x,e^k)

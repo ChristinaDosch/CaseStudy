@@ -35,6 +35,7 @@ end
 objfct = @(x) 1/K * sum(cellfun(@(f)f(x),F)); % weighted (all weights=1/K) sum of F(x,e^k)
 
 %% Performing optimization
+x0 = zeros(1,T);
 tic
 [x_opt, obj_opt] = fmincon(objfct,x0,A,b,[],[],x_min*ones(1,T),x_max*ones(1,T)); 
 toc
