@@ -36,6 +36,7 @@ H2=@(z) H{i}(z-epsilon*P);
 int1(i) = integral(H1,0,x(i));
 int2(i) = integral(H2,0,x(i));
 
+
 H1_help(i) = H1(x(i)); % = H{i}(x(i)+epsilon*P)
 H2_help(i) = H2(x(i)); % = H{i}(x(i)-epsilon*P)    
 end
