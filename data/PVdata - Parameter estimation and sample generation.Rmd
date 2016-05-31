@@ -9,10 +9,11 @@ output:
 
 
 ```{r, include=FALSE,cache=FALSE}
-PVdata <- read.csv("~/Uni/8.Semester/CaseStudies/CaseStudy/data/PVdata2csv.csv", header=FALSE) #load data
-
+#PVdata <- read.csv("~/Uni/8.Semester/CaseStudies/CaseStudy/data/PVdata2csv.csv", header=FALSE) #load data
+PVdata <- read.csv("~/Documents/CaseStudy/data/PVdata2csv.csv", header=FALSE) #load data
 library(mvnmle) #package for parameter estimation
 library(MASS)
+library(fitdistrplus)
 ```
 
 We consider the first column of the data given in PVdata2.csv (to reduce running times, it will work analogously when we take all data into account).
@@ -22,6 +23,11 @@ Let's generate a matrix where each line represents a day and each column represe
 PV1<-PVdata[1:1440,1] #24*60=1440
 for (i in 1:30) {
   PV1<-cbind(PV1,PVdata[((i*1440)+1):((i+1)*1440),1])
+}
+for(j in 2:12){
+  for(i in 1:31){
+    PV1<-cbind(PV1,PVdata[(((i-1)*1440)+1):(i*1440),j])
+  }
 }
 PV1<-t(PV1)
 ```
@@ -36,8 +42,8 @@ PV1<-t(PV1)
 We estimate the values of expectation and the covariance matrix under the assumption of a **multivariate** normal distribution for intervals of 1h: 
 
 ```{r}
-PV1h<-matrix(rep(0,744),nrow=31) #hourly values -> take means
-for(i in 1:31){
+PV1h<-matrix(rep(0,8928),nrow=372) #hourly values -> take means, 24*372=8928
+for(i in 1:372){
   for (j in 1:24){
     PV1h[i,j]<-mean(PV1[i,((j-1)*60+1):(j*60)])
   }
@@ -64,14 +70,14 @@ Using the package above it is not possible to analyse a multivariate normal dist
 
 
 ```{r}
-PV1quh<-matrix(rep(0,(744*4)),nrow=31) #quarter hourly values -> take means
-for(i in 1:31){
+PV1quh<-matrix(rep(0,(8928*4)),nrow=372) #quarter hourly values -> take means, 24*372=8928
+for(i in 1:372){
   for (j in 1:(24*4)){
     PV1quh[i,j]<-mean(PV1[i,((j-1)*15+1):(j*15)])
   }
 }
 
-estimates_n_ind<-matrix(rep(0,2*96),nrow=2) #under assumption of independence
+estimates_n_ind<-matrix(rep(0,2*96),nrow=2) #under assumption of independence, 4*24=96=T
 for (i in 1:(24*4)){
   estimates_n_ind[1,i]<-fitdistr(PV1quh[,i],"normal")$estimate[1] #estimate of mean (mu)
   estimates_n_ind[2,i]<-fitdistr(PV1quh[,i],"normal")$estimate[2] #estimate of std error (sigma)
@@ -136,7 +142,18 @@ max(diffmu)
 max(diffsigma)
 ```
 
-These values show us that a sample size of $N=1000$ is probably not enough. 
+These values show us that a sample size of $N=1000$ is probably not enough. \
+
+To visualize, the first three realizations that were generated, look like this: 
+```{r}
+plot(Nsample[1,], type="l", xlim=c(4,21), ylab="radiation", xlab="time [h]", ylim=c(0,3500))
+lines(Nsample[2,], type="l", col="red")
+lines(Nsample[3,], type="l", col="blue")
+lines(Nsample[4,], type="l", col="green")
+lines(Nsample[5,], type="l", col="pink")
+lines(Nsample[6,], type="l", col="orange")
+
+```
 
 
 ###Sample generation - independent for 15min intervals
@@ -163,7 +180,7 @@ lines(N_ind_sample[3,], type="l", col="blue")
 
 #Weibull distribution\
 
-##Parameter estimation
+##Parameter estimation\
 
 ###Parameter estimation - independent for 15min intervals\
 
@@ -171,12 +188,33 @@ We assume **independently** distributed values for every 15 minutes and estimate
 
 ```{r}
 estimates_w_ind<-matrix(rep(0,2*96),nrow=2) #under assumption of independence
-for (i in 1:(24*4)){
-  estimates_w_ind[1,i]<-fitdistr(PV1quh[,i],"normal")$estimate[1] #estimate of shape paramter
-  estimates_w_ind[2,i]<-fitdistr(PV1quh[,i],"normal")$estimate[2] #estimate of scale parameter
+for (i in 1:(4*24)){
+  coli<-PV1quh[,i]
+  coli<-coli[coli>0]
+  if(length(coli)>0){
+  estimates_w_ind[1,i]<-fitdist(coli,"weibull", lower=c(0,0))$estimate[1] #estimate of shape paramter
+  estimates_w_ind[2,i]<-fitdist(coli,"weibull", lower=c(0,0))$estimate[2] #estimate of scale parameter
+  } else {
+    estimates_w_ind[1,i]<-NaN
+    estimates_w_ind[2,i]<-NaN
+  }
   }
 estimates_w_ind
 ```
+
+##Sample generation
+
+###Sample generation - independent for 15min intervals\
+
+```{r}
+N<-10000
+W_ind_sample<-matrix(rep(0,24*4*N), ncol=24*4) # 1 column for 1 time interval, 1 row for 1 realization
+for(i in 1:N){
+W_ind_sample[i,]<-rweibull(24*4,estimates_w_ind[1,i], estimates_w_ind[2,i])
+}
+```
+
+
 
 
 
