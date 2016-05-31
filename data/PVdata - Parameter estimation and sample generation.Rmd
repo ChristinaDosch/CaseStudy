@@ -9,14 +9,14 @@ output:
 
 
 ```{r, include=FALSE,cache=FALSE}
-#PVdata <- read.csv("~/Uni/8.Semester/CaseStudies/CaseStudy/data/PVdata2csv.csv", header=FALSE) #load data
-PVdata <- read.csv("~/Documents/CaseStudy/data/PVdata2csv.csv", header=FALSE) #load data
+PVdata <- read.csv("~/Uni/8.Semester/CaseStudies/CaseStudy/data/PVdata2csv.csv", header=FALSE) #load data
+#PVdata <- read.csv("~/Documents/CaseStudy/data/PVdata2csv.csv", header=FALSE) #load data
 library(mvnmle) #package for parameter estimation
 library(MASS)
 library(fitdistrplus)
 ```
 
-We consider the first column of the data given in PVdata2.csv (to reduce running times, it will work analogously when we take all data into account).
+We consider the data given in PVdata2.csv.
 Let's generate a matrix where each line represents a day and each column represents one minute of this day: 
 
 ```{r}
@@ -187,19 +187,19 @@ lines(N_ind_sample[3,], type="l", col="blue")
 We assume **independently** distributed values for every 15 minutes and estimate $a$ and $b$ called the *shape parameter* and the *scale parameter*.
 
 ```{r}
-estimates_w_ind<-matrix(rep(0,2*96),nrow=2) #under assumption of independence
-for (i in 1:(4*24)){
-  coli<-PV1quh[,i]
-  coli<-coli[coli>0]
-  if(length(coli)>0){
-  estimates_w_ind[1,i]<-fitdist(coli,"weibull", lower=c(0,0))$estimate[1] #estimate of shape paramter
-  estimates_w_ind[2,i]<-fitdist(coli,"weibull", lower=c(0,0))$estimate[2] #estimate of scale parameter
-  } else {
-    estimates_w_ind[1,i]<-NaN
-    estimates_w_ind[2,i]<-NaN
-  }
-  }
-estimates_w_ind
+# estimates_w_ind<-matrix(rep(0,2*96),nrow=2) #under assumption of independence
+# for (i in 1:(4*24)){
+#   coli<-PV1quh[,i]
+#   coli<-coli[coli>0]
+#   if(length(coli)>0){
+#   estimates_w_ind[1,i]<-fitdist(coli,"weibull", lower=c(0,0))$estimate[1] #estimate of shape paramter
+#   estimates_w_ind[2,i]<-fitdist(coli,"weibull", lower=c(0,0))$estimate[2] #estimate of scale parameter
+#   } else {
+#     estimates_w_ind[1,i]<-NaN
+#     estimates_w_ind[2,i]<-NaN
+#   }
+#   }
+# estimates_w_ind
 ```
 
 ##Sample generation
@@ -207,11 +207,11 @@ estimates_w_ind
 ###Sample generation - independent for 15min intervals\
 
 ```{r}
-N<-10000
-W_ind_sample<-matrix(rep(0,24*4*N), ncol=24*4) # 1 column for 1 time interval, 1 row for 1 realization
-for(i in 1:N){
-W_ind_sample[i,]<-rweibull(24*4,estimates_w_ind[1,i], estimates_w_ind[2,i])
-}
+# N<-10000
+# W_ind_sample<-matrix(rep(0,24*4*N), ncol=24*4) # 1 column for 1 time interval, 1 row for 1 realization
+# for(i in 1:N){
+# W_ind_sample[i,]<-rweibull(24*4,estimates_w_ind[1,i], estimates_w_ind[2,i])
+# }
 ```
 
 
