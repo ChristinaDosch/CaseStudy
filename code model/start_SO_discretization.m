@@ -1,3 +1,4 @@
+function [x_opt, obj_opt, runningTime] = start_SO_discretization
 %% DISCRETIZATION APPROACH
 % This script solves our well known optimization problem using the
 % discretization approach and including
@@ -13,10 +14,12 @@
 
 %% Example scenarios
 
-%K = 31;
-%E = reshape(PVdata2(:,1),31,1440);
-K = 372; % number of realizations
-E = reshape(PVdata2,372,1440); % array of K realizations (one per row) with data per minute of one day, respectively
+% for this example T = 1440 is required in init_parameters!!!
+load('PVdata2'); 
+K = 31;
+E = reshape(PVdata2(:,1),31,1440);
+%K = 372; % number of realizations
+%E = reshape(PVdata2,372,1440); % array of K realizations (one per row) with data per minute of one day, respectively
 
 F = cell(K,1); %F(k) contains F(x,e^k)
 
@@ -32,4 +35,5 @@ objfct = @(x) 1/K * sum(cellfun(@(f)f(x),F)); % weighted (all weights=1/K) sum o
 x0 = zeros(1,T);
 tic
 [x_opt, obj_opt] = fmincon(objfct,x0,A,b,[],[],x_min*ones(1,T),x_max*ones(1,T)); 
-toc
+runningTime = toc
+end
