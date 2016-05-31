@@ -15,6 +15,7 @@ X = ones(N,1)*x_opt_RO;
     obj_RO = sum(-cost*E + penalty(max(zeros(N,T), (X - P*epsilon) - E)) + max(zeros(N,T), E - (X + P*epsilon))*cost, 2);
 X = ones(N,1)*x_opt_SO;
     obj_SO = sum(-cost*E + penalty(max(zeros(N,T), (X - P*epsilon) - E)) + max(zeros(N,T), E - (X + P*epsilon))*cost, 2);
+if nargin == 0, ToPlotOrNotToPlot = true; end
 if ToPlotOrNotToPlot
     figure, hold on,
     plot(t,x_opt_RO,'*r', t,x_opt_SO,'*b',... % solution computed by ga or patternsearch
