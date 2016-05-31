@@ -2,11 +2,11 @@ function [x_opt_RO, obj_opt_RO, obj_RO,...
           x_opt_SO, obj_opt_SO, obj_SO] = start_ROvsSO(ToPlotOrNotToPlot)
 
 [x_opt_RO, obj_opt_RO, ~] = start_RO(false);
-[x_opt_SO, obj_opt_SO, ~] = start_SO(false);
+[x_opt_SO, obj_opt_SO, ~] = start_SO_closed(false);
 
 N = 10000;
-[T, P, cost, penalty, epsilon, t, mu, sigma, lambda] = init_parameters;
-[x_min, x_max, delta, ~, ~] = init_constraints(T);
+[T, P, cost, penalty, epsilon, C, t, mu, sigma, lambda] = init_parameters;
+[x_min, x_max, delta, ~, ~] = init_constraints(T,P,C);
 variance = sigma.^2;
 E = mvnrnd(mu,variance,N);
 
