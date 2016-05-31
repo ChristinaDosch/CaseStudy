@@ -1,0 +1,221 @@
+---
+title: "PV data - Parameter estimation and sample generation"
+author: "Martina Kuchlbauer"
+date: "Tuesday, May 17, 2016"
+output:
+  pdf_document:
+    number_sections: yes
+---
+
+
+```{r, include=FALSE,cache=FALSE}
+#PVdata <- read.csv("~/Uni/8.Semester/CaseStudies/CaseStudy/data/PVdata2csv.csv", header=FALSE) #load data
+PVdata <- read.csv("~/Documents/CaseStudy/data/PVdata2csv.csv", header=FALSE) #load data
+library(mvnmle) #package for parameter estimation
+library(MASS)
+library(fitdistrplus)
+```
+
+We consider the first column of the data given in PVdata2.csv (to reduce running times, it will work analogously when we take all data into account).
+Let's generate a matrix where each line represents a day and each column represents one minute of this day: 
+
+```{r}
+PV1<-PVdata[1:1440,1] #24*60=1440
+for (i in 1:30) {
+  PV1<-cbind(PV1,PVdata[((i*1440)+1):((i+1)*1440),1])
+}
+for(j in 2:12){
+  for(i in 1:31){
+    PV1<-cbind(PV1,PVdata[(((i-1)*1440)+1):(i*1440),j])
+  }
+}
+PV1<-t(PV1)
+```
+
+
+#Normal distribution
+
+##Parameter estimation
+
+###Parameter estimation - multivariate (dependent) for 1h intervals\
+
+We estimate the values of expectation and the covariance matrix under the assumption of a **multivariate** normal distribution for intervals of 1h: 
+
+```{r}
+PV1h<-matrix(rep(0,8928),nrow=372) #hourly values -> take means, 24*372=8928
+for(i in 1:372){
+  for (j in 1:24){
+    PV1h[i,j]<-mean(PV1[i,((j-1)*60+1):(j*60)])
+  }
+}
+
+estimates_n_dep<-mlest(PV1h) #under assumption of no independence: hourly means and covariance matrix
+
+estimates_n_dep$muhat #estimate of mean (mu)
+estimates_n_dep$sigmahat #estimate of covariance matrix (sigma)
+```
+
+Let's visualize the expected value we estimated: 
+
+```{r}
+plot(estimates_n_dep$muhat,xlab="time [h]", ylab="radiation", type="l", col="red", ylim=c(0,3000))
+legend(17,3000, c("exp value"), col=c("red"), lty=c(1))
+```
+
+
+###Parameter estimation - independent for 15min intervals\
+
+
+Using the package above it is not possible to analyse a multivariate normal distribution with more than 50 variables, hence we continue the analysis with the assumption of **independently** distributed variables for every 15 minutes. 
+
+
+```{r}
+PV1quh<-matrix(rep(0,(8928*4)),nrow=372) #quarter hourly values -> take means, 24*372=8928
+for(i in 1:372){
+  for (j in 1:(24*4)){
+    PV1quh[i,j]<-mean(PV1[i,((j-1)*15+1):(j*15)])
+  }
+}
+
+estimates_n_ind<-matrix(rep(0,2*96),nrow=2) #under assumption of independence, 4*24=96=T
+for (i in 1:(24*4)){
+  estimates_n_ind[1,i]<-fitdistr(PV1quh[,i],"normal")$estimate[1] #estimate of mean (mu)
+  estimates_n_ind[2,i]<-fitdistr(PV1quh[,i],"normal")$estimate[2] #estimate of std error (sigma)
+  }
+estimates_n_ind
+
+```
+
+Let's visualize the expected value and standard errors we estimated: 
+
+```{r}
+plot(estimates_n_ind[1,],xlab="time [15min]", ylab="radiation", type="l", col="red", ylim=c(0,3500))
+lines(estimates_n_ind[1,]+estimates_n_ind[2,],type="l")
+lines(estimates_n_ind[1,]-estimates_n_ind[2,],type="l")
+legend(65,3400, c("exp value", "+/- std error"), col=c("red","black"), lty=c(1,1))
+
+```
+
+##Sample generation
+
+###Sample generation - dependent for 1h intervals\
+
+```{r, include=FALSE,cache=FALSE}
+#Just ignore the following lines!
+#
+# sigma<-estimates_n_dep$sigmahat #24x24 matrix
+# mu<-estimates_n_dep$muhat
+# A<-chol(sigma)
+# 
+# N<-10000 #sample size
+# 
+# rn<-rep(0,24)
+# Nstdsample<-matrix(rep(0,24*N),ncol=24) #matrix to store std norm sample
+# for (i in 1:N){
+#   rn<-rnorm(24)
+#   Nstdsample[i,]<-rn
+# }
+# 
+# Nsample<-matrix(rep(0,24*N),ncol=24)#matrix to store N(mu,sigma) sample
+# for(i in 1:N){
+#   Rea<-rep(0,24)
+#   Nstd<-Nstdsample[i,]
+#   Rea<-t(A)%*%Nstd+mu
+#   Nsample[i,]<-Rea
+# }
+```
+
+We generate a sample of size $N$ of a **multivariate** normal distribution with the parameters estimated above: 
+
+```{r}
+N<-1000
+Nsample<-mvrnorm(n=N, estimates_n_dep$muhat, estimates_n_dep$sigmahat)
+```
+
+To validate this sample generation, we estimate its distribution and standard error and compare them with the parameters we used:
+
+```{r}
+test<-mlest(Nsample)
+diffmu<-estimates_n_dep$muhat-test$muhat
+diffsigma<-estimates_n_dep$sigmahat-test$sigmahat
+max(diffmu)
+max(diffsigma)
+```
+
+These values show us that a sample size of $N=1000$ is probably not enough. \
+
+To visualize, the first three realizations that were generated, look like this: 
+```{r}
+plot(Nsample[1,], type="l", xlim=c(4,21), ylab="radiation", xlab="time [h]", ylim=c(0,3500))
+lines(Nsample[2,], type="l", col="red")
+lines(Nsample[3,], type="l", col="blue")
+lines(Nsample[4,], type="l", col="green")
+lines(Nsample[5,], type="l", col="pink")
+lines(Nsample[6,], type="l", col="orange")
+
+```
+
+
+###Sample generation - independent for 15min intervals
+
+
+We generate a sample of $N$ **independently** identically distributed random variables of the normal distribution with the parameters estimated above: 
+
+```{r}
+N<-10000
+N_ind_sample<-matrix(rep(0,24*4*N), ncol=24*4) # 1 column for 1 time interval, 1 row for 1 realization
+for(i in 1:N){
+N_ind_sample[i,]<-rnorm(24*4,estimates_n_ind[1,], estimates_n_ind[2,])
+}
+```
+
+To visualize, the first three realizations that were generated, look like this: 
+```{r}
+plot(N_ind_sample[1,], type="l", xlim=c(25,75), ylab="radiation", xlab="time [15min]")
+lines(N_ind_sample[2,], type="l", col="red")
+lines(N_ind_sample[3,], type="l", col="blue")
+
+```
+
+
+#Weibull distribution\
+
+##Parameter estimation\
+
+###Parameter estimation - independent for 15min intervals\
+
+We assume **independently** distributed values for every 15 minutes and estimate $a$ and $b$ called the *shape parameter* and the *scale parameter*.
+
+```{r}
+estimates_w_ind<-matrix(rep(0,2*96),nrow=2) #under assumption of independence
+for (i in 1:(4*24)){
+  coli<-PV1quh[,i]
+  coli<-coli[coli>0]
+  if(length(coli)>0){
+  estimates_w_ind[1,i]<-fitdist(coli,"weibull", lower=c(0,0))$estimate[1] #estimate of shape paramter
+  estimates_w_ind[2,i]<-fitdist(coli,"weibull", lower=c(0,0))$estimate[2] #estimate of scale parameter
+  } else {
+    estimates_w_ind[1,i]<-NaN
+    estimates_w_ind[2,i]<-NaN
+  }
+  }
+estimates_w_ind
+```
+
+##Sample generation
+
+###Sample generation - independent for 15min intervals\
+
+```{r}
+N<-10000
+W_ind_sample<-matrix(rep(0,24*4*N), ncol=24*4) # 1 column for 1 time interval, 1 row for 1 realization
+for(i in 1:N){
+W_ind_sample[i,]<-rweibull(24*4,estimates_w_ind[1,i], estimates_w_ind[2,i])
+}
+```
+
+
+
+
+
+
