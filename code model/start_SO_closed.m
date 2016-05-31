@@ -1,5 +1,5 @@
-function [x_opt, obj_opt, runningTime] = start_SO(ToPlotOrNotToPlot)
-% This script contains the entire simulation using SO, conducting the following steps: 
+function [x_opt, obj_opt, runningTime] = start_SO_closed(ToPlotOrNotToPlot)
+% This function contains the entire simulation using SO, conducting the following steps: 
 % 1.) Initialization of common parameters and constraints (independent of ansatz)
 % 2.) Initialization of parameters and obj. function corresponding to SO
 % 3.) Performing optimization using SO
@@ -11,8 +11,8 @@ function [x_opt, obj_opt, runningTime] = start_SO(ToPlotOrNotToPlot)
 
 %% 1.) Initialize parameters and 
 if nargin == 0, ToPlotOrNotToPlot = true; end
-[T, P, cost, penalty, epsilon, t, mu, sigma] = init_parameters;
-[x_min, x_max, delta, A, b] = init_constraints(T);
+[T, P, cost, penalty, epsilon, C, t, mu, sigma] = init_parameters;
+[x_min, x_max, delta, A, b] = init_constraints(T,P,C);
 
 %% 2.) Initialize optimization model for SO
 % multivariate normal distribution for E
@@ -22,6 +22,7 @@ for i=1:T
 end
 
 objfct = @(x) obj_SO_closed_form(x,H,mu,cost,penalty,epsilon,P); % objective function using the closed-form version of SO
+
 %% 3.) Performing optimization using SO
 tic
 [x_opt, obj_opt] = fmincon(objfct,mu,A,b,[],[],x_min*ones(1,T),x_max*ones(1,T));

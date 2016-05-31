@@ -6,16 +6,10 @@
 %       * general penalty function (also quadratic is possible)
 
 %% Initialize parameters
-[T, P, cost, penalty, epsilon, t, mu, sigma, lambda] = init_parameters;
-C = 2.6; % battery capacity (to be included in init_parameters)
+[T, P, cost, penalty, epsilon, C] = init_parameters;
 
 %% Constraints
-x_min = 0;  
-x_max = 0.7*P; 
-delta = 0.03*P; % maximum deviation allowed
-B = [-eye(T-1) zeros(T-1,1)] + [zeros(T-1,1) eye(T-1)];
-A = [B; -B];
-b = ones(2*(T-1),1)*delta;
+[x_min,x_max,delta,A,b] = init_constraints(T,P,C);
 
 %% Example scenarios
 %K = 372; % number of realizations
