@@ -4,7 +4,6 @@ Zum Testen der verschiedenen Ansätze die start-Funktionen aufrufen:
 * start_SO_discretization für den SO Ansatz mit Diskretisierung des Erwartungswert, OHNE Batterie
 * start_SO_discretization_battery für den SO Ansatz mit Diskretisierung des Erwartungswert MIT Batterie (brute force)
 * start_RO für den RO Ansatz OHNE Batterie
-* start_RO_B für den RO Ansatz mit Batterie
 * start_ROvsSO für einen Vergleich von RO ohne Batterie und SO closed-form ohne Batterie
 
 In init_constraints werden die Constraints definiert, 
