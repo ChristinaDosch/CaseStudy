@@ -25,13 +25,18 @@ x_tilde = zeros(1,T); % \tilde{x}, to be returned
 SOC = zeros(1,T+1); % state of charge ((T+1)-dim since we need a dummy value for easier computation using the for-loop)
 
 SOC_0 = 0.25; % 25 percent state of charge(SOC) at day break
-SOC(1) = SOC_0;
 
-for i = 1:T                    
-    b_in(i) = min(max(0,e(i)-x(i)),(0.95-SOC(i))*C);               % (11) in the current documentation
-    b_out(i) = min(max(0,1/0.95*(x(i)-e(i))),(SOC(i)-0.1)*C);      % (12)
-    x_tilde(i) = e(i) - b_in(i) + 0.95*b_out(i);                   % (13)
-    SOC(i+1) = SOC(i) + 1/C*(0.95*b_in(i) - b_out(i));             % (10) 
+%for i=1:
+b_in(1) = min(max(0,e(1)-x(1)),(0.95-SOC_0)*C);
+b_out(1) = min(max(0,1/0.95*(x(1)-e(1))),(SOC_0-0.1)*C);
+SOC(1) = SOC_0 + 1/C*(0.95*b_in(1) - b_out(1));
+x_tilde(1) = e(1) - b_in(1) + 0.95*b_out(1);
+
+for i = 2:T                    
+    b_in(i) = min(max(0,e(i)-x(i)),(0.95-SOC(i-1))*C);               % (10) in the current documentation
+    b_out(i) = min(max(0,1/0.95*(x(i)-e(i))),(SOC(i-1)-0.1)*C);      % (11)
+    SOC(i) = SOC(i-1) + 1/C*(0.95*b_in(i) - b_out(i));               % (12) 
+    x_tilde(i) = e(i) - b_in(i) + 0.95*b_out(i);                     % (13)
 end
 
 % TO DO: Find a way to express this for loop by vector and matrix calculations
