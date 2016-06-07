@@ -15,9 +15,9 @@ function [x_opt, obj_opt, runningTime] = start_SO_discretization
 %% Example scenarios
 
 % for this example T = 1440 is required in init_parameters!!!
-load('PVdata2'); 
-K = 31;
-E = reshape(PVdata2(:,1),31,1440);
+E=load('sample_normal_independent.csv');
+K = size(E,1);
+%E = reshape(sample_normal_independent(:,1),31,1440);
 %K = 372; % number of realizations
 %E = reshape(PVdata2,372,1440); % array of K realizations (one per row) with data per minute of one day, respectively
 
