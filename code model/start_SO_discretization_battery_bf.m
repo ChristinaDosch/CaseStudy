@@ -36,8 +36,7 @@ objfct = @(x) 1/K * sum(cellfun(@(f)f(x),F)); % weighted (all weights=1/K) sum o
 %% Performing optimization
 x0 = zeros(1,T);
 tic
-%[x_opt, obj_opt] = patternsearch(objfct,x0,A,b,[],[],x_min*ones(1,T),x_max*ones(1,T));
-[x_opt, obj_opt] = fmincon(objfct,x0,A,b,[],[],x_min*ones(1,T),x_max*ones(1,T));
+[x_opt, obj_opt] = patternsearch(objfct,x0,A,b,[],[],x_min*ones(1,T),x_max*ones(1,T));
 runningTime = toc
 %% 4.) Plot the solutions and data
 if ToPlotOrNotToPlot
