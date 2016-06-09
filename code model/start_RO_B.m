@@ -1,5 +1,5 @@
 function [xb_opt, obj_opt, runningTime] = start_RO_B(ToPlotOrNotToPlot)
-% This script contains the entire simulation using RO, conducting the following steps: 
+% This script contains the entire simulation using RO WITH BATTERY, conducting the following steps: 
 % 1.) Initialization of common parameters and constraints (independent of ansatz)
 % 2.) Initialization of parameters and obj. function corresponding to RO
 % 3.) Performing optimization using RO
@@ -9,8 +9,8 @@ function [xb_opt, obj_opt, runningTime] = start_RO_B(ToPlotOrNotToPlot)
 
 %% 1.) Initialize parameters and constraints
 if nargin == 0, ToPlotOrNotToPlot = true; end
-[T, P, cost, penalty, epsilon, t, mu, sigma, lambda] = init_parameters;
-[x_min, x_max, delta, A, b, C, A_, b_] = init_constraints(T);
+[T, P, cost, penalty, epsilon, C, t, mu, sigma, lambda] = init_parameters;
+[x_min, x_max, delta, A, b, A_, b_] = init_constraints(T,P,C);
 
 %% 2.) Initialize e_l, e_r for RO
 e_l = mu - lambda*sigma; %
