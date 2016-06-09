@@ -1,4 +1,4 @@
-function [T, P, cost, penalty, epsilon, C, t, mu, sigma, lambda] = init_parameters
+function [T, P, cost, penalty, epsilon, C, SOC_0, t, mu, sigma, lambda] = init_parameters
 
 %T = 1 + 24*1;       % one hour schedule (works for RO and start_SO_closed, for the latter only with long running time)
 %T = 3;              % for start_SO_closed with an acceptable runtime
@@ -10,6 +10,7 @@ epsilon = 0.05;
 cost = 1;
 penalty = @(x) x.^2;  % quadratic penalty
 C = 2.6;              % battery capacity
+SOC_0 = 0.25;         % state of charge (SOC) at day break
 t = linspace(0,24,T);
 
 pd = makedist('Normal');

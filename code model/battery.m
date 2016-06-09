@@ -1,4 +1,4 @@
-function [x_tilde] = battery(e, x, C)
+function [x_tilde] = battery(e, x, C, SOC_0)
 %BATTERY computes x_tilde for a given realization e and a schedule x
 % 
 % Input:
@@ -6,6 +6,8 @@ function [x_tilde] = battery(e, x, C)
 %       e - 1 by T vector           e(i) is the solar radiance during the
 %                                   i^th hour
 %       C - scalar                  capacity of the battery
+%       SOC_0 - scalar              state of charge(SOC) at day break
+%                                   (usually SOC_0 = 0.25)
 %
 % Output:
 %       x_tilde - 1 by T vector     what is really fed in the grid, based
@@ -23,8 +25,6 @@ b_in = zeros(1,T); % \tilde{b_in}
 b_out = zeros(1,T); % \tilde{b_out}
 x_tilde = zeros(1,T); % \tilde{x}, to be returned
 SOC = zeros(1,T+1); % state of charge ((T+1)-dim since we need a dummy value for easier computation using the for-loop)
-
-SOC_0 = 0.25; % 25 percent state of charge(SOC) at day break
 
 %for i=1:
 b_in(1) = min(max(0,e(1)-x(1)),(0.95-SOC_0)*C);

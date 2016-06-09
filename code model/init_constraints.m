@@ -1,4 +1,4 @@
-function [x_min, x_max, delta, A, b, A_, b_, A_smart, b_smart] = init_constraints(T, P, C)
+function [x_min, x_max, delta, A, b, A_, b_, A_smart, b_smart] = init_constraints(T, P, C, SOC_0)
 % returns bounds x_min,x_max,delta for constraints as well as matrix A and
 % vector b, describing all constraints in the form Ax<=b.
 % For detailled description of A and b see "Ansatz 2: Robust Optimization"
@@ -21,12 +21,12 @@ b_ = [C*ones(T,1); zeros(T,1)];
 
 % For SO with battery (SMART)
 %TO DO:
-%B_tilde = ;
-%C = ;
-%D = ;
-%c = ;
+B_tilde = [B, zeros(T-1,3*T)];
+C_smart = [zeros(T,T), eye(T) + diag(-ones(T-1,1),-1) , -0.95/C * eye(T), 1/C * eye(T)];
+D = [zeros(T,2*T), -eye(T), 0.95 * eye(T)];
+c = [SOC_0; zeros(T-1,1)];
 %d = ;
-A_smart = [B_tilde; -B_tilde; C; -C; D; -D];
+A_smart = [B_tilde; -B_tilde; C_smart; -C_smart; D; -D];
 b_smart = [ones(T-1,1)*delta; -ones(T-1,1)*delta; c; -c; d; -d];
 
 %TO DO:

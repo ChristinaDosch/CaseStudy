@@ -8,10 +8,10 @@ function [x_opt, obj_opt, runningTime] = start_SO_discretization_battery_bf(ToPl
 
 %% Initialize parameters
 if nargin == 0, ToPlotOrNotToPlot = true; end
-[T, P, cost, penalty, epsilon, C, t] = init_parameters;
+[T, P, cost, penalty, epsilon, C, SOC_0, t] = init_parameters;
 
 %% Constraints
-[x_min,x_max,delta,A,b] = init_constraints(T,P,C);
+[x_min,x_max,delta,A,b] = init_constraints(T,P,C,SOC_0);
 
 %% Example scenarios
 
@@ -34,7 +34,7 @@ F = cell(K,1);
 
 % determine revenue function F(x,\tilde{x}^k) for every k=1,...,K:
 for k = 1:K 
-x_tilde = @(x) battery(E(k,:),x,C); % compute \tilde{x}^k
+x_tilde = @(x) battery(E(k,:),x,C,SOC_0); % compute \tilde{x}^k
 F(k) = { @(x) obj_SO_discr(x,x_tilde(x),cost,penalty,epsilon,P)};
 end
 

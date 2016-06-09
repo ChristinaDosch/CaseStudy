@@ -1,4 +1,4 @@
-function [x_min, x_max, delta, A, b, A_, b_] = init_constraints(T, P, C)
+function [x_min, x_max, delta, A, b, A_, b_, A_smart, b_smart] = init_constraints(T, P, C)
 % returns bounds x_min,x_max,delta for constraints as well as matrix A and
 % vector b, describing all constraints in the form Ax<=b.
 % For detailled description of A and b see "Ansatz 2: Robust Optimization"
@@ -19,6 +19,19 @@ b = ones(2*(T-1),1)*delta;
 A_ = tril(ones(T)); A_ = [A_; -A_];
 b_ = [C*ones(T,1); zeros(T,1)];
 
-% For SO with battery (s
+% For SO with battery (SMART)
+%TO DO:
+B_tilde = [B, zeros(T-1,3*T)];
+C = [zeros(T,T), , -0.95/C*eye(T)];
+%D = ;
+%c = ;
+%d = ;
+A_smart = [B_tilde; -B_tilde; C; -C; D; -D];
+b_smart = [ones(T-1,1)*delta; -ones(T-1,1)*delta; c; -c; d; -d];
+
+%TO DO:
+% upper bounds und lower bounds (die ja nicht in Matrix mit drin stehen,
+% weil Matlab mit solchen capacity constraints sinnvoller umgehen kann)
+% müssen dann auch oben als function output noch rein
 end
 
