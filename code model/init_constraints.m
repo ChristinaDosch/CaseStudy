@@ -20,18 +20,18 @@ A_ = tril(ones(T)); A_ = [A_; -A_];
 b_ = [C*ones(T,1); zeros(T,1)];
 
 % For SO with battery (SMART)
-%TO DO:
 B_tilde = [B, zeros(T-1,3*T)];
 C_smart = [zeros(T,T), eye(T) + diag(-ones(T-1,1),-1) , -0.95/C * eye(T), 1/C * eye(T)];
 D = [zeros(T,2*T), -eye(T), 0.95 * eye(T)];
 c = [SOC_0; zeros(T-1,1)];
-%d = ;
+% d = ; %kann man hoffentlich weglassen
 A_smart = [B_tilde; -B_tilde; C_smart; -C_smart; D; -D];
 b_smart = [ones(T-1,1)*delta; -ones(T-1,1)*delta; c; -c; d; -d];
 
 %TO DO:
-% upper bounds und lower bounds (die ja nicht in Matrix mit drin stehen,
-% weil Matlab mit solchen capacity constraints sinnvoller umgehen kann)
-% müssen dann auch oben als function output noch rein
+% - upper bounds und lower bounds (die ja nicht in Matrix mit drin stehen,
+%   weil Matlab mit solchen capacity constraints sinnvoller umgehen kann)
+%   müssen dann auch oben als function output noch rein
+% - d weglassen und damit auch D
 end
 
