@@ -14,14 +14,13 @@ function [x_opt, obj_opt, runningTime] = start_SO_discretization
 
 %% Example scenarios
 
-% using SAMPLE_NORMAL_INDEPENDENT.CSV:
+% using SAMPLE_NORMAL_INDEPENDENT.CSV
 % for this example T = 96 is required in init_parameters!!!
 E = load('sample_normal_independent.csv');
 E = 1/1000 * E; % since we need kWh (and in the samples it's in Wh)
 K = size(E,1); % number of realizations
-K = 100;
 
-% using PVDATA2.MAT
+
 % for this example T = 1440 is required in init_parameters!!! 
 %E = load('PVdata2');
 %E = 1/1000 * E;

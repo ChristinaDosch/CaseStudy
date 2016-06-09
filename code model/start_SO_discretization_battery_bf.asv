@@ -14,21 +14,14 @@ if nargin == 0, ToPlotOrNotToPlot = true; end
 [x_min,x_max,delta,A,b] = init_constraints(T,P,C);
 
 %% Example scenarios
-
-% using SAMPLE_NORMAL_INDEPENDENT.CSV:
-% for this example T = 96 is required in init_parameters!!!
-E = load('sample_normal_independent.csv');
-E = 1/1000 * E; % since we need kWh (and in the samples it's in Wh)
-K = size(E,1); % number of realizations
-K = 100;
-
-% using PVDATA2.MAT
-% for this example T = 1440 is required in init_parameters!!! 
-%E = load('PVdata2');
-%E = 1/1000 * E;
+load('PVdata2');
+%E = load('sample_normal_independent.csv');
 %K = 372; % number of realizations
 %E = reshape(PVdata2,372,1440); % array of K realizations (one per row) with data per minute of one day, respectively
-%E = reshape(PVdata2(:,1),31,1440); % array of 31 realizations with minute values from January
+%K = 1000;
+%load('PVdata2');
+K = 31;
+E = reshape(PVdata2(:,1),31,1440); % array of 31 realizations with minute values from January
 
 F = cell(K,1);
 
@@ -44,7 +37,6 @@ objfct = @(x) 1/K * sum(cellfun(@(f)f(x),F)); % weighted (all weights=1/K) sum o
 x0 = zeros(1,T);
 tic
 [x_opt, obj_opt] = patternsearch(objfct,x0,A,b,[],[],x_min*ones(1,T),x_max*ones(1,T));
-%[x_opt, obj_opt] = fmincon(objfct,x0,A,b,[],[],x_min*ones(1,T),x_max*ones(1,T));
 runningTime = toc
 %% 4.) Plot the solutions and data
 if ToPlotOrNotToPlot
@@ -60,7 +52,7 @@ if ToPlotOrNotToPlot
            'x_{max}, x_{min}')
     xlabel('time'), ylabel('energy, kWh')
     % size
-    xlim([0 24]);
+    xlim([0 T]);
     v = axis;
     ylim([0 v(4)]);
     % info-box at the top left corner
