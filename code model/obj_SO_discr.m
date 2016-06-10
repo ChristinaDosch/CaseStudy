@@ -1,6 +1,6 @@
 function obj = obj_SO_discr(x,e,cost,penalty,epsilon,P)
 % obj = REVENUE(x,e,cost,penalty,P)
-% Calculates the objective function F(x,E) as in 1.5 Objective function
+% Calculates the objective function -F(x,E) as in 1.5 Objective function
 % Since F(x,E) = \sum_{i=1}^T F^{(i)}(x_i,E_i) (see also 1.5), obj_SO_discr
 % calculates the revenue values F^{(i)}(x_i,E_i) for all time steps 
 % and returns the sum of all values

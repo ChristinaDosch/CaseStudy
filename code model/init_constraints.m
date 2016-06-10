@@ -24,7 +24,7 @@ SOC_min = 0.1;  % maximum of state of charge
 SOC_max = 0.95; % minimum of state of charge
 
 % "real" constraints (not capacity constraints)
-delta = 0.03*P; % maximum deviation between two successive power values
+delta = 0.03 * P; % maximum deviation between two successive power values
 B = [-eye(T-1) zeros(T-1,1)] + [zeros(T-1,1) eye(T-1)];
 A = [B; -B];
 b = ones(2*(T-1),1)*delta;
