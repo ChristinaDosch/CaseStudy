@@ -11,7 +11,7 @@ if nargin == 0, ToPlotOrNotToPlot = true; end
 [T, P, cost, penalty, epsilon, C, SOC_0, t] = init_parameters;
 
 %% Constraints
-[x_min, x_max, SOC_min, SOC_max, delta,~,~,~,~,A_smart,b_smart] = init_constraints(T,P,C,SOC_0);
+[x_min, x_max, delta,~,~,~,~, A_smart, b_smart, SOC_min, SOC_max] = init_constraints(T,P,C,SOC_0);
 
 %% Example scenarios
 
