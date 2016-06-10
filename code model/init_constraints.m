@@ -1,5 +1,5 @@
 function [x_min, x_max, SOC_min, SOC_max, delta, A, b, A_, b_, A_smart, b_smart] = init_constraints(T, P, C, SOC_0)
-% returns bounds x_min,x_max,delta for constraints as well as matrix A and
+% returns bounds x_min, x_max, delta for constraints as well as matrix A and
 % vector b, describing all constraints in the form Ax<=b.
 % For detailled description of A and b see "Ansatz 2: Robust Optimization"
 % 
