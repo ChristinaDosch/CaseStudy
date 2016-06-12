@@ -20,7 +20,7 @@ if nargin == 0, ToPlotOrNotToPlot = true; end
 E = load('sample_normal_independent.csv');
 E = 1/1000 * E; % since we need kWh (and in the samples it's in Wh)
 %K = size(E,1); % number of realizations
-K = 300;
+K = 50;
 
 % using PVDATA2.MAT
 % for this example T = 1440 is required in init_parameters!!! (1min interv)
@@ -30,23 +30,35 @@ K = 300;
 %E = reshape(PVdata2,372,1440); % array of K realizations (one per row) with data per minute of one day, respectively
 %E = reshape(PVdata2(:,1),31,1440); % array of 31 realizations with minute values from January
 
-F = cell(K,1);
+F = cell(K,2);
+%Fg = cell(K,1);
 
 % determine revenue function F(x,\tilde{x}^k) for every k=1,...,K:
 for k = 1:K 
+<<<<<<< HEAD
+x_tilde = @(x) E(k,:)+0.95*x((3*T+1):(4*T))-x((2*T+1):(3*T)); % compute \tilde{x}^k
+%[obj,grad]=obj_SO_discr(x(1:T),x_tilde(x),cost,penalty,epsilon,P);
+F(k,:) = { @(x) obj_SO_discr(x(1:T),x_tilde(x),cost,penalty,epsilon,P)};
+%F(k) = { @(x) obj_SO_discr(x(1:T),x_tilde(x),cost,penalty,epsilon,P)};
+%Fg(k) = { @(x) grad};
+=======
 x_tilde = @(x) E(k,:)+0.95*x((3*T+1):(4*T))-x((2*T+1):(3*T)); % compute \tilde{x}^k as e^k + 0.95 \tilde{b^out,k} - \tilde{b^in}
 F(k) = { @(x) obj_SO_discr(x(1:T),x_tilde(x),cost,penalty,epsilon,P)};
+>>>>>>> 8430a312b805ed33d928c7391f2a88a51a23269a
 end
 
 objfct = @(x) 1/K * sum(cellfun(@(f)f(x),F)); % weighted (all weights=1/K) sum of F(x,e^k)
+
 
 %% Performing optimization
 x0 = zeros(1,4*T);
 tic
 %[x_opt, obj_opt] = patternsearch(objfct,x0,A_smart,b_smart,[],[],...
  %   [x_min*ones(1,T), SOC_min*ones(1,T),0*ones(1,(2*T))],[x_max*ones(1,T), SOC_max*ones(1,T),2*P*ones(1,(2*T))]);
-[x_opt, obj_opt] = fmincon(objfct, x0, A_smart, b_smart,[],[],...
-    [x_min*ones(1,T), SOC_min*ones(1,T),0*ones(1,(2*T))],[x_max*ones(1,T), SOC_max*ones(1,T),2*P*ones(1,(2*T))]);
+options=optimoptions('fmincon', 'MaxFunctionEvaluations', 30000,'SpecifyObjectiveGradient',true);
+ [x_opt, obj_opt] = fmincon(objfct, x0, A_smart, b_smart,[],[],...
+    [x_min*ones(1,T), SOC_min*ones(1,T),0*ones(1,(2*T))],[x_max*ones(1,T), SOC_max*ones(1,T),2*P*ones(1,(2*T))],...
+    [],options);
 runningTime = toc
 %% 4.) Plot the solutions and data
 if ToPlotOrNotToPlot
