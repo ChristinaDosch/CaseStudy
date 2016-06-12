@@ -1,9 +1,9 @@
-function [x_opt, obj_opt, runningTime] = start_SO_discretization_battery_bf(ToPlotOrNotToPlot)
-%% DISCRETIZATION APPROACH with BATTERY BRUTE FORCE
+function [x_opt, obj_opt, runningTime] = start_SO_discretization_battery_smart(ToPlotOrNotToPlot)
+%% DISCRETIZATION APPROACH with BATTERY SMART APPROACH
 % This script solves our well known optimization problem using the
 % discretization approach and including
 %       * ramping constraints and x_min, x_max
-%       * battery using the BRUTE FORCE approach
+%       * battery using the SMART approach
 %       * general penalty function (also quadratic is possible)
 
 %% Initialize parameters
@@ -11,7 +11,7 @@ if nargin == 0, ToPlotOrNotToPlot = true; end
 [T, P, cost, penalty, epsilon, C, SOC_0, t] = init_parameters;
 
 %% Constraints
-[x_min,x_max,SOC_min, SOC_max, delta,~,~,~,~,A_smart,b_smart] = init_constraints(T,P,C,SOC_0);
+[x_min, x_max, delta,~,~,~,~, A_smart, b_smart, SOC_min, SOC_max] = init_constraints(T,P,C,SOC_0);
 
 %% Example scenarios
 
@@ -45,7 +45,7 @@ x0 = zeros(1,4*T);
 tic
 %[x_opt, obj_opt] = patternsearch(objfct,x0,A_smart,b_smart,[],[],...
  %   [x_min*ones(1,T), SOC_min*ones(1,T),0*ones(1,(2*T))],[x_max*ones(1,T), SOC_max*ones(1,T),2*P*ones(1,(2*T))]);
-[x_opt, obj_opt] = fmincon(objfct,x0,A_smart,b_smart,[],[],...
+[x_opt, obj_opt] = fmincon(objfct, x0, A_smart, b_smart,[],[],...
     [x_min*ones(1,T), SOC_min*ones(1,T),0*ones(1,(2*T))],[x_max*ones(1,T), SOC_max*ones(1,T),2*P*ones(1,(2*T))]);
 runningTime = toc
 %% 4.) Plot the solutions and data
