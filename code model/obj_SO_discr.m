@@ -1,4 +1,5 @@
-function [obj,grad] = obj_SO_discr(x,e,cost,penalty,epsilon,P)
+function obj = obj_SO_discr(x,e,cost,penalty,epsilon,P)
+%function [obj,grad] = obj_SO_discr(x,e,cost,penalty,epsilon,P)
 % obj = REVENUE(x,e,cost,penalty,P)
 % Calculates the objective function -F(x,E) as in 1.5 Objective function
 % Since F(x,E) = \sum_{i=1}^T F^{(i)}(x_i,E_i) (see also 1.5), obj_SO_discr
@@ -30,7 +31,7 @@ E = ones(s(1),1) * e;                                                       % E 
 [yc,gradc,pc]=smooth_ppart(E - (x + epsilon*P),1E-3,5);
 obj = penalty(yp) + yc*cost - E*cost;  
 
-grad = 2*yp.*gradp + gradc*cost ;
+%grad = 2*yp.*gradp + gradc*cost ;
 
 %obj = penalty(max(zeros(s), (x - epsilon*P) - E)) + ...
 %      max(zeros(s), E - (x + epsilon*P))*cost - E*cost;                     % just evaluating the formula
