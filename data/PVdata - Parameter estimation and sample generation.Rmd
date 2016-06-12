@@ -106,7 +106,7 @@ mean(logn)
 
 ###Parameter estimation - sum of RVs 
 
-We now estimate the parameters under the assumption that the radiation values are distributed according to $\frac{1}{4}\cdot (X+Y+Z+W)$ where $X,Y,Z$ and $W$ are normally distributed.\ 
+We now estimate the parameters under the assumption that the radiation values are distributed according to $\frac{1}{m}\cdot (X+Y+Z+W+...)$ where $X,Y,Z,W,...$ are normally distributed.\ 
 
 Let $X$ be distributed with the parameters we estimated for the **independently** normal distribution for intervals of 15min.\
 
@@ -121,6 +121,7 @@ for (i in 1:(24)){
 ```
 
 For every interval of 3h, let $Z$ be the random variable distributed according to a univariate normal distribution. 
+For every interval of 4h, let $W$ be the random variable distributed according to a univariate normal distribution, and so on...
 
 ```{r}
 PV13h<-matrix(rep(0,(8*372)),nrow=372) #3h values -> take means, 8*372=2976
@@ -134,12 +135,7 @@ for (i in 1:(8)){
   estimates_n_sum3[1,i]<-fitdistr(PV13h[,i],"normal")$estimate[1] #estimate of mean 
   estimates_n_sum3[2,i]<-fitdistr(PV13h[,i],"normal")$estimate[2] #estimate of std er
   }
-```
 
-
-For every interval of 4h, let $W$ be the random variable distributed according to a univariate normal distribution. 
-
-```{r}
 PV14h<-matrix(rep(0,(6*372)),nrow=372) #4h values -> take means
 for(i in 1:372){
   for (j in 1:(6)){
@@ -151,9 +147,7 @@ for (i in 1:(6)){
   estimates_n_sum4[1,i]<-fitdistr(PV14h[,i],"normal")$estimate[1] #estimate of mean 
   estimates_n_sum4[2,i]<-fitdistr(PV14h[,i],"normal")$estimate[2] #estimate of std er
   }
-```
 
-```{r}
 PV15h<-matrix(rep(0,(12*372)),nrow=372) #2h values -> take means
 for(i in 1:372){
   for (j in 1:(12)){
@@ -165,9 +159,7 @@ for (i in 1:(12)){
   estimates_n_sum5[1,i]<-fitdistr(PV15h[,i],"normal")$estimate[1] #estimate of mean 
   estimates_n_sum5[2,i]<-fitdistr(PV15h[,i],"normal")$estimate[2] #estimate of std er
   }
-```
 
-```{r}
 PV16h<-matrix(rep(0,(48*372)),nrow=372) #30min values -> take means
 for(i in 1:372){
   for (j in 1:(48)){
@@ -285,6 +277,7 @@ N_ind_sample<-matrix(rep(0,24*4*N), ncol=24*4) # 1 column for 1 time interval, 1
 for(i in 1:N){
 N_ind_sample[i,]<-rnorm(24*4,estimates_n_ind[1,], estimates_n_ind[2,])
 }
+write.csv(N_ind_sample,"sample_normal_independent.csv", row.names=FALSE)
 ```
 
 To visualize, the first three realizations that were generated, look like this: 
@@ -354,6 +347,7 @@ W_ind_sample<-matrix(rep(0,24*4*N), ncol=24*4) # 1 column for 1 time interval, 1
 for(i in 1:N){
 W_ind_sample[i,]<-rweibull(24*4,estimates_w_ind[1,], estimates_w_ind[2,])
 }
+write.csv(W_ind_sample,"sample_weibull_independent.csv", row.names=FALSE)
 ```
 
 To visualize, the first three realizations that were generated, look like this: 
@@ -364,6 +358,8 @@ lines(W_ind_sample[2,], type="l", col="red")
 lines(W_ind_sample[3,], type="l", col="blue")
 
 ```
+
+Just to visualize what our original data look like: 
 
 ```{r}
 plot(PV1quh[10,], type="l", xlim=c(25,75), ylab="radiation", xlab="time [15min]")
