@@ -11,7 +11,7 @@ if nargin == 0, ToPlotOrNotToPlot = true; end
 [T, P, cost, penalty, penalty_grad, epsilon, C, SOC_0, t] = init_parameters;
 
 %% Constraints
-[x_min,x_max,~,~,delta,A,b,~,~,~,~] = init_constraints(T,P,C,SOC_0);
+[x_min,x_max,delta,A,b] = init_constraints(T,P,C,SOC_0);
 
 %% Example scenarios
 
@@ -20,7 +20,7 @@ if nargin == 0, ToPlotOrNotToPlot = true; end
 E = load('sample_normal_independent.csv');
 E = 1/1000 * E; % since we need kWh (and in the samples it's in Wh)
 %K = size(E,1); % number of realizations
-K = 1;
+K = 3;
 
 % using PVDATA2.MAT
 % for this example T = 1440 is required in init_parameters!!! 
@@ -35,7 +35,7 @@ F = cell(K,1);
 % determine revenue function F(x,\tilde{x}^k) for every k=1,...,K:
 for k = 1:K 
 x_tilde = @(x) battery(E(k,:),x,C,SOC_0); % compute \tilde{x}^k
-F(k) = { @(x) obj_SO_discr(x,x_tilde(x),cost,penalty,epsilon,P)};
+F(k) = { @(x) obj_SO_discr(x,x_tilde(x),cost,penalty,penalty_grad,epsilon,P)};
 end
 
 objfct = @(x) 1/K * sum(cellfun(@(f)f(x),F)); % weighted (all weights=1/K) sum of F(x,e^k)
@@ -43,8 +43,8 @@ objfct = @(x) 1/K * sum(cellfun(@(f)f(x),F)); % weighted (all weights=1/K) sum o
 %% Performing optimization
 x0 = zeros(1,T);
 tic
-[x_opt, obj_opt] = patternsearch(objfct,x0,A,b,[],[],x_min*ones(1,T),x_max*ones(1,T));
-%[x_opt, obj_opt] = fmincon(objfct,x0,A,b,[],[],x_min*ones(1,T),x_max*ones(1,T));
+%[x_opt, obj_opt] = patternsearch(objfct,x0,A,b,[],[],x_min*ones(1,T),x_max*ones(1,T));
+[x_opt, obj_opt] = fmincon(objfct,x0,A,b,[],[],x_min*ones(1,T),x_max*ones(1,T));
 runningTime = toc
 %% 4.) Plot the solutions and data
 if ToPlotOrNotToPlot
@@ -68,7 +68,7 @@ if ToPlotOrNotToPlot
     text(0.05*v(2),0.93*v(4),['cost = ', num2str(cost)])
     text(0.05*v(2),0.90*v(4),['penalty = ', func2str(penalty)])
     text(0.05*v(2),0.87*v(4),['[x_{min} x_{max}] = ', '[', num2str(x_min), ' ', num2str(x_max), ']'])
-    text(0.05*v(2),0.84*v(4),['\Delta = ', num2str(delta)])
+%    text(0.05*v(2),0.84*v(4),['\Delta = ', num2str(delta)])
     title('SO discretization brute force')
     hold off
 end
