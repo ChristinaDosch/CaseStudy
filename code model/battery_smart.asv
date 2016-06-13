@@ -1,0 +1,17 @@
+function [SOC,b_in,b_out] = battery_smart(e,x,C,SOC_0)
+%UNTITLED Summary of this function goes here
+%   Detailed explanation goes here
+
+%TO DO: Only constraints on battery, no ramping constraints
+[x_min, x_max, delta,~,~,~,~, A_smart, b_smart, SOC_min, SOC_max] = init_constraints(T,P,C,SOC_0);
+x_tilde = e+0.95*b_out-b_in;
+F = { @(x) obj_SO_discr(x,x_tilde,cost,penalty,penalty_grad,epsilon,P)};
+
+x0 = zeros(1,4*T);
+[x_opt, obj_opt] = fmincon(F, x0, A_smart, b_smart,[],[],...
+    [x_min*ones(1,T), SOC_min*ones(1,T),0*ones(1,(2*T))],[x_max*ones(1,T), SOC_max*ones(1,T),2*P*ones(1,(2*T))]);
+
+SOC = x_opt(T+1:2*T);
+b_in = 
+end
+
