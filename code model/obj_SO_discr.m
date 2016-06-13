@@ -27,13 +27,13 @@ s = size(x);
 if size(e,2) ~= s(2), error('Sizes of x and e do not match'); end
 %% Calculation
 E = ones(s(1),1) * e;                                                       % E is an n by m matrix with e in each column
-[yp,gradp,pp]=smooth_ppart((x - epsilon*P) - E,1E-1,5);
-[yc,gradc,pc]=smooth_ppart(E - (x + epsilon*P),1E-1,5);
+[yp,gradp,pp]=smooth_ppart((x - epsilon*P) - E,1E-3,5);
+[yc,gradc,pc]=smooth_ppart(E - (x + epsilon*P),1E-3,5);
 obj = penalty(yp) + yc*cost - E*cost;  
 
-%grad = 2*yp.*gradp + gradc*cost ;
+grad = 2*yp.*gradp + gradc.*cost;
 
 %obj = penalty(max(zeros(s), (x - epsilon*P) - E)) + ...
- %    max(zeros(s), E - (x + epsilon*P))*cost - E*cost;                     % just evaluating the formula
+%   max(zeros(s), E - (x + epsilon*P))*cost - E*cost;                     % just evaluating the formula
 
 obj = sum(obj,2); % sum of all single revenue values
