@@ -1,4 +1,4 @@
-function [obj, grad] = obj_RO_B(xb,e_l,e_u,cost,penalty,epsilon,P,SmoothOrNonSmooth)
+function [obj, grad] = obj_RO_B(xb,e_l,e_u,cost,penalty,penalty_grad,epsilon,P,SmoothOrNonSmooth)
 % [obj, grad] = OBJ_RO(xb,e_l,e_u,cost,penalty,epsilon,P,SmoothOrNonSmooth)
 % Calculates the objective function as in (4) from "First approach with RO"
 % and its gradient.
@@ -27,6 +27,8 @@ function [obj, grad] = obj_RO_B(xb,e_l,e_u,cost,penalty,epsilon,P,SmoothOrNonSmo
 %                                   grad(i) = sum_j
 %                                               gradF(x(i,j),e_l(j),e_r(j))
 %                                   With F from medium_objective
+%%
+if nargin == 8, SmoothOrNonSmooth = 'nonsmooth'; end
 %% Calculation
 s = size(xb);
 if rem(s(2),2) ~= 0, error('Dimension 2 of xb must be even'), end
@@ -75,7 +77,6 @@ function [obj, grad] = medium_objective(x,e_l,e_u,cost,penalty,penalty_grad,epsi
 %       grad - n by m matrix        !!!works only for linear penalties!!!
 %                                   please see the last part of the code
 
-if nargin == 8, SmoothOrNonSmooth = 'nonsmooth'; end
 %% Check the size of x and e
 s = size(x);
 if size(e_l,2) ~= s(2), error('Sizes of x and e_l do not match'); end

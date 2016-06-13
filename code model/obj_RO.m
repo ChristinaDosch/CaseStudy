@@ -27,6 +27,8 @@ function [obj, grad] = obj_RO(x,e_l,e_u,cost,penalty,penalty_grad,epsilon,P,Smoo
 %                                   grad(i) = sum_j
 %                                               gradF(x(i,j),e_l(j),e_r(j))
 %                                   With F from medium_objective
+%%
+if nargin == 8, SmoothOrNonSmooth = 'nonsmooth'; end
 %% Calculation
 [obj, grad] = medium_objective(x,e_l,e_u,cost,penalty,penalty_grad,epsilon,P,SmoothOrNonSmooth);
 obj = sum(obj,2);
@@ -66,7 +68,6 @@ function [obj, grad] = medium_objective(x,e_l,e_u,cost,penalty,penalty_grad,epsi
 %       grad - n by m matrix        !!!works only for linear penalties!!!
 %                                   please see the last part of the code
 
-if nargin == 8, SmoothOrNonSmooth = 'nonsmooth'; end
 %% Check the size of x and e
 s = size(x);
 if size(e_l,2) ~= s(2), error('Sizes of x and e_l do not match'); end
