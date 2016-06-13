@@ -43,7 +43,7 @@ H2_help(i) = H2(x(i)); % = H{i}(x(i)-epsilon*P)
 end
 
 % calculate objective as given by closed-form formula:
-obj = - cost*ones(T,1)*epsilon*P - ones(1,T)*H_help*cost*(mu' - epsilon*P*ones(T,1)) - cost*x' + cost*int1 + ones(1,T)*penalty(int2);
+obj = - cost*ones(T,1)*epsilon*P - ones(1,T)*H_help*cost*(mu' - epsilon*P) - cost*x' + cost*int1 + ones(1,T)*penalty(int2);
 % calculate gradient w.r.t x:%
 grad = -cost + cost.*H1_help' + penalty(H2_help)';
 end

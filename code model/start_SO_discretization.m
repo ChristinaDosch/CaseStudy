@@ -19,7 +19,7 @@ function [x_opt, obj_opt, runningTime] = start_SO_discretization
 E = load('sample_normal_independent.csv');
 E = 1/1000 * E; % since we need kWh (and in the samples it's in Wh)
 K = size(E,1); % number of realizations
-K = 100;
+K = 10;
 
 % using PVDATA2.MAT
 % for this example T = 1440 is required in init_parameters!!! 
@@ -33,7 +33,7 @@ F = cell(K,1); %F(k) contains F(x,e^k)
 % determine revenue function F(x,e^k) for every e^1,...,e^K:
 for k = 1:K
 e = E(k,:); % contains the k^th realization
-F(k) = {@(x) obj_SO_discr(x,e,cost,penalty,epsilon,P)}; 
+F(k) = {@(x) obj_SO_discr(x,e,cost,penalty,penalty_grad,epsilon,P)}; 
 end
 
 objfct = @(x) 1/K * sum(cellfun(@(f)f(x),F)); % weighted (all weights=1/K) sum of F(x,e^k)

@@ -1,4 +1,4 @@
-function result = obj_SO_discr(x,e,cost,penalty,penalty_grad,epsilon,P)
+function obj = obj_SO_discr(x,e,cost,penalty,penalty_grad,epsilon,P)
 %function [obj,grad] = obj_SO_discr(x,e,cost,penalty,epsilon,P)
 % obj = REVENUE(x,e,cost,penalty,P)
 % Calculates the objective function -F(x,E) as in 1.5 Objective function
@@ -26,14 +26,14 @@ function result = obj_SO_discr(x,e,cost,penalty,penalty_grad,epsilon,P)
 s = size(x);
 if size(e,2) ~= s(2), error('Sizes of x and e do not match'); end
 %% Calculation
-E = ones(s(1),1) * e;                       % E is an n by m matrix with e in each column
-C = ones(s(1),1) * cost;
+E = ones(s(1),1) * e;                       % E is an n by m matrix with e in each row
+Cost = ones(s(1),1) * cost;                    % C is an n by m matrix with cost in each row
 [yp,gradp,pp]=smooth_ppart((x - epsilon*P) - E,1E-3,5);
 [yc,gradc,pc]=smooth_ppart(E - (x + epsilon*P),1E-3,5);
 
-obj = penalty(yp) + yc.*C - E.*C;  
+obj = penalty(yp) + yc.*Cost - E.*Cost;  
 
-grad = penalty_grad(yp).*gradp + gradc.*C;
+grad = penalty_grad(yp).*gradp + gradc.*Cost;
 
 result = [obj;grad];
 
