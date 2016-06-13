@@ -7,7 +7,7 @@ function [x_opt, obj_opt, runningTime] = start_SO_discretization
 %       * general penalty function (also quadratic is possible)
 
 %% Initialize parameters
-[T, P, cost, penalty, epsilon, C, SOC_0] = init_parameters;
+[T, P, cost, penalty, penalty_grad, epsilon, C, SOC_0] = init_parameters;
 
 %% Constraints
 [x_min,x_max,delta,A,b] = init_constraints(T,P,C,SOC_0);

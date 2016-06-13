@@ -33,10 +33,10 @@ if rem(s(2),2) ~= 0, error('Dimension 2 of xb must be even'), end
 x = xb(:,1:round(s(2)/2));
 b = xb(:,round(s(2)/2)+1:end);
 % whos e_u e_l x b xb s
-% e_u = e_u - max(b,0);
-% e_l = e_l + max(-b,0);
-e_u = e_u - b;
-e_l = e_l - b;
+e_u = e_u - max(b,0);
+e_l = e_l + max(-b,0);
+% e_u = e_u - b;
+% e_l = e_l - b;
 [obj, grad] = medium_objective(x,e_l,e_u,cost,penalty,penalty_grad,epsilon,P,SmoothOrNonSmooth);
 obj = sum(obj,2);
 grad = sum(grad,2);

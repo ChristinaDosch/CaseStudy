@@ -8,7 +8,7 @@ function [x_opt, obj_opt, runningTime] = start_SO_discretization_battery_bf(ToPl
 
 %% Initialize parameters
 if nargin == 0, ToPlotOrNotToPlot = true; end
-[T, P, cost, penalty, epsilon, C, SOC_0, t] = init_parameters;
+[T, P, cost, penalty, penalty_grad, epsilon, C, SOC_0, t] = init_parameters;
 
 %% Constraints
 [x_min,x_max,~,~,delta,A,b,~,~,~,~] = init_constraints(T,P,C,SOC_0);
