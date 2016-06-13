@@ -23,13 +23,13 @@ x_max = 0.7*P;  % maximum amount of power that can be scheduled
 SOC_min = 0.1;  % maximum of state of charge
 SOC_max = 0.95; % minimum of state of charge
 
-% "real" constraints (not capacity constraints)
+% Ramping constraints for x (not capacity constraints)
 delta = 0.03 * P; % maximum deviation between two successive power values
 B = [-eye(T-1) zeros(T-1,1)] + [zeros(T-1,1) eye(T-1)];
 A = [B; -B];
 b = ones(2*(T-1),1)*delta;
 
-% For RO with battery
+% Capacity constraints for SOC*C
 A_ = tril(ones(T)); A_ = [A_; -A_];
 b_ = [C*ones(T,1); zeros(T,1)];
 
@@ -41,4 +41,3 @@ c = [SOC_0; zeros(T-1,1)];
 A_smart = [B_tilde; -B_tilde; C_smart; -C_smart];
 b_smart = [ones(T-1,1)*delta; ones(T-1,1)*delta; c; -c];
 end
-

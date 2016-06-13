@@ -9,8 +9,8 @@ function [xb_opt, obj_opt, runningTime] = start_RO_B(ToPlotOrNotToPlot)
 
 %% 1.) Initialize parameters and constraints
 if nargin == 0, ToPlotOrNotToPlot = true; end
-[T, P, cost, penalty, epsilon, C, SOC_0 t, mu, sigma, lambda] = init_parameters;
-[x_min, x_max, delta, A, b, A_, b_] = init_constraints(T,P,C,SOC_0);
+[T, P, cost, penalty, penalty_grad, epsilon, C, SOC_0, t, mu, sigma, lambda] = init_parameters;
+[x_min, x_max, delta, A, b, A_, b_, ~, ~, ~, ~] = init_constraints(T,P,C,SOC_0);
 
 %% 2.) Initialize e_l, e_r for RO
 e_l = mu - lambda*sigma; %
@@ -18,7 +18,7 @@ e_u = mu + lambda*sigma; %
 
 % Initialize optimization model for RO
 xb0 = [mu zeros(1,T)]; % Starting guess for pattern search
-objfct = @(xb) obj_RO_B(xb,e_l,e_u,cost,penalty,epsilon,P); % Objective function for RO
+objfct = @(xb) obj_RO_B(xb,e_l,e_u,cost,penalty,penalty_grad,epsilon,P); % Objective function for RO
 
 %% 3.) Performing optimization using RO
 A = [A zeros(size(A,1),size(A_,2)); zeros(size(A_,1),size(A,2)) A_];

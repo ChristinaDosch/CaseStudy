@@ -1,4 +1,4 @@
-function m = smooth_max(x,y,epsilon)
+function [m, gradX, gradY] = smooth_max(x,y,epsilon)
 % SMOOTH_MAX(x,y,epsilon) berechnet das Maximum von x und y, falls
 % |x-y|>=epsilon, oder benutzt smooth_ppart, um die max-Funktion zu
 % gl?tten, falls |x-y|<epsilon.
@@ -12,5 +12,7 @@ function m = smooth_max(x,y,epsilon)
 %       m - n by m matrix           value of the smooth max(x,y)
 
 if all(size(x) ~= size(y)), error('size(x) unequal size(y)'); end
-[m, ~, ~] = smooth_ppart(x-y, epsilon);
+
+[m, gradX, ~] = smooth_ppart(x-y, epsilon);
 m = m + y;
+gradY = -gradX + 1;
