@@ -31,6 +31,7 @@ K = 1;
 %E = reshape(PVdata2(:,1),31,1440); % array of 31 realizations with minute values from January
 
 F = cell(K,1);
+G = cell(K,1);
 %F = cell(K,2);
 
 % determine revenue function F(x,\tilde{x}^k) for every k=1,...,K:
@@ -38,11 +39,15 @@ for k = 1:K
 %x_tilde = @(x) E(k,:)+0.95*x((3*T+1):(4*T))-x((2*T+1):(3*T)); % compute \tilde{x}^k
 %F(k,:) = { @(x) obj_SO_discr(x(1:T),x_tilde(x),cost,penalty,epsilon,P)};
 x_tilde = @(x) E(k,:)+0.95*x((3*T+1):(4*T))-x((2*T+1):(3*T)); % compute \tilde{x}^k as e^k + 0.95 \tilde{b^out,k} - \tilde{b^in}
-F(k) = { @(x) obj_SO_discr(x(1:T),x_tilde(x),cost,penalty,epsilon,P)};
+
+F(k) = { @(x) [1,0] * obj_SO_discr(x(1:T),x_tilde(x),cost,penalty,penalty_grad,epsilon,P)};
+G(k) = { @(x) [0,1] * obj_SO_discr(x(1:T),x_tilde(x),cost,penalty,penalty_grad,epsilon,P)};
 end
-
-objfct = @(x) 1/K * sum(cellfun(@(f)f(x),F)); % weighted (all weights=1/K) sum of F(x,e^k)
-
+f = @(x)F(1);
+f(1)
+whos f
+objfct = @(x) 1/K .* sum(cellfun(@(f)f(x),F)); % weighted (all weights=1/K) sum of F(x,e^k)
+grad = @(x) 1/K .* sum(cellfun(@(f)f(x),G));
 
 %% Performing optimization
 x0 = zeros(1,4*T);

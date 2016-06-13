@@ -20,7 +20,7 @@ if nargin == 0, ToPlotOrNotToPlot = true; end
 E = load('sample_normal_independent.csv');
 E = 1/1000 * E; % since we need kWh (and in the samples it's in Wh)
 %K = size(E,1); % number of realizations
-K = 500;
+K = 1;
 
 % using PVDATA2.MAT
 % for this example T = 1440 is required in init_parameters!!! (1min interv)
@@ -31,22 +31,31 @@ K = 500;
 %E = reshape(PVdata2(:,1),31,1440); % array of 31 realizations with minute values from January
 
 F = cell(K,1);
+G = cell(K,1);
+%F = cell(K,2);
 
 % determine revenue function F(x,\tilde{x}^k) for every k=1,...,K:
 for k = 1:K 
-x_tilde = @(x) E(k,:)+0.95*x((3*T+1):(4*T))-x((2*T+1):(3*T)); % compute \tilde{x}^k
-F(k) = { @(x) obj_SO_discr(x(1:T),x_tilde(x),cost,penalty,epsilon,P)};
-end
+%x_tilde = @(x) E(k,:)+0.95*x((3*T+1):(4*T))-x((2*T+1):(3*T)); % compute \tilde{x}^k
+%F(k,:) = { @(x) obj_SO_discr(x(1:T),x_tilde(x),cost,penalty,epsilon,P)};
+x_tilde = @(x) E(k,:)+0.95*x((3*T+1):(4*T))-x((2*T+1):(3*T)); % compute \tilde{x}^k as e^k + 0.95 \tilde{b^out,k} - \tilde{b^in}
 
-objfct = @(x) 1/K * sum(cellfun(@(f)f(x),F)); % weighted (all weights=1/K) sum of F(x,e^k)
+F(k) = { @(x) [1,0] * obj_SO_discr(x(1:T),x_tilde(x),cost,penalty,penalty_grad,epsilon,P)};
+G(k) = { @(x) [0,1] * obj_SO_discr(x(1:T),x_tilde(x),cost,penalty,penalty_grad,epsilon,P)};
+end
+f 
+objfct = @(x) 1/K .* sum(cellfun(@(f)f(x),F)); % weighted (all weights=1/K) sum of F(x,e^k)
+grad = @(x) 1/K .* sum(cellfun(@(f)f(x),G));
 
 %% Performing optimization
 x0 = zeros(1,4*T);
 tic
 %[x_opt, obj_opt] = patternsearch(objfct,x0,A_smart,b_smart,[],[],...
  %   [x_min*ones(1,T), SOC_min*ones(1,T),0*ones(1,(2*T))],[x_max*ones(1,T), SOC_max*ones(1,T),2*P*ones(1,(2*T))]);
-[x_opt, obj_opt] = fmincon(objfct, x0, A_smart, b_smart,[],[],...
+%options=optimoptions('fmincon', 'MaxFunctionEvaluations', 30000,'SpecifyObjectiveGradient',true);
+ [x_opt, obj_opt] = fmincon(objfct, x0, A_smart, b_smart,[],[],...
     [x_min*ones(1,T), SOC_min*ones(1,T),0*ones(1,(2*T))],[x_max*ones(1,T), SOC_max*ones(1,T),2*P*ones(1,(2*T))]);
+    %[],options);
 runningTime = toc
 %% 4.) Plot the solutions and data
 if ToPlotOrNotToPlot
@@ -54,9 +63,9 @@ if ToPlotOrNotToPlot
     plot(t,x_opt(1:T),'*r',... % solution computed by ga or patternsearch
          t,x_opt(1:T) + epsilon*P,'^r',...
          t,x_opt(1:T) - epsilon*P,'vr',...
-         t,x_opt(T+1:2*T)*C, 'bo',...
-         t,x_opt(2*T+1:3*T), '-b',... % optimal \tilde{b
-         t,x_opt(3*T+1:4*T), '-g',...
+         t,x_opt(T+1:2*T)*C, 'bo',... % optimal \tilde{SOC}
+         t,x_opt(2*T+1:3*T), '-b',... % optimal \tilde{b^in}
+         t,x_opt(3*T+1:4*T), '-g',... % optimal \tilde{b^out}
          [t(1) t(end)], [x_max x_max], 'k--',... % x_max
          [t(1) t(end)], [x_min x_min], 'k--') % x_min 
     legend('calculated opt. sol.',...
