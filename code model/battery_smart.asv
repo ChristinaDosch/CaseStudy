@@ -1,17 +1,39 @@
-function [SOC,b_in,b_out] = battery_smart(e,x,C,SOC_0)
-%UNTITLED Summary of this function goes here
-%   Detailed explanation goes here
+function [SOC,b_in,b_out] = battery_smart(e,x_plan,T,P,cost,penalty,penalty_grad,epsilon,...
+    A_smart, b_smart, SOC_min, SOC_max)
+%BATTERY_SMART computes optimal SOC, b_in, b_out for a given realization e and a given schedule x
+% 
+% Input:
+%       e - 1 by T vector           e(i) is the solar radiance during the i^th hour
+%       x_plan - 1 by T vector      given schedule, x(i) corresponds to the i^th hour
+%       
+%
+%
+%
+%       C - scalar                  capacity of the battery
+%       SOC_0 - scalar              state of charge(SOC) at day break
+%                                   (usually SOC_0 = 0.25)
+%
+% Output:
+%       SOC - 1 by T vector     
+%       b_in - 1 by T vector
+%       b_out - 1 by T vector    
+%       
+%  
+%%
+if size(e,2) ~= size(x_plan,2), error('Sizes of x and e do not match'); end
+if size(e,2) ~= s(2), error('Sizes of x and e do not match'); end
+x_tilde = @(x) e + 0.95*x(2*T+1:3*T) - x(T+1:2*T);
+F = @(x) obj_SO_discr(x_plan,x_tilde(x),cost,penalty,penalty_grad,epsilon,P);
 
-%TO DO: Only constraints on battery, no ramping constraints
-[x_min, x_max, delta,~,~,~,~, A_smart, b_smart, SOC_min, SOC_max] = init_constraints(T,P,C,SOC_0);
-x_tilde = e+0.95*b_out-b_in;
-F = { @(x) obj_SO_discr(x,x_tilde,cost,penalty,penalty_grad,epsilon,P)};
+x0 = zeros(1,3*T);
+options=optimoptions('fmincon', 'MaxFunEvals', 30000); %'SpecifyObjectiveGradient',true);
+[x_opt] = fmincon(F, x0, A_smart(2*T-1:4*T-2,T+1:4*T), b_smart(2*T-1:4*T-2),[],[],...
+    [SOC_min*ones(1,T),0*ones(1,(2*T))],[SOC_max*ones(1,T),2*P*ones(1,(2*T))], [], options); % calculates optimal SOC, b^in, b^out
 
-x0 = zeros(1,4*T);
-[x_opt, obj_opt] = fmincon(F, x0, A_smart, b_smart,[],[],...
-    [x_min*ones(1,T), SOC_min*ones(1,T),0*ones(1,(2*T))],[x_max*ones(1,T), SOC_max*ones(1,T),2*P*ones(1,(2*T))]);
+SOC = x_opt(1:T);
+b_in = x_opt(1*T+1:2*T);
+b_out = x_opt(2*T+1:3*T);
 
-SOC = x_opt(T+1:2*T);
-b_in = 
+% Müsste man jetzt nicht x_tilde = e + 0.95*b_out - b_in zurückgeben?
 end
 
