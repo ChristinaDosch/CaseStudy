@@ -19,7 +19,7 @@ function [obj,grad] = obj_SO_closed_form(x,H,mu,cost,penalty,epsilon,P)
 %
 % Output:
 %       obj: scalar                 obj = sum_i F^{(i)}(x(i),e(i))
-%       grad: scalar
+%       grad: 1 by T vector
 
 T = max(size(x));
 int1 = zeros(T,1); % vector containing the intervals int_0^x(i) H_i(z+epsilon*P)dz

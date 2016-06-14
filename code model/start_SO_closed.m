@@ -21,7 +21,7 @@ for i=1:T
     H{i} = @(y) normcdf(y,mu(i),sigma(i));
 end
 
-objfct = @(x) obj_SO_closed_form(x,H,mu,cost,penalty,epsilon,P); % objective function using the closed-form version of SO
+objfct = @(x) obj_SO_closed_form(x,H,mu,cost,penalty,epsilon,P); % objective function using the closed-form version of SO, also containing the gradient in the second argument
 
 %% 3.) Performing optimization using SO
 tic
