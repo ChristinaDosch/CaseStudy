@@ -42,18 +42,17 @@ for k = 1:K
 %x_tilde = @(x) E(k,:)+0.95*x((3*T+1):(4*T))-x((2*T+1):(3*T)); % compute \tilde{x}^k as e^k + 0.95 \tilde{b^out,k} - \tilde{b^in}
 
 x_tilde = @(x) battery_smart(E(k,:),x,T,P,cost,penalty,penalty_grad,epsilon, A_smart, b_smart, SOC_min, SOC_max); % computes optimal x_tilde as e^k 0.95 \tilde{b^out,k}_opt - \tilde{b^in,k}_opt
-F(k) = { @(x) obj_SO_discr(x(1:T),x_tilde(x),cost,penalty,penalty_grad,epsilon,P)};
-
-%G(k) = { @(x) [0,1] * obj_SO_discr(x(1:T),x_tilde(x),cost,penalty,penalty_grad,epsilon,P)};
+F(k) = { @(x) obj_SO_discr(x(1:T),x_tilde(x),cost,penalty,penalty_grad,epsilon,P)};% * [1; zeros(T,1)]};
+%obj_SO_discr(ones(1,T),ones(1,T),cost,penalty,penalty_grad,epsilon,P)* [zeros(1,T+1); zeros(T,1), eye(T)]
+%G(k) = { @(x) obj_SO_discr(x(1:T),x_tilde(x),cost,penalty,penalty_grad,epsilon,P) * [zeros(1,T+1); zeros(T,1), eye(T)]};
 end
-%f = @(x)F(1);
-%f(1)
-%whos f
 
 objfct = @(x) 1/K .* sum(cellfun(@(f)f(x),F)); % weighted (all weights=1/K) sum of F(x,e^k)
-
 %grad = @(x) 1/K .* sum(cellfun(@(f)f(x),G));
-%objfct = [objfct, grad];
+
+%obj = cell(1,2);
+%obj(1,1) = {objfct};
+%obj(1,2) = {grad};
 
 %% Performing optimization
 x0 = zeros(1,T);

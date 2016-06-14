@@ -41,10 +41,9 @@ for k = 1:K
 %F(k,:) = { @(x) obj_SO_discr(x(1:T),x_tilde(x),cost,penalty,epsilon,P)};
 %x_tilde = @(x) E(k,:)+0.95*x((3*T+1):(4*T))-x((2*T+1):(3*T)); % compute \tilde{x}^k as e^k + 0.95 \tilde{b^out,k} - \tilde{b^in}
 
-x_tilde = @(x) battery_smart(E(k,:),x,T,P,cost,penalty,penalty_grad,epsilon, A_smart, b_smart, SOC_min, SOC_max);
-F(k) = { @(x) obj_SO_discr(x(1:T),x_tilde(x),cost,penalty,penalty_grad,epsilon,P)};
-
-%G(k) = { @(x) [0,1] * obj_SO_discr(x(1:T),x_tilde(x),cost,penalty,penalty_grad,epsilon,P)};
+x_tilde = @(x) battery_smart(E(k,:),x,T,P,cost,penalty,penalty_grad,epsilon, A_smart, b_smart, SOC_min, SOC_max); % computes optimal x_tilde as e^k 0.95 \tilde{b^out,k}_opt - \tilde{b^in,k}_opt
+F(k) = { @(x) obj_SO_discr(x(1:T),x_tilde(x),cost,penalty,penalty_grad,epsilon,P) * [1; zeros(T,1)]};
+G(k) = { @(x) obj_SO_discr(x(1:T),x_tilde(x),cost,penalty,penalty_grad,epsilon,P) * [o; zeros(T,1)]};
 end
 %f = @(x)F(1);
 %f(1)
