@@ -7,10 +7,10 @@ T = 96;              % 15min-schedule (required for start_SO_discretization and 
          
 P = 3.8;             % nominal power of the PV element
 epsilon = 0.05;
-cost = ones(1,T)*1;   % cost(j) is a price for an energy unit during j's hour
+cost = ones(1,T)*5;   % cost(j) is a price for an energy unit during j's hour
 penalty = @(x) x.^2;  % quadratic penalty
 penalty_grad = @(x) 2*x; % derivative of the penalty function
-%penalty = @(x) 1*x; % linear penalty
+%penalty = @(x) 5*x; % linear penalty
 %penalty_grad = @(x) 1;
 C = 2.6;              % battery capacity
 SOC_0 = 0.25;         % state of charge (SOC) at day break
