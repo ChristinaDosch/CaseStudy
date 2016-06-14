@@ -20,7 +20,7 @@ if nargin == 0, ToPlotOrNotToPlot = true; end
 E = load('sample_normal_independent.csv');
 E = 1/1000 * E; % since we need kWh (and in the samples it's in Wh)
 %K = size(E,1); % number of realizations
-K = 3;
+K = 1;
 
 % using PVDATA2.MAT
 % for this example T = 1440 is required in init_parameters!!! 
@@ -43,8 +43,8 @@ objfct = @(x) 1/K * sum(cellfun(@(f)f(x),F)); % weighted (all weights=1/K) sum o
 %% Performing optimization
 x0 = zeros(1,T);
 tic
-%[x_opt, obj_opt] = patternsearch(objfct,x0,A,b,[],[],x_min*ones(1,T),x_max*ones(1,T));
-[x_opt, obj_opt] = fmincon(objfct,x0,A,b,[],[],x_min*ones(1,T),x_max*ones(1,T));
+[x_opt, obj_opt] = patternsearch(objfct,x0,A,b,[],[],x_min*ones(1,T),x_max*ones(1,T));
+%[x_opt, obj_opt] = fmincon(objfct,x0,A,b,[],[],x_min*ones(1,T),x_max*ones(1,T));
 runningTime = toc
 %% 4.) Plot the solutions and data
 if ToPlotOrNotToPlot

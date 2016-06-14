@@ -11,7 +11,7 @@ if nargin == 0, ToPlotOrNotToPlot = true; end
 [T, P, cost, penalty, penalty_grad, epsilon, C, SOC_0, t] = init_parameters;
 
 %% Constraints
-[x_min, x_max, delta,~,~,~,~, A_smart, b_smart, SOC_min, SOC_max] = init_constraints(T,P,C,SOC_0);
+[x_min, x_max, delta,A,b,~,~, A_smart, b_smart, SOC_min, SOC_max] = init_constraints(T,P,C,SOC_0);
 
 %% Example scenarios
 
@@ -30,37 +30,43 @@ K = 1;
 %E = reshape(PVdata2,372,1440); % array of K realizations (one per row) with data per minute of one day, respectively
 %E = reshape(PVdata2(:,1),31,1440); % array of 31 realizations with minute values from January
 
+%% determine revenue function F(x,\tilde{x}^k) for every k=1,...,K:
+
 F = cell(K,1);
-G = cell(K,1);
+%G = cell(K,1);
 %F = cell(K,2);
 
-% determine revenue function F(x,\tilde{x}^k) for every k=1,...,K:
 for k = 1:K 
 %x_tilde = @(x) E(k,:)+0.95*x((3*T+1):(4*T))-x((2*T+1):(3*T)); % compute \tilde{x}^k
 %F(k,:) = { @(x) obj_SO_discr(x(1:T),x_tilde(x),cost,penalty,epsilon,P)};
 %x_tilde = @(x) E(k,:)+0.95*x((3*T+1):(4*T))-x((2*T+1):(3*T)); % compute \tilde{x}^k as e^k + 0.95 \tilde{b^out,k} - \tilde{b^in}
-x_tilde = @(x) battery_smart(E(k,:),x,C,SOC_0,T,P,cost,penalty,penalty_grad,epsilon);
+
+x_tilde = @(x) battery_smart(E(k,:),x,T,P,cost,penalty,penalty_grad,epsilon, A_smart, b_smart, SOC_min, SOC_max);
 F(k) = { @(x) obj_SO_discr(x(1:T),x_tilde(x),cost,penalty,penalty_grad,epsilon,P)};
+
 %G(k) = { @(x) [0,1] * obj_SO_discr(x(1:T),x_tilde(x),cost,penalty,penalty_grad,epsilon,P)};
 end
 %f = @(x)F(1);
 %f(1)
 %whos f
-objfct = @(x) 1/K .* sum(cellfun(@(f)f(x),F)); % weighted (all weights=1/K) sum of F(x,e^k)
-%grad = @(x) 1/K .* sum(cellfun(@(f)f(x),G));
 
+objfct = @(x) 1/K .* sum(cellfun(@(f)f(x),F)); % weighted (all weights=1/K) sum of F(x,e^k)
+
+%grad = @(x) 1/K .* sum(cellfun(@(f)f(x),G));
 %objfct = [objfct, grad];
 
 %% Performing optimization
-x0 = zeros(1,4*T);
+x0 = zeros(1,T);
 tic
 %[x_opt, obj_opt] = patternsearch(objfct,x0,A_smart,b_smart,[],[],...
  %   [x_min*ones(1,T), SOC_min*ones(1,T),0*ones(1,(2*T))],[x_max*ones(1,T), SOC_max*ones(1,T),2*P*ones(1,(2*T))]);
-%options=optimoptions('fmincon', 'MaxFunctionEvaluations', 30000,'SpecifyObjectiveGradient',true);
- [x_opt, obj_opt] = fmincon(objfct, x0, A_smart, b_smart,[],[],...
-    [x_min*ones(1,T), SOC_min*ones(1,T),0*ones(1,(2*T))],[x_max*ones(1,T), SOC_max*ones(1,T),2*P*ones(1,(2*T))]);
+%options=optimoptions('fmincon', 'MaxFunEvals', 30000,'SpecifyObjectiveGradient',true);
+% [x_opt, obj_opt] = fmincon(objfct, x0, A_smart, b_smart,[],[],...
+%    [x_min*ones(1,T), SOC_min*ones(1,T),0*ones(1,(2*T))],[x_max*ones(1,T), SOC_max*ones(1,T),2*P*ones(1,(2*T))]);
     %[],options);
+ [x_opt, obj_opt] = fmincon(objfct, x0, A, b,[],[],[x_min*ones(1,T)],[x_max*ones(1,T)]);
 runningTime = toc
+
 %% 4.) Plot the solutions and data
 if ToPlotOrNotToPlot
     figure, hold on,

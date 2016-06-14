@@ -1,5 +1,5 @@
 function obj = obj_SO_discr(x,e,cost,penalty,penalty_grad,epsilon,P)
-%function [obj,grad] = obj_SO_discr(x,e,cost,penalty,epsilon,P)
+%function result = obj_SO_discr(x,e,cost,penalty,epsilon,P)
 % obj = REVENUE(x,e,cost,penalty,P)
 % Calculates the objective function -F(x,E) as in 1.5 Objective function
 % Since F(x,E) = \sum_{i=1}^T F^{(i)}(x_i,E_i) (see also 1.5), obj_SO_discr
@@ -35,9 +35,8 @@ obj = penalty(yp) + yc.*Cost - E.*Cost;
 
 grad = penalty_grad(yp).*gradp + gradc.*Cost;
 
-result = [obj;grad];
-
 %obj = penalty(max(zeros(s), (x - epsilon*P) - E)) + ...
 %   max(zeros(s), E - (x + epsilon*P))*cost - E*cost;                     % just evaluating the formula
 
 obj = sum(obj,2); % sum of all single revenue values
+%result = [obj;grad];
