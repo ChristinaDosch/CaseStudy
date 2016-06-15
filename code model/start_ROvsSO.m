@@ -6,15 +6,15 @@ function [x_opt_RO, obj_opt_RO, obj_RO,...
 
 N = 10000;
 [T, P, cost, penalty, ~, epsilon, C, SOC_0, t, mu, sigma, lambda] = init_parameters;
-[x_min, x_max, delta, ~, ~] = init_constraints(T,P,C,SOC_0);
+[x_min, x_max, delta, ~, ~, ~, ~, ~, ~, ~, ~] = init_constraints(T, P, C, SOC_0);
 variance = sigma.^2;
 E = mvnrnd(mu,variance,N);
 
-
+cost = ones(N,1)*cost;
 X = ones(N,1)*x_opt_RO;
-    obj_RO = sum(-cost*E + penalty(max(zeros(N,T), (X - P*epsilon) - E)) + max(zeros(N,T), E - (X + P*epsilon))*cost, 2);
+    obj_RO = sum(-cost.*E + penalty(max(zeros(N,T), (X - P*epsilon) - E)) + max(zeros(N,T), E - (X + P*epsilon)).*cost, 2);
 X = ones(N,1)*x_opt_SO;
-    obj_SO = sum(-cost*E + penalty(max(zeros(N,T), (X - P*epsilon) - E)) + max(zeros(N,T), E - (X + P*epsilon))*cost, 2);
+    obj_SO = sum(-cost.*E + penalty(max(zeros(N,T), (X - P*epsilon) - E)) + max(zeros(N,T), E - (X + P*epsilon)).*cost, 2);
 if nargin == 0, ToPlotOrNotToPlot = true; end
 if ToPlotOrNotToPlot
     figure, hold on,
@@ -31,7 +31,7 @@ if ToPlotOrNotToPlot
     v = axis;
     ylim([0 v(4)]);
     % info-box at the top left corner
-    text(0.05*v(2),0.93*v(4),['cost = ', num2str(cost)])
+    text(0.05*v(2),0.93*v(4),['cost = ', num2str(cost(1,:))])
     text(0.05*v(2),0.90*v(4),['penalty = ', func2str(penalty)])
     text(0.05*v(2),0.87*v(4),['[x_{min} x_{max}] = ', '[', num2str(x_min), ' ', num2str(x_max), ']'])
     text(0.05*v(2),0.84*v(4),['\Delta = ', num2str(delta)])
