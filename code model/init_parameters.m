@@ -1,4 +1,4 @@
-function [T, P, cost, penalty, penalty_grad, epsilon, C, SOC_0, t, mu, sigma, lambda] = init_parameters
+function [T, P, cost, penalty, penalty_grad, epsilon, C, SOC_0, t, mu, sigma, lambda, penalty_hess] = init_parameters
 
 % T = 13;
 T = 1 + 24*1;       % one hour schedule (works for RO and start_SO_closed, for the latter only with long running time)
@@ -11,6 +11,7 @@ epsilon = 0.05;
 cost = ones(1,T)*5;   % cost(j) is a price for an energy unit during j's hour
 penalty = @(x) x.^2;  % quadratic penalty
 penalty_grad = @(x) 2*x; % derivative of the penalty function
+penalty_hess = @(x) 2; % Hessian of the penalty function
 %penalty = @(x) 5*x; % linear penalty
 %penalty_grad = @(x) 1;
 C = 2.6;              % battery capacity
