@@ -1,4 +1,4 @@
-function x_tilde_opt = battery_smart(e,x_plan,T,P,cost,penalty,penalty_grad,epsilon,...
+function x_tilde_opt = battery_smart(e,x_plan,T,P,cost,penalty,penalty_grad,penalty_hess,epsilon,...
     A_smart, b_smart, SOC_min, SOC_max)
 %BATTERY_SMART computes optimal SOC, b_in, b_out for a given realization e and a given schedule x
 % 
@@ -30,9 +30,10 @@ x_tilde = @(x) e + 0.95*x(2*T+1:3*T) - x(T+1:2*T);
 F = @(x) obj_SO_discr(x_plan,x_tilde(x),cost,penalty,penalty_grad,epsilon,P,'SOC,b^in,b^out'); % for a given e and x_plan, the objective is a function of b^in and b^out
 
 x0 = zeros(1,3*T);
-options = optimoptions('fmincon', 'MaxFunEvals', 30000, 'GradObj','on');
+%hessianfcn = @(x) hess_SO_discr_smart(x_plan,x_tilde(x),penalty_hess,epsilon,P);
+options = optimoptions('fmincon', 'MaxFunEvals', 30000, 'GradObj','on');%,'Hessian','user-supplied','HessFcn',hessianfcn);
 %tic
-[x_opt] = fmincon(F, x0, A_smart(2*T-1:4*T-2,T+1:4*T), b_smart(2*T-1:4*T-2),[],[],...
+[x_opt] = fmincon(F, x0, A_smart(2*T-1:4*T-2,T+1:4*T),b_smart(2*T-1:4*T-2),[],[],...
     [SOC_min*ones(1,T),0*ones(1,(2*T))],[SOC_max*ones(1,T),2*P*ones(1,(2*T))], [], options); % calculates optimal SOC, b^in, b^out
 %runningTime = toc 
 
