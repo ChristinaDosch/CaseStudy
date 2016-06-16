@@ -30,24 +30,22 @@ s = size(x); T = s(2);
 if size(e,2) ~= s(2), error('Sizes of x and e do not match'); end
 %% Calculation
 E = ones(s(1),1) * e;                       % E is an n by m matrix with e in each row
-Cost = ones(s(1),1) * cost;                    % C is an n by m matrix with cost in each row
+Cost = ones(s(1),1) * cost;                  % C is an n by m matrix with cost in each row
 [yp,gradp,pp] = smooth_ppart((x - epsilon*P) - E,1E-3,5);
 [yc,gradc,pc] = smooth_ppart(E - (x + epsilon*P),1E-3,5);
 
 obj = penalty(yp) + yc.*Cost - E.*Cost;  
 obj = sum(obj,2); % sum of all single revenue values
 
-if nargin == 7
 % gradient w.r.t x
-grad = penalty_grad(yp).*gradp + gradc.*Cost; 
-obj = [obj,grad];
-end
+%grad = penalty_grad(yp).*gradp + gradc.*Cost; 
+grad = penalty_grad(yp).*gradp - gradc.*Cost; 
 
 if nargin == 8 
    if var == 'SOC,b^in,b^out'
 Cost = ones(s(1),1) * [cost, cost, cost]; % C is an n by 3m matrix with three times cost in each row
 % gradient w.r.t [SOC,b^in,b^out]
-grad_x_tilde = [zeros(s(1),T), 0.95 * ones(s(1),T), -1 * zeros(s(1),T)];
+grad_x_tilde = [zeros(s(1),T), -1 * zeros(s(1),T), 0.95 * ones(s(1),T)];
 grad = - penalty_grad([yp,yp,yp]).*[gradp, gradp, gradp].*grad_x_tilde + grad_x_tilde.*Cost.*[gradc, gradc, gradc] - grad_x_tilde.*Cost ;
    end
 end
