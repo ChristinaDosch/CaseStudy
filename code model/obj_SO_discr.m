@@ -1,4 +1,4 @@
-function [obj,grad] = obj_SO_discr(x,e,cost,penalty,penalty_grad,epsilon,P,var)
+function [obj,grad] = obj_SO_discr(x,e,cost,penalty,penalty_grad,epsilon,P,var,penalty_hess)
 %function [obj,grad] = obj_SO_discr(x,e,cost,penalty,penalty_grad,P)
 % Calculates the objective function -F(x,E) as in 1.5 Objective function
 % Since F(x,E) = \sum_{i=1}^T F^{(i)}(x_i,E_i) (see also 1.5), obj_SO_discr
@@ -41,12 +41,19 @@ obj = sum(obj,2); % sum of all single revenue values
 %grad = penalty_grad(yp).*gradp + gradc.*Cost; 
 grad = penalty_grad(yp).*gradp - gradc.*Cost; 
 
-if nargin == 8 
+if nargin == 9 
    if var == 'SOC,b^in,b^out'
 Cost = ones(s(1),1) * [cost, cost, cost]; % C is an n by 3m matrix with three times cost in each row
 % gradient w.r.t [SOC,b^in,b^out]
 grad_x_tilde = [zeros(s(1),T), -1 * zeros(s(1),T), 0.95 * ones(s(1),T)];
 grad = - penalty_grad([yp,yp,yp]).*[gradp, gradp, gradp].*grad_x_tilde + grad_x_tilde.*Cost.*[gradc, gradc, gradc] - grad_x_tilde.*Cost ;
+
+hessian = zeros(3*T,3*T);
+
+hessian(T+1:2*T,T+1:2*T) = ones(T,1)*(gradp.*penalty_hess(yp).*gradp);
+hessian(T+1:2*T,2*T+1:3*T) = ones(T,1)*(- gradp.*penalty_hess(yp).*gradp.*0.95);
+hessian(2*T+1:3*T,T+1:2*T) = hessian(T+1:2*T,2*T+1:3*T);
+hessian(2*T+1:3*T,2*T+1:3*T) = ones(T,1)*(0.95.*0.95.*gradp.*penalty_hess(yp).*gradp);
    end
 end
 %% Alter Code:

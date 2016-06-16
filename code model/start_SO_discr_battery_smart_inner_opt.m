@@ -1,4 +1,4 @@
-function [x_opt, obj_opt, runningTime] = start_SO_discretization_battery_smart(ToPlotOrNotToPlot)
+function [x_opt, obj_opt, runningTime] = start_SO_discr_battery_smart_inner_opt(ToPlotOrNotToPlot)
 %% DISCRETIZATION APPROACH with BATTERY SMART APPROACH
 % This script solves our well known optimization problem using the
 % discretization approach and including

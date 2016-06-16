@@ -1,4 +1,4 @@
-function [x_opt, obj_opt, runningTime] = old_start_SO_discretization_battery_smart(ToPlotOrNotToPlot)
+function [x_opt, obj_opt, runningTime] = start_SO_discretization_battery_smart_constr(ToPlotOrNotToPlot)
 %% DISCRETIZATION APPROACH with BATTERY SMART APPROACH
 % This script solves our well known optimization problem using the
 % discretization approach and including
@@ -31,21 +31,18 @@ K = 1;
 %E = reshape(PVdata2(:,1),31,1440); % array of 31 realizations with minute values from January
 
 F = cell(K,1);
-G = cell(K,1);
-%F = cell(K,2);
+%G = cell(K,1);
 
 % determine revenue function F(x,\tilde{x}^k) for every k=1,...,K:
 for k = 1:K 
-x_tilde = @(x) E(k,:)+0.95*x((3*T+1):(4*T))-x((2*T+1):(3*T)); % compute \tilde{x}^k as e^k + 0.95 \tilde{b^out,k} - \tilde{b^in}
+x_tilde = @(x) E(k,:)+0.95*x((T+2*K*T+(k-1)*T+1):(T+2*K*T+k*T))-x((T+K*T+(k-1)*T+1):(T+K*T+k*T)); % compute \tilde{x}^k as e^k + 0.95 \tilde{b^out,k} - \tilde{b^in}
 
-F(k) = { @(x) [1,0] * obj_SO_discr(x(1:T),x_tilde(x),cost,penalty,penalty_grad,epsilon,P)};
-G(k) = { @(x) [0,1] * obj_SO_discr(x(1:T),x_tilde(x),cost,penalty,penalty_grad,epsilon,P)};
+F(k) = { @(x) obj_SO_discr(x(1:T),x_tilde(x),cost,penalty,penalty_grad,epsilon,P)};
+%G(k) = { @(x) [0,1] * obj_SO_discr(x(1:T),x_tilde(x),cost,penalty,penalty_grad,epsilon,P)};
 end
-%f = @(x)F(1);
-%f(1)
-%whos f
+
 objfct = @(x) 1/K .* sum(cellfun(@(f)f(x),F)); % weighted (all weights=1/K) sum of F(x,e^k)
-grad = @(x) 1/K .* sum(cellfun(@(f)f(x),G));
+%grad = @(x) 1/K .* sum(cellfun(@(f)f(x),G));
 
 %objfct = [objfct, grad];
 
@@ -54,10 +51,10 @@ x0 = zeros(1,4*T);
 tic
 %[x_opt, obj_opt] = patternsearch(objfct,x0,A_smart,b_smart,[],[],...
  %   [x_min*ones(1,T), SOC_min*ones(1,T),0*ones(1,(2*T))],[x_max*ones(1,T), SOC_max*ones(1,T),2*P*ones(1,(2*T))]);
-%options=optimoptions('fmincon', 'MaxFunctionEvaluations', 30000,'SpecifyObjectiveGradient',true);
+ %options=optimoptions('fmincon', 'MaxFunEvals', 30000);%,'SpecifyObjectiveGradient',true);
  [x_opt, obj_opt] = fmincon(objfct, x0, A_smart, b_smart,[],[],...
     [x_min*ones(1,T), SOC_min*ones(1,T),0*ones(1,(2*T))],[x_max*ones(1,T), SOC_max*ones(1,T),2*P*ones(1,(2*T))]);
-    %[],options);
+%,[],options);
 runningTime = toc
 %% 4.) Plot the solutions and data
 if ToPlotOrNotToPlot
@@ -66,8 +63,8 @@ if ToPlotOrNotToPlot
          t,x_opt(1:T) + epsilon*P,'^r',...
          t,x_opt(1:T) - epsilon*P,'vr',...
          t,x_opt(T+1:2*T)*C, 'bo',... % optimal \tilde{SOC}
-         t,x_opt(2*T+1:3*T), '-b',... % optimal \tilde{b^in}
-         t,x_opt(3*T+1:4*T), '-g',... % optimal \tilde{b^out}
+         t,x_opt(T+T*K+1:T+2*T*K), '-b',... % optimal \tilde{b^in}
+         t,x_opt(T+2*T*K+1:T+3*T*K), '-g',... % optimal \tilde{b^out}
          [t(1) t(end)], [x_max x_max], 'k--',... % x_max
          [t(1) t(end)], [x_min x_min], 'k--') % x_min 
     legend('calculated opt. sol.',...
