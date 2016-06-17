@@ -7,7 +7,7 @@ function [x_opt, obj_opt, runningTime] = start_SO_closed(ToPlotOrNotToPlot)
 %
 % Important Note:
 % this implements the closed-form formula (see "Summary" in "Ansatz 1:
-% Stochastic Optimization") for general T and multivariate distribution
+% Stochastic Optimization") for general T and multidimensional distribution
 
 %% 1.) Initialize parameters and constraints
 if nargin == 0, ToPlotOrNotToPlot = true; end
@@ -23,7 +23,7 @@ end
 
 objfct = @(x) obj_SO_closed_form(x,H,mu,cost,penalty,epsilon,P); % objective function using the closed-form version of SO, also containing the gradient in the second argument
 
-%% 3.) Performing optimization using SO
+%% 3.) Performing optimization
 tic
 options = optimoptions('fmincon','GradObj','on');
 [x_opt, obj_opt] = fmincon(objfct,mu,A,b,[],[],x_min*ones(1,T),x_max*ones(1,T),[],options);

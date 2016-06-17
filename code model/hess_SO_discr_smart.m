@@ -1,8 +1,15 @@
-function hessian = hess_SO_discr_smart(x_plan,x_tilde,penalty_hess,epsilon,P)
-%UNTITLED2 Summary of this function goes here
-%   Detailed explanation goes here
+function hessian = hess_SO_discr_smart(x,x_tilde,penalty_hess,epsilon,P)
+% HESSIAN outputs the hessian of the objective w.r.t. [SOC,b^{in]},b^{out}]
+% Input: 
+%       x - 1 by m vector                schedule, x(i) corresponds to the i^th time step
+%       x_tilde - 1 by m vector          x_tilde(i) is the actually provided value at time step i
+%       penalty_hess - function handle   hessian of the penalty function
+%       epsilon - scalar                 size of the no-penalty interval
+%       P - scalar                       nominal power of PV element
+% Output:
+%       hessian - 3m by 3m matrix        hessian of the objective w.r.t. [SOC,b^{in]},b^{out}]
 
-[yp,gradp,~] = smooth_ppart((x_plan - epsilon*P) - x_tilde,1E-3,5);
+[yp,gradp,~,~] = smooth_ppart((x - epsilon*P) - x_tilde,1E-3,5);
 
 hessian = zeros(3*T,3*T);
 

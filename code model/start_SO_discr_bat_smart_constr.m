@@ -8,7 +8,7 @@ function [x_opt, obj_opt, runningTime] = start_SO_discr_bat_smart_constr(ToPlotO
 
 %% Initialize parameters
 if nargin == 0, ToPlotOrNotToPlot = true; end
-[T, P, cost, penalty, penalty_grad, epsilon, C, SOC_0, t] = init_parameters;
+[T, P, cost, penalty, penalty_grad, epsilon, C, SOC_0, t, ~, ~, ~, penalty_hess] = init_parameters;
 
 %% Example scenarios
 
@@ -45,19 +45,24 @@ K = 5;
 %% New version: Compute weighted sum in function obj_SO_discr_weighted_sum which also returns the gradient
 % x \in R^(T+3*K*T) is going to be the optimization variable in this function. 
 % x = [x,SOC^1,...,SOC^K,b^{in,1},...b^{in,K},b^{out,1},...b^{out,K}]
-objfct = @(x) obj_SO_discr_weighted_sum(x,E,K,cost,penalty,penalty_grad,epsilon,P);
+objfct = @(x) obj_SO_discr_weighted_sum(x,E,K,cost,penalty,penalty_grad,penalty_hess,epsilon,P);
 
 %% Performing optimization
 x0 = zeros(1,T+3*K*T);
+x0(T+1:2*T) = SOC_0;
 tic
-options = optimoptions('fmincon','GradObj','on');%'MaxFunEvals', 30000
- [x_opt, obj_opt] = fmincon(objfct, x0, A_smart, b_smart,[],[],...
+options = optimoptions('fmincon','Algorithm','interior-point','GradObj','on',...
+     'Hessian',{'lbfgs',100});
+% 'Hessian','user-supplied','HessFcn',@hessianfcn);%,'MaxFunEvals', 30000);
+% for this user-supplied version the function hessianfcn must return the
+% hessian of the lagrange fct. It must only obtain x and lambda as input!
+[x_opt, obj_opt] = fmincon(objfct, x0, A_smart, b_smart,[],[],...
     [x_min*ones(1,T), SOC_min*ones(1,K*T),0*ones(1,(2*K*T))],[x_max*ones(1,T), SOC_max*ones(1,K*T),2*P*ones(1,(2*K*T))],[],options);
 runningTime = toc
 %% Plot the solutions and data
 if ToPlotOrNotToPlot
     figure, hold on,
-    plot(t,x_opt(1:T),'*r',... % solution computed by ga or patternsearch
+    plot(t,x_opt(1:T),'*r',... % solution computed by fmincon
          t,x_opt(1:T) + epsilon*P,'^r',...
          t,x_opt(1:T) - epsilon*P,'vr',...
          t,x_opt(T+1:2*T)*C, 'bo',... % \tilde{SOC^1}

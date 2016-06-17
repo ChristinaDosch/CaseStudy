@@ -1,4 +1,4 @@
-function [y, grad, p] = smooth_ppart(x,epsilon,N)
+function [y, grad, hess, p] = smooth_ppart(x,epsilon,N)
 % SMOOTH_PART(x,epsilon) berechnet den positiven Teil von x, falls
 % |x|>=epsilon, oder epsilon/4 + 0.5*x + 0.25/epsilon*x^2, falls
 % |x|<epsilon. Das entspricht der Gl?ttung der Funktion max(x,0) in dem
@@ -14,6 +14,8 @@ function [y, grad, p] = smooth_ppart(x,epsilon,N)
 % Output:
 %       y - n by m matrix           value of the smooth function at x
 %       grad - n by m matrix        value of the derivative at x
+%       hess - n by m matrix        value of the 2nd derivative at x 
+%   !!!! hess is only correctly implemented for N=2 !!!!
 %       p - 1 by 3 or
 %           1 by N+1 vector         vector of coefficients from the
 %                                   interpolating polynomial
@@ -44,11 +46,14 @@ grad = zeros(s);
 I = (x > -epsilon) & (x < epsilon);
 y(I) = polyval(p,x(I));
 grad(I) = polyval((N:-1:1).*p(1:end-1), x(I));
+hess(I) = polyval(N.*p(1:end-2),x(I));
 %% x<-eps
 I = (x <= -epsilon);
 y(I) = 0;
 grad(I) = 0;
+hess(I) = 0;
 %% x>eps
 I = (x >= epsilon);
 y(I) = x(I);
 grad(I) = 1;
+hess(I) = 0;
