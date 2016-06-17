@@ -32,7 +32,7 @@ G = zeros(K,T);
 for k = 1:K 
 x_tilde = E(k,:)+0.95*x((T+2*K*T+(k-1)*T+1):(T+2*K*T+k*T))...
     -x((T+K*T+(k-1)*T+1):(T+K*T+k*T)); % compute \tilde{x}^k as e^k + 0.95 \tilde{b^out,k} - \tilde{b^in,k}
-[F(k),grad_x,grad_SOC_b] = obj_SO_discr(x(1:T),x_tilde,cost,penalty,penalty_grad,epsilon,P);
+[F(k),grad_SOC_b,grad_x] = obj_SO_discr(x(1:T),x_tilde,cost,penalty,penalty_grad,epsilon,P);
 % In the "k^th objective" F(k) only b^{in,k} and b^{out,k} appear and thus
 % only the corresponding entries in the gradient row G(k,:) are non-zero
 G(k,1:T) = grad_x; % gradient w.r.t. x
