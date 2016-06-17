@@ -1,4 +1,4 @@
-function [x_opt, obj_opt, runningTime] = start_SO_discretization_battery_bf(ToPlotOrNotToPlot)
+function [x_opt, obj_opt, runningTime] = start_SO_discr_bat_bf(ToPlotOrNotToPlot)
 %% DISCRETIZATION APPROACH with BATTERY BRUTE FORCE
 % This script solves our well known optimization problem using the
 % discretization approach and including
