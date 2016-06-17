@@ -3,7 +3,8 @@ function [x_opt, obj_opt, runningTime] = start_SO_discr_bat_smart_inner_opt(ToPl
 % This script solves our well known optimization problem using the
 % discretization approach and including
 %       * ramping constraints and x_min, x_max
-%       * battery using the SMART approach
+%       * battery using the SMART approach (using an inner optimization
+%       problem for finding optimal b^in,k and b^out,k)
 %       * general penalty function (also quadratic is possible)
 
 %% Initialize parameters
