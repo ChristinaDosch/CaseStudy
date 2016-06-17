@@ -48,22 +48,22 @@ objfct = @(x) 1/K .* sum(cellfun(@(f)f(x),F)); % weighted (all weights=1/K) sum 
 %grad = @(x) 1/K .* sum(cellfun(@(f)f(x),G));
 
 %% Performing optimization
-x0 = zeros(1,4*T);
+x0 = zeros(1,T+3*K*T);
 tic
 %options=optimoptions('fmincon', 'MaxFunEvals', 30000);%,'SpecifyObjectiveGradient',true);
  [x_opt, obj_opt] = fmincon(objfct, x0, A_smart, b_smart,[],[],...
     [x_min*ones(1,T), SOC_min*ones(1,K*T),0*ones(1,(2*K*T))],[x_max*ones(1,T), SOC_max*ones(1,K*T),2*P*ones(1,(2*K*T))]);
 %,[],options);
 runningTime = toc
-%% 4.) Plot the solutions and data
+%% Plot the solutions and data
 if ToPlotOrNotToPlot
     figure, hold on,
     plot(t,x_opt(1:T),'*r',... % solution computed by ga or patternsearch
          t,x_opt(1:T) + epsilon*P,'^r',...
          t,x_opt(1:T) - epsilon*P,'vr',...
-         t,x_opt(T+1:2*T)*C, 'bo',... % optimal \tilde{SOC}
-         t,x_opt(T+T*K+1:T+2*T*K), '-b',... % optimal \tilde{b^in}
-         t,x_opt(T+2*T*K+1:T+3*T*K), '-g',... % optimal \tilde{b^out}
+         t,x_opt(T+1:2*T)*C, 'bo',... % \tilde{SOC^1}
+         t,x_opt(T+K*T+1:T+K*T+T), '-b',... % \tilde{b^in,1}
+         t,x_opt(T+2*K*T+1:T+2*K*T+T), '-g',... % \tilde{b^out,1}
          [t(1) t(end)], [x_max x_max], 'k--',... % x_max
          [t(1) t(end)], [x_min x_min], 'k--') % x_min 
     legend('calculated opt. sol.',...
