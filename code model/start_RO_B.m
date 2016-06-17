@@ -10,7 +10,7 @@ function [xb_opt, obj_opt, runningTime] = start_RO_B(ToPlotOrNotToPlot)
 %% 1.) Initialize parameters and constraints
 if nargin == 0, ToPlotOrNotToPlot = true; end
 [T, P, cost, penalty, penalty_grad, epsilon, C, SOC_0, t, mu, sigma, lambda] = init_parameters;
-[x_min, x_max, delta, A, b, A_, b_, ~, ~, ~, ~] = init_constraints(T,P,C,SOC_0);
+[x_min, x_max, delta, ~, ~, A, b, A_, b_, ~, ~] = init_constraints(T,P,C,SOC_0);
 
 %% 2.) Initialize e_l, e_r for RO
 e_l = mu - lambda*sigma; %

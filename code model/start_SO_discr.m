@@ -1,4 +1,4 @@
-function [x_opt, obj_opt, runningTime] = start_SO_discretization
+function [x_opt, obj_opt, runningTime] = start_SO_discr
 %% DISCRETIZATION APPROACH
 % This script solves our well known optimization problem using the
 % discretization approach and including
@@ -10,7 +10,7 @@ function [x_opt, obj_opt, runningTime] = start_SO_discretization
 [T, P, cost, penalty, penalty_grad, epsilon, C, SOC_0] = init_parameters;
 
 %% Constraints
-[x_min,x_max,delta,A,b] = init_constraints(T,P,C,SOC_0);
+[x_min,x_max,delta, ~, ~, A, b] = init_constraints(T,P,C,SOC_0);
 
 %% Example scenarios
 

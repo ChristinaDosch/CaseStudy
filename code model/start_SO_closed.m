@@ -12,7 +12,7 @@ function [x_opt, obj_opt, runningTime] = start_SO_closed(ToPlotOrNotToPlot)
 %% 1.) Initialize parameters and constraints
 if nargin == 0, ToPlotOrNotToPlot = true; end
 [T, P, cost, penalty, ~, epsilon, C, SOC_0, t, mu, sigma] = init_parameters;
-[x_min, x_max, delta, A, b] = init_constraints(T,P,C,SOC_0);
+[x_min, x_max, delta, ~, ~, A, b] = init_constraints(T,P,C,SOC_0);
 
 %% 2.) Initialize optimization model for SO
 % multivariate normal distribution for E
@@ -35,14 +35,15 @@ if ToPlotOrNotToPlot
     plot(t,x_opt,'*r',... % solution computed by ga or patternsearch
          t,x_opt + epsilon*P,'^r',...
          t,x_opt - epsilon*P,'vr',...
+         t,mu,'ko',... % expected values
          [t(1) t(end)], [x_max x_max], 'k--',... % x_max
-         [t(1) t(end)], [x_min x_min], 'k--',... % x_min
-         t,mu,'ko') % expected values
+         [t(1) t(end)], [x_min x_min], 'k--') % x_min
+          
     legend('calculated opt. sol.',...
            'upper no-penalty bound',...
            'lower no-penalty bound',...
-           'x_{max}, x_{min}',...
-           'expected values')
+           'expected values',...
+           'x_{max}, x_{min}')
     xlabel('time'), ylabel('energy, kWh')
     % size
     xlim([0 24])

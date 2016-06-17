@@ -12,7 +12,7 @@ if nargin == 0, ToPlotOrNotToPlot = true; end
 [T, P, cost, penalty, penalty_grad, epsilon, C, SOC_0, t,~,~,~,penalty_hess] = init_parameters;
 if T ~= 96, error('T=96 required for samples, change this in init_parameters');end
 %% Constraints
-[x_min, x_max, delta, A, b,~,~, A_smart, b_smart, SOC_min, SOC_max] = init_constraints(T,P,C,SOC_0);
+[x_min, x_max, delta, SOC_min, SOC_max, A, b,~,~, A_smart, b_smart] = init_constraints(T,P,C,SOC_0);
 
 %% Example scenarios
 

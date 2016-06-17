@@ -28,7 +28,7 @@ K = 5;
 %E = reshape(PVdata2(:,1),31,1440); % array of 31 realizations with minute values from January
 
 %% Initialize Constraints
-[x_min, x_max, delta,~,~,~,~, A_smart, b_smart, SOC_min, SOC_max] = init_constraints(T,P,C,SOC_0,K);
+[x_min, x_max, delta, SOC_min, SOC_max,~,~,~,~, A_smart, b_smart] = init_constraints(T,P,C,SOC_0,K);
 
 %% Determine objective function
 %% Old version:
@@ -42,8 +42,9 @@ K = 5;
 %
 %objfct = @(x) 1/K .* sum(cellfun(@(f)f(x),F)); % weighted (all weights=1/K) sum of F(x,e^k)
 %
-%% New version: mach das mit der gewichteten Summe in einer Funktion obj_SO_discr_weighted_sum, die K und E übergeben bekommt
-
+%% New version: Compute weighted sum in function obj_SO_discr_weighted_sum which also returns the gradient
+% x \in R^(T+3*K*T) is going to be the optimization variable in this function. 
+% x = [x,SOC^1,...,SOC^K,b^{in,1},...b^{in,K},b^{out,1},...b^{out,K}]
 objfct = @(x) obj_SO_discr_weighted_sum(x,E,K,cost,penalty,penalty_grad,epsilon,P);
 
 %% Performing optimization

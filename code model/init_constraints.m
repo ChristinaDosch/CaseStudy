@@ -1,4 +1,4 @@
-function [x_min, x_max, delta, A, b, A_, b_, A_smart, b_smart, SOC_min, SOC_max] = init_constraints(T, P, C, SOC_0,K)
+function [x_min, x_max, delta, SOC_min, SOC_max, A, b, A_, b_, A_smart, b_smart] = init_constraints(T, P, C, SOC_0,K)
 %% INIT_CONSTRAINTS(T,P,C,SOC_0) returns all constraints in the form Ax<=b
 % 
 % input:   T - scalar:                  number of time steps
