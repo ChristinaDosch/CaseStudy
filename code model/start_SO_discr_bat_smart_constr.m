@@ -31,29 +31,27 @@ K = 5;
 [x_min, x_max, delta,~,~,~,~, A_smart, b_smart, SOC_min, SOC_max] = init_constraints(T,P,C,SOC_0,K);
 
 %% Determine objective function
-
-F = cell(K,1);
-%G = cell(K,1);
-
+%% Old version:
+%F = cell(K,1);
 % determine revenue function F(x,\tilde{x}^k) for every k=1,...,K:
-for k = 1:K 
-x_tilde = @(x) E(k,:)+0.95*x((T+2*K*T+(k-1)*T+1):(T+2*K*T+k*T))...
-    -x((T+K*T+(k-1)*T+1):(T+K*T+k*T)); % compute \tilde{x}^k as e^k + 0.95 \tilde{b^out,k} - \tilde{b^in,k}
+%for k = 1:K 
+%x_tilde = @(x) E(k,:)+0.95*x((T+2*K*T+(k-1)*T+1):(T+2*K*T+k*T))...
+%    -x((T+K*T+(k-1)*T+1):(T+K*T+k*T)); % compute \tilde{x}^k as e^k + 0.95 \tilde{b^out,k} - \tilde{b^in,k}
+%F(k) = { @(x) obj_SO_discr(x(1:T),x_tilde(x),cost,penalty,penalty_grad,epsilon,P)};
+%end
+%
+%objfct = @(x) 1/K .* sum(cellfun(@(f)f(x),F)); % weighted (all weights=1/K) sum of F(x,e^k)
+%
+%% New version: mach das mit der gewichteten Summe in einer Funktion obj_SO_discr_weighted_sum, die K und E übergeben bekommt
 
-F(k) = { @(x) obj_SO_discr(x(1:T),x_tilde(x),cost,penalty,penalty_grad,epsilon,P)};
-%G(k) = { @(x) [0,1] * obj_SO_discr(x(1:T),x_tilde(x),cost,penalty,penalty_grad,epsilon,P)};
-end
-
-objfct = @(x) 1/K .* sum(cellfun(@(f)f(x),F)); % weighted (all weights=1/K) sum of F(x,e^k)
-%grad = @(x) 1/K .* sum(cellfun(@(f)f(x),G));
+objfct = @(x) obj_SO_discr_weighted_sum(x,E,K,cost,penalty,penalty_grad,epsilon,P);
 
 %% Performing optimization
 x0 = zeros(1,T+3*K*T);
 tic
-%options=optimoptions('fmincon', 'MaxFunEvals', 30000);%,'SpecifyObjectiveGradient',true);
+options = optimoptions('fmincon','GradObj','on');%'MaxFunEvals', 30000
  [x_opt, obj_opt] = fmincon(objfct, x0, A_smart, b_smart,[],[],...
-    [x_min*ones(1,T), SOC_min*ones(1,K*T),0*ones(1,(2*K*T))],[x_max*ones(1,T), SOC_max*ones(1,K*T),2*P*ones(1,(2*K*T))]);
-%,[],options);
+    [x_min*ones(1,T), SOC_min*ones(1,K*T),0*ones(1,(2*K*T))],[x_max*ones(1,T), SOC_max*ones(1,K*T),2*P*ones(1,(2*K*T))],[],options);
 runningTime = toc
 %% Plot the solutions and data
 if ToPlotOrNotToPlot
