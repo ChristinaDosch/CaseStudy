@@ -13,7 +13,7 @@ switch nargin
     case 1, SmoothOrNonSmooth = 'nonsmooth';
 end
 
-[T, P, cost, penalty, penalty_grad, epsilon, C, SOC_0, t, mu, sigma, lambda] = init_parameters;
+[T, P, cost, penalty, penalty_grad, epsilon, C, SOC_0, t, mu, sigma, lambda, ~] = init_parameters;
 [x_min, x_max, delta, ~, ~, A, b, ~, ~, ~, ~] = init_constraints(T, P, C, SOC_0);
 
 %% 2.) Initialize e_l, e_r for RO

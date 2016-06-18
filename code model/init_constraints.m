@@ -24,7 +24,7 @@ SOC_min = 0.1;  % maximum of state of charge
 SOC_max = 0.95; % minimum of state of charge
 
 % Ramping constraints for x (not capacity constraints)
-delta = 0.03 * P; % maximum deviation between two successive power values
+delta = 0.015 * P; % maximum deviation between two successive power values
 B = [-eye(T-1) zeros(T-1,1)] + [zeros(T-1,1) eye(T-1)];
 A = [B; -B];
 b = ones(2*(T-1),1)*delta;
@@ -33,6 +33,8 @@ b = ones(2*(T-1),1)*delta;
 A_ = tril(ones(T)); A_ = [A_; -A_];
 b_ = [C*ones(T,1); zeros(T,1)];
 
+A_smart = [];
+b_smart = [];
 % For SO with battery (SMART), requires declaration of K in the function call
 if nargin == 5
     % matrix for ramping constraints:    
