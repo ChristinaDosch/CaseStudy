@@ -27,6 +27,7 @@ function [obj, grad] = obj_RO(x,e_l,e_u,cost,penalty,penalty_grad,epsilon,P,Smoo
 %                                   grad(i) = sum_j
 %                                               gradF(x(i,j),e_l(j),e_r(j))
 %                                   With F from medium_objective
+
 %%
 if nargin == 8, SmoothOrNonSmooth = 'nonsmooth'; end
 %% Calculation
@@ -133,7 +134,7 @@ if size(e,2) ~= s(2), error('Sizes of x and e do not match'); end
 E = ones(s(1),1) * e;                                                       % E is an n by m matrix with e in each column
 cost = ones(s(1),1) * cost;
 obj = penalty(max(zeros(s), (x - epsilon*P) - E)) + ...
-      max(zeros(s), E - (x + epsilon*P)).*cost - E.*cost;                    % just evaluating the formula
+      max(zeros(s), E - (x + epsilon*P)).*cost - E.*cost - 0.001*x;                    % just evaluating the formula
 end
 
 function [obj, grad] = small_objective_smooth(x,e,cost,penalty,penalty_grad,epsilon,P)
@@ -165,6 +166,6 @@ E = ones(s(1),1) * e;                                                       % E 
 cost = ones(s(1),1) * cost;
 [m1, g1] = smooth_ppart((x - epsilon*P) - E, 0.05);
 [m2, g2] = smooth_ppart(E - (x + epsilon*P), 0.05);
-obj = penalty(m1) + m2.*cost - E.*cost;                                     % evaluating the formula
-grad = penalty_grad(m1).*g1 + g2.*cost;
+obj = penalty(m1) + m2.*cost - E.*cost - 0.001*x;                                     % evaluating the formula
+grad = penalty_grad(m1).*g1 + g2.*cost - 0.001;
 end

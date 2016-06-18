@@ -1,16 +1,24 @@
-function [xb_opt, obj_opt, runningTime] = start_RO_B(ToPlotOrNotToPlot)
+function [xb_opt, obj_opt, runningTime] = start_RO_B(ToPlotOrNotToPlot, SmoothOrNonSmooth, option)
 % This script contains the entire simulation using RO WITH BATTERY, conducting the following steps: 
 % 1.) Initialization of common parameters and constraints (independent of ansatz)
 % 2.) Initialization of parameters and obj. function corresponding to RO
 % 3.) Performing optimization using RO
 % 4.) Plotting solutions and data
 %
-%It follows the documentation in "Ansatz 2: Robust Optimization"
+% It follows the documentation in "Ansatz 2: Robust Optimization"
 
 %% 1.) Initialize parameters and constraints
-if nargin == 0, ToPlotOrNotToPlot = true; end
+switch nargin
+    case 0, ToPlotOrNotToPlot = true; SmoothOrNonSmooth = 'nonsmooth'; option = 1;
+    case 1, SmoothOrNonSmooth = 'nonsmooth'; option = 1;
+    case 2, option = 1;
+end
 [T, P, cost, penalty, penalty_grad, epsilon, C, SOC_0, t, mu, sigma, lambda] = init_parameters;
+<<<<<<< HEAD
+[x_min, x_max, delta, A, b, A_, b_, ~, ~, ~, ~] = init_constraints(T, P, C, SOC_0);
+=======
 [x_min, x_max, delta, ~, ~, A, b, A_, b_, ~, ~] = init_constraints(T,P,C,SOC_0);
+>>>>>>> origin/master
 
 %% 2.) Initialize e_l, e_r for RO
 e_l = mu - lambda*sigma; %
@@ -18,14 +26,22 @@ e_u = mu + lambda*sigma; %
 
 % Initialize optimization model for RO
 xb0 = [mu zeros(1,T)]; % Starting guess for pattern search
-objfct = @(xb) obj_RO_B(xb,e_l,e_u,cost,penalty,penalty_grad,epsilon,P); % Objective function for RO
+objfct = @(xb) obj_RO_B(xb,e_l,e_u,cost,penalty,penalty_grad,epsilon,P,SmoothOrNonSmooth,option); % Nonsmooth bjective function for RO
 
 %% 3.) Performing optimization using RO
 A = [A zeros(size(A,1),size(A_,2)); zeros(size(A_,1),size(A,2)) A_];
-tic
-[xb_opt, obj_opt] = patternsearch(objfct,xb0,...
-    A,[b; b_],[],[],[x_min*ones(1,T) -100*ones(1,T)],[x_max*ones(1,T) e_l]); % pattern search
-runningTime = toc;
+switch SmoothOrNonSmooth
+    case 'nonsmooth',
+        tic
+        [xb_opt, obj_opt] = patternsearch(objfct,xb0,...
+                                A,[b; b_],[],[],[x_min*ones(1,T) -100*ones(1,T)],[x_max*ones(1,T) e_l]); % pattern search
+        runningTime = toc;
+    case 'smooth',
+        tic
+        [xb_opt, obj_opt] = fmincon(objfct,xb0,...
+                                A,[b; b_],[],[],[x_min*ones(1,T) -100*ones(1,T)],[x_max*ones(1,T) e_l]); % pattern search
+        runningTime = toc;
+end
 x_opt = xb_opt(1:T);
 b_opt = xb_opt(T+1:end);
 %% 4.) Plot the solutions and data
