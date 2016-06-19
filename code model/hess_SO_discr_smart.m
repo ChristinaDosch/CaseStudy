@@ -1,5 +1,5 @@
 function hessian = hess_SO_discr_smart(x,x_tilde,penalty_hess,epsilon,P)
-% HESSIAN outputs the hessian of the objective w.r.t. [SOC,b^{in]},b^{out}]
+% HESS_SO_DISCR_SMART outputs the hessian of the objective w.r.t. [SOC,b^{in]},b^{out}]
 % Input: 
 %       x - 1 by m vector                schedule, x(i) corresponds to the i^th time step
 %       x_tilde - 1 by m vector          x_tilde(i) is the actually provided value at time step i

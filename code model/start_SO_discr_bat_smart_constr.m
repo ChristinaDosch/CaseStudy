@@ -17,7 +17,7 @@ if nargin == 0, ToPlotOrNotToPlot = true; end
 E = load('sample_normal_independent.csv');
 E = 1/1000 * E; % since we need kWh (and in the samples it's in Wh)
 %K = size(E,1); % number of realizations
-K = 5;
+K = 1;
 
 % using PVDATA2.MAT
 % for this example T = 1440 is required in init_parameters!!! (1min interv)
@@ -46,18 +46,19 @@ K = 5;
 % x \in R^(T+3*K*T) is going to be the optimization variable in this function. 
 % x = [x,SOC^1,...,SOC^K,b^{in,1},...b^{in,K},b^{out,1},...b^{out,K}]
 objfct = @(x) obj_SO_discr_weighted_sum(x,E,K,cost,penalty,penalty_grad,penalty_hess,epsilon,P);
-
+hess = @(x, lambda) hess_lagr_SO_discr_smart( transpose(x), E,K,cost,penalty,penalty_grad,penalty_hess,epsilon,P );
 %% Performing optimization
 x0 = zeros(1,T+3*K*T);
 x0(T+1:2*T) = SOC_0;
 tic
-options = optimoptions('fmincon','Algorithm','interior-point','GradObj','on',...
-     'Hessian',{'lbfgs',100});
+options = optimoptions('fmincon','Algorithm','interior-point','SpecifyObjectiveGradient',true,...
+     'HessianFcn', hess, 'StepTolerance',1e-1000,'MaxFunEvals', 30000, 'MaxIterations', 100000);
 % 'Hessian','user-supplied','HessFcn',@hessianfcn);%,'MaxFunEvals', 30000);
 % for this user-supplied version the function hessianfcn must return the
 % hessian of the lagrange fct. It must only obtain x and lambda as input!
 [x_opt, obj_opt] = fmincon(objfct, x0, A_smart, b_smart,[],[],...
-    [x_min*ones(1,T), SOC_min*ones(1,K*T),0*ones(1,(2*K*T))],[x_max*ones(1,T), SOC_max*ones(1,K*T),2*P*ones(1,(2*K*T))],[],options);
+    [x_min*ones(1,T), SOC_min*ones(1,K*T),0*ones(1,(2*K*T))],[x_max*ones(1,T),...
+    SOC_max*ones(1,K*T),2*P*ones(1,(2*K*T))],[],options);
 runningTime = toc
 %% Plot the solutions and data
 if ToPlotOrNotToPlot

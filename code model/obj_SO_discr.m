@@ -59,5 +59,5 @@ hessian(3*T+1:4*T,3*T+1:4*T) = ones(T,1)*(0.95.*0.95.*gradp.*penalty_hess(yp).*g
 %% Alter Code:
 %obj = penalty(max(zeros(s), (x - epsilon*P) - E)) + ...
 %   max(zeros(s), E - (x + epsilon*P))*cost - E*cost;                     % just evaluating the formula
-
+end
 

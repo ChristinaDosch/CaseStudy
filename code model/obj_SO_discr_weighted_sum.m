@@ -1,4 +1,5 @@
-function [obj,grad] = obj_SO_discr_weighted_sum(x,E,K,cost,penalty,penalty_grad,penalty_hess,epsilon,P)
+function [obj,grad, hessian] = obj_SO_discr_weighted_sum(x,E,K,cost,penalty,penalty_grad,...
+    penalty_hess,epsilon,P)
 %% OBJ_SO_DISCR_WEIGHTED_SUM computes 1/K * \sum_{i=1}^K F(x,\tilde{x}^k),
 % i.e. the objective function of our discretized optimization problem as in
 % 1.8 (smart approach)
@@ -42,18 +43,46 @@ G(k,(T+(k-1)*T+1):(T+k*T)) = grad_SOC_b(1:T); % gradient w.r.t. SOC^k
 G(k,((K+1)*T+(k-1)*T+1):((K+1)*T+k*T)) = grad_SOC_b(T+1:2*T); % gradient w.r.t. b^in,k
 G(k,((2*K+1)*T+(k-1)*T+1):((2*K+1)*T+k*T)) = grad_SOC_b(2*T+1:3*T); % gradient w.r.t. b^out,k
 
-H((K+1)*T+(k-1)*T+1:((K+1)*T+k*T),(K+1)*T+(k-1)*T+1:((K+1)*T+k*T)) = hessian(2*T+1:3*T,2*T+1:3*T);
-H((K+1)*T+(k-1)*T+1:((K+1)*T+k*T),(2*K+1)*T+(k-1)*T+1:((2*K+1)*T+k*T)) = hessian(2*T+1:3*T,3*T+1:4*T);
-H((2*K+1)*T+(k-1)*T+1:((2*K+1)*T+k*T),(K+1)*T+(k-1)*T+1:((K+1)*T+k*T)) = hessian(3*T+1:4*T,2*T+1:3*T);
-H((2*K+1)*T+(k-1)*T+1:((2*K+1)*T+k*T),(2*K+1)*T+(k-1)*T+1:((2*K+1)*T+k*T)) = hessian(3*T+1:4*T,3*T+1:4*T);
+
+H(1:T,1:T) = H(1:T,1:T)+1/K*hessian(1:T,1:T);
+H(1:T,T+(k-1)*T+1:(T+k*T)) = H(1:T,T+(k-1)*T+1:(T+k*T))+1/K*hessian(1:T,T+1:2*T);
+H(1:T,(K+1)*T+(k-1)*T+1:((K+1)*T+k*T)) =H(1:T,(K+1)*T+(k-1)*T+1:((K+1)*T+k*T)) +1/K* hessian(1:T,2*T+1:3*T);
+H(1:T,(2*K+1)*T+(k-1)*T+1:((2*K+1)*T+k*T)) = H(1:T,(2*K+1)*T+(k-1)*T+1:((2*K+1)*T+k*T))+1/K*...
+    hessian(1:T,3*T+1:4*T);
+
+H(T+(k-1)*T+1:(T+k*T),1:(T)) = H(T+(k-1)*T+1:(T+k*T),1:(T))+1/K*hessian(T+1:2*T,1:T);
+H(T+(k-1)*T+1:(T+k*T),T+(k-1)*T+1:(T+k*T)) =                    hessian(T+1:2*T,T+1:2*T);
+H(T+(k-1)*T+1:(T+k*T),(K+1)*T+(k-1)*T+1:((K+1)*T+k*T)) =        hessian(T+1:2*T,2*T+1:3*T);
+H(T+(k-1)*T+1:(T+k*T),(2*K+1)*T+(k-1)*T+1:((2*K+1)*T+k*T)) =    hessian(T+1:2*T,3*T+1:4*T);
+
+H((K+1)*T+(k-1)*T+1:((K+1)*T+k*T),1:(T)) = H((K+1)*T+(k-1)*T+1:((K+1)*T+k*T),1:(T)) +1/K*hessian(2*T+1:3*T,1:T);
+H((K+1)*T+(k-1)*T+1:((K+1)*T+k*T),T+(k-1)*T+1:(T+k*T)) =                    hessian(2*T+1:3*T,T+1:2*T);
+H((K+1)*T+(k-1)*T+1:((K+1)*T+k*T),(K+1)*T+(k-1)*T+1:((K+1)*T+k*T)) =        hessian(2*T+1:3*T,2*T+1:3*T);
+H((K+1)*T+(k-1)*T+1:((K+1)*T+k*T),(2*K+1)*T+(k-1)*T+1:((2*K+1)*T+k*T)) =    hessian(2*T+1:3*T,3*T+1:4*T);
+
+H((2*K+1)*T+(k-1)*T+1:((2*K+1)*T+k*T),1:(T)) = H((2*K+1)*T+(k-1)*T+1:((2*K+1)*T+k*T),1:(T))+1/K*hessian(3*T+1:4*T,1:T);
+H((2*K+1)*T+(k-1)*T+1:((2*K+1)*T+k*T),T+(k-1)*T+1:(T+k*T)) =                    hessian(3*T+1:4*T,T+1:2*T);
+H((2*K+1)*T+(k-1)*T+1:((2*K+1)*T+k*T),(K+1)*T+(k-1)*T+1:((K+1)*T+k*T)) =        hessian(3*T+1:4*T,2*T+1:3*T);
+H((2*K+1)*T+(k-1)*T+1:((2*K+1)*T+k*T),(2*K+1)*T+(k-1)*T+1:((2*K+1)*T+k*T)) =    hessian(3*T+1:4*T,3*T+1:4*T);
+
+
 end
+
+
 
 obj = 1/K .* sum(F(:,1)); % weighted (all weights=1/K)x sum of F(x,\tilde{x}^k)
 grad = 1/K .* sum(G,1); % weighted sum over all gradients
+hessian = H;
 
 
 % TO DO:
 % The first row and column of H is not yet filled since there are different
 % values for every k and thus we also need to take the average.
+
+%* grad: wieso weighted sum? kann man das nicht gleich in einen vektor
+%  schreiben, anstatt in eine matrix? sind nicht immer verschiedene einträge
+%  größer 0?
+%
+
 end
 
