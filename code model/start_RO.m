@@ -5,7 +5,7 @@ function [x_opt, obj_opt, runningTime] = start_RO(ToPlotOrNotToPlot, SmoothOrNon
 % 3.) Performing optimization using RO
 % 4.) Plotting solutions and data
 %
-%It follows the documentation in "Ansatz 2: Robust Optimization"
+% It follows the documentation in "Ansatz 2: Robust Optimization"
 
 %% 1.) Initialize parameters and constraints
 switch nargin
