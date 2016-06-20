@@ -45,29 +45,35 @@ b = xb(:,round(s(2)/2)+1:end);
 switcher = [SmoothOrNonSmooth option];
 switch switcher
     case ['nonsmooth' 1]
-        e_u = e_u - max(b,0);
-        e_l = e_l + max(-b,0);
+        b_in = max(b,0);
+        b_out = max(-b,0);
+        e_u = e_u - b_in;
+        e_l = e_l + 0.95*b_out;
         [obj, gradX, ~, ~] = medium_objective(x,e_l,e_u,cost,penalty,penalty_grad,epsilon,P,SmoothOrNonSmooth);
         obj = sum(obj, 2);
     case ['nonsmooth' 2]
-        e_u = e_u - b;
-        e_l = e_l - b;
+        b_in = max(b,0);
+        b_out = max(-b,0);
+        e_u = e_u - b_in + 0.95*b_out;
+        e_l = e_l - b_in + 0.95*b_out;
         [obj, gradX, ~, ~] = medium_objective(x,e_l,e_u,cost,penalty,penalty_grad,epsilon,P,SmoothOrNonSmooth);
         obj = sum(obj, 2);
     case ['smooth' 1]
-        [b1, g1] = smooth_ppart(b,0.05);
-        [b2, g2] = smooth_ppart(-b,0.05);
-        e_u = e_u - b1;
-        e_l = e_l + b2;
+        [b_in, g_in] = smooth_ppart(b,0.05);
+        [b_out, g_out] = smooth_ppart(-b,0.05);
+        e_u = e_u - b_in;
+        e_l = e_l + 0.95*b_out;
         [obj, gradX, gradE_l, gradE_u] = medium_objective(x,e_l,e_u,cost,penalty,penalty_grad,epsilon,P,SmoothOrNonSmooth);
         obj = sum(obj, 2);
-        gradB = -gradE_l.*g2 - gradE_u.*g1;
+        gradB = -0.95*gradE_l.*g_out - gradE_u.*g_in;
     case ['smooth' 2]
-        e_u = e_u - b;
-        e_l = e_l - b;
+        [b_in, g_in] = smooth_ppart(b,0.05);
+        [b_out, g_out] = smooth_ppart(-b,0.05);
+        e_u = e_u - b_in + 0.95*b_out;
+        e_l = e_l - b_in + 0.95*b_out;
         [obj, gradX, gradE_l, gradE_u] = medium_objective(x,e_l,e_u,cost,penalty,penalty_grad,epsilon,P,SmoothOrNonSmooth);
         obj = sum(obj, 2);
-        gradB = -gradE_l - gradE_u;
+        gradB = -gradE_l.*(g_in + 0.95*g_out) - gradE_u.*(g_in + 0.95*g_out);
     otherwise, error('Something wrong with SmoothOrNonSmooth or option')
 end
 grad = [gradX gradB];
