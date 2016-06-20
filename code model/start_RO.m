@@ -38,7 +38,7 @@ switch SmoothOrNonSmooth
             x0, A, b, [], [], x_min*ones(1,T), x_max*ones(1,T), options); % pattern search
         runningTime = toc;
     case 'smooth'
-        options = psoptimset('MaxFunEvals', 5000*T);
+        options = optimoptions(@fmincon,'MaxFunEvals', 5000*T);
         tic
         [x_opt, obj_opt] = fmincon(objfct,...
             x0, A, b, [], [], x_min*ones(1,T), x_max*ones(1,T), [], options); % ???
