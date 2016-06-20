@@ -47,7 +47,7 @@ hess = zeros(s);
 I = (x > -epsilon) & (x < epsilon);
 y(I) = polyval(p,x(I));
 grad(I) = polyval((N:-1:1).*p(1:end-1), x(I));
-hess(I) = polyval(N.*p(1:end-2), x(I));
+hess(I) = polyval((N:-1:2).*(N-1:-1:1).*p(1:end-2), x(I));
 %% x<-eps
 I = (x <= -epsilon);
 y(I) = 0;
