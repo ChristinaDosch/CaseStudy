@@ -50,7 +50,7 @@ if ToPlotOrNotToPlot
          t,x_opt - epsilon*P,'vr',...
          [t(1) t(end)], [x_max x_max], 'k--',... % x_max
          t, e_l, 'k+-.',... % uncertainty intervals
-         t, cumsum(b_opt), 'bo',... % battary load
+         t, cumsum(b_opt) + SOC_0*C, 'bo',... % battary load
          [t; t], [zeros(1,T); b_opt], '-b',... % battery usage
          [t(1) t(end)], [x_min x_min], 'k--',... % x_min
          t,mu,'ko',... % centers of uncertainty intervals

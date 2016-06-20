@@ -1,8 +1,8 @@
 function [x_opt_RO, obj_opt_RO, obj_RO,...
           x_opt_SO, obj_opt_SO, obj_SO] = start_ROvsSO(ToPlotOrNotToPlot)
 
-[x_opt_RO, obj_opt_RO, ~] = start_RO(false,'nonsmooth');
-display('RO nonsmooth finished')
+[x_opt_RO, obj_opt_RO, ~] = start_RO(false,'smooth');
+display('RO smooth finished')
 [x_opt_SO, obj_opt_SO, ~] = start_SO_closed(false);
 display('SO closed finished')
 
