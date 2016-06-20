@@ -49,10 +49,18 @@ objfct = @(x) obj_SO_discr_weighted_sum(x,E,K,cost,penalty,penalty_grad,penalty_
 hess = @(x, lambda) hess_lagr_SO_discr_smart( transpose(x), E,K,cost,penalty,penalty_grad,penalty_hess,epsilon,P );
 %% Performing optimization
 x0 = zeros(1,T+3*K*T);
+for i=10:floor(T/2)
+   x0(i) = x0(i-1)+delta; 
+end 
+for i=floor(T/2)+1:T-10
+   x0(i) = max(0,x0(i-1)-delta);
+end    
 x0(T+1:2*T) = SOC_0;
+
 tic
-options = optimoptions('fmincon','Algorithm','interior-point','SpecifyObjectiveGradient',true,...
-     'HessianFcn', hess, 'StepTolerance',1e-1000,'MaxFunEvals', 30000, 'MaxIterations', 100000);
+options = optimoptions('fmincon','Algorithm','interior-point','GradObj','on',...%'SpecifyObjectiveGradient',true
+    'Hessian','user-supplied','HessFcn',@hessianfcn,'StepTolerance',1e-1000,'MaxFunEvals', 30000, 'MaxIterations', 10000);
+ %    'HessianFcn', hess, 'StepTolerance',1e-1000,'MaxFunEvals', 30000, 'MaxIterations', 10000);
 % 'Hessian','user-supplied','HessFcn',@hessianfcn);%,'MaxFunEvals', 30000);
 % for this user-supplied version the function hessianfcn must return the
 % hessian of the lagrange fct. It must only obtain x and lambda as input!
