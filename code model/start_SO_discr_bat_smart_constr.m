@@ -51,16 +51,25 @@ hess = @(x, lambda) hess_lagr_SO_discr_smart( transpose(x), E,K,cost,penalty,pen
 %% Performing optimization
 x0 = zeros(1,T+3*K*T);
 x0(T+1:2*T) = SOC_0;
+for i=10:floor(T/2)
+   x0(i) = min(x0(i-1)+delta,x_max); 
+end 
+for i=floor(T/2)+1:T-10
+   x0(i) = max(0,x0(i-1)-delta);
+end    
 tic
-options = optimoptions('fmincon','Algorithm','sqp','SpecifyObjectiveGradient',true,...
-      'StepTolerance',1e-1000,'MaxFunEvals', 30000, 'MaxIterations', 100000);
-% 'HessianFcn', hess,'Hessian','user-supplied','HessFcn',@hessianfcn);%,'MaxFunEvals', 30000);
-% for this user-supplied version the function hessianfcn must return the
-% hessian of the lagrange fct. It must only obtain x and lambda as input!
-[x_opt, obj_opt] = fmincon(objfct, x0, A_smart(1:2*(T-1),:), b_smart(1:2*(T-1)),...
-    A_smart(2*(T-1)+1:2*(T-1)+2*(T*K),:),b_smart(2*(T-1)+1:2*(T-1)+2*(T*K)),...
-    [x_min*ones(1,T), SOC_min*ones(1,K*T),0*ones(1,(2*K*T))],[x_max*ones(1,T),...
-    SOC_max*ones(1,K*T),2*P*ones(1,(2*K*T))],[],options);
+options = optimoptions('fmincon','Algorithm','sqp','GradObj','on');%,'TolX',1e-1000,'MaxIter',3000,'Diagnostics','on');%,...%'SpecifyObjectiveGradient',true,...
+      %'StepTolerance',1e-1000,'MaxFunEvals', 30000, 'MaxIterations', 100000);
+%options = optimoptions('fmincon','GradObj','on','Hessian','user-supplied','HessFcn',@hessianfcn,'MaxFunEvals',30000,'MaxIter',10000);%,'MaxFunEvals', 30000);
+
+% possible options:
+% * 'ScaleProblem','obj-and-constr': causes the algorithm to normalize all constraints and the objective function
+%                                    didn't help at all
+
+[x_opt, obj_opt] = fmincon(objfct, x0, A_smart(1:2*(T-1),:), b_smart(1:2*(T-1)),... % inequality constraints
+    A_smart(2*(T-1)+1:2*(T-1)+2*(T*K),:),b_smart(2*(T-1)+1:2*(T-1)+2*(T*K)),...     % equality constraints
+    [x_min*ones(1,T), SOC_min*ones(1,K*T),0*ones(1,(2*K*T))],...                    % lower bounds
+    [x_max*ones(1,T), SOC_max*ones(1,K*T),2*P*ones(1,(2*K*T))],[],options);         % upper bounds
 runningTime = toc
 %% Plot the solutions and data
 if ToPlotOrNotToPlot
