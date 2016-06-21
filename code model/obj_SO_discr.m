@@ -26,8 +26,9 @@ function [obj,grad_SOC_b,grad_x,hessian] = obj_SO_discr(x,e,cost,penalty,penalty
 %       grad_x - n by m matrix           grad w.r.t. x
 %       hessian - 4m by 4m matrix        hessian of the objective w.r.t. [x,SOC,b^{in]},b^{out}]
 %% Check the size of x and e
-s = size(x); T = s(2);
+s = size(x); T = s(2); 
 if size(e,2) ~= s(2), error('Sizes of x and e do not match'); end
+if s(1) ~= 1, error('x schedules for than one day'); end
 %% Computation of the objective
 E = ones(s(1),1) * e;                        % E is an n by m matrix with e in each row
 Cost = ones(s(1),1) * cost;                  % C is an n by m matrix with cost in each row
@@ -42,7 +43,7 @@ grad_x = penalty_grad(yp).*gradp - gradc.*Cost;
 
 %% Computation of gradient w.r.t [SOC,b^in,b^out]
 Cost = ones(s(1),1) * [cost, cost, cost]; % C is an n by 3m matrix with three times cost in each row
-grad_x_tilde = [zeros(s(1),T), -1 * zeros(s(1),T), 0.95 * ones(s(1),T)];
+grad_x_tilde = [zeros(s(1),T), -1 * ones(s(1),T), 0.95 * ones(s(1),T)];
 grad_SOC_b = - penalty_grad([yp,yp,yp]).*[gradp, gradp, gradp].*grad_x_tilde + grad_x_tilde.*Cost.*[gradc, gradc, gradc] - grad_x_tilde.*Cost ;
 
 %% Computation of the hessian w.r.t. [x,SOC,b^in,b^out]
