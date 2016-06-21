@@ -30,7 +30,7 @@ B = [-eye(T-1) zeros(T-1,1)] + [zeros(T-1,1) eye(T-1)];
 A = [B; -B];
 b = ones(2*(T-1),1)*delta;
 
-% Capacity constraints for SOC*C
+% Capacity constraints for SOC*C for RO
 A_ = tril(ones(T)); A_ = [A_; -A_];
 b_ = [SOC_max*C*ones(T,1) - SOC_0*C; -SOC_min*ones(T,1) + SOC_0*C];
 
