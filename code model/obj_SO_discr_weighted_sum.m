@@ -1,5 +1,4 @@
-function [obj,grad, hessian] = obj_SO_discr_weighted_sum(x,E,K,cost,penalty,penalty_grad,...
-    penalty_hess,epsilon,P)
+function [obj,grad, hessian] = obj_SO_discr_weighted_sum(x,E,K,cost,penalty,penalty_grad,penalty_hess,epsilon,P)
 %% OBJ_SO_DISCR_WEIGHTED_SUM computes 1/K * \sum_{i=1}^K F(x,\tilde{x}^k),
 % i.e. the objective function of our discretized optimization problem as in
 % 1.8 (smart approach)
@@ -28,7 +27,7 @@ T = size(E,2);
 
 %% Calculation
 F = zeros(K,1); % F(k) = F(x,\tilde{x^k})
-G = zeros(K,T+3*K*T); % G(k) = gradient w.r.t. [x,SOC^k,b^{in,k},b^{out,k}]
+G = zeros(K,T+3*K*T); % G(k) = gradient w.r.t. [x,SOC^1,...,SOC^K,b^{in,1},...,b^{in,K},b^{out,1},...,b^{out,K}]
 H = zeros(T+3*K*T,T+3*K*T);
 
 for k = 1:K 
