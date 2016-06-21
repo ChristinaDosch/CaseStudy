@@ -51,19 +51,19 @@ H(1:T,(2*K+1)*T+(k-1)*T+1:((2*K+1)*T+k*T)) = H(1:T,(2*K+1)*T+(k-1)*T+1:((2*K+1)*
     hessian(1:T,3*T+1:4*T);
 
 H(T+(k-1)*T+1:(T+k*T),1:(T)) = H(T+(k-1)*T+1:(T+k*T),1:(T))+1/K*hessian(T+1:2*T,1:T);
-H(T+(k-1)*T+1:(T+k*T),T+(k-1)*T+1:(T+k*T)) =                    hessian(T+1:2*T,T+1:2*T);
-H(T+(k-1)*T+1:(T+k*T),(K+1)*T+(k-1)*T+1:((K+1)*T+k*T)) =        hessian(T+1:2*T,2*T+1:3*T);
-H(T+(k-1)*T+1:(T+k*T),(2*K+1)*T+(k-1)*T+1:((2*K+1)*T+k*T)) =    hessian(T+1:2*T,3*T+1:4*T);
+H(T+(k-1)*T+1:(T+k*T),T+(k-1)*T+1:(T+k*T)) =                    1/K*hessian(T+1:2*T,T+1:2*T);
+H(T+(k-1)*T+1:(T+k*T),(K+1)*T+(k-1)*T+1:((K+1)*T+k*T)) =        1/K*hessian(T+1:2*T,2*T+1:3*T);
+H(T+(k-1)*T+1:(T+k*T),(2*K+1)*T+(k-1)*T+1:((2*K+1)*T+k*T)) =    1/K*hessian(T+1:2*T,3*T+1:4*T);
 
 H((K+1)*T+(k-1)*T+1:((K+1)*T+k*T),1:(T)) = H((K+1)*T+(k-1)*T+1:((K+1)*T+k*T),1:(T)) +1/K*hessian(2*T+1:3*T,1:T);
-H((K+1)*T+(k-1)*T+1:((K+1)*T+k*T),T+(k-1)*T+1:(T+k*T)) =                    hessian(2*T+1:3*T,T+1:2*T);
-H((K+1)*T+(k-1)*T+1:((K+1)*T+k*T),(K+1)*T+(k-1)*T+1:((K+1)*T+k*T)) =        hessian(2*T+1:3*T,2*T+1:3*T);
-H((K+1)*T+(k-1)*T+1:((K+1)*T+k*T),(2*K+1)*T+(k-1)*T+1:((2*K+1)*T+k*T)) =    hessian(2*T+1:3*T,3*T+1:4*T);
+H((K+1)*T+(k-1)*T+1:((K+1)*T+k*T),T+(k-1)*T+1:(T+k*T)) =                   1/K* hessian(2*T+1:3*T,T+1:2*T);
+H((K+1)*T+(k-1)*T+1:((K+1)*T+k*T),(K+1)*T+(k-1)*T+1:((K+1)*T+k*T)) =       1/K* hessian(2*T+1:3*T,2*T+1:3*T);
+H((K+1)*T+(k-1)*T+1:((K+1)*T+k*T),(2*K+1)*T+(k-1)*T+1:((2*K+1)*T+k*T)) =   1/K* hessian(2*T+1:3*T,3*T+1:4*T);
 
 H((2*K+1)*T+(k-1)*T+1:((2*K+1)*T+k*T),1:(T)) = H((2*K+1)*T+(k-1)*T+1:((2*K+1)*T+k*T),1:(T))+1/K*hessian(3*T+1:4*T,1:T);
-H((2*K+1)*T+(k-1)*T+1:((2*K+1)*T+k*T),T+(k-1)*T+1:(T+k*T)) =                    hessian(3*T+1:4*T,T+1:2*T);
-H((2*K+1)*T+(k-1)*T+1:((2*K+1)*T+k*T),(K+1)*T+(k-1)*T+1:((K+1)*T+k*T)) =        hessian(3*T+1:4*T,2*T+1:3*T);
-H((2*K+1)*T+(k-1)*T+1:((2*K+1)*T+k*T),(2*K+1)*T+(k-1)*T+1:((2*K+1)*T+k*T)) =    hessian(3*T+1:4*T,3*T+1:4*T);
+H((2*K+1)*T+(k-1)*T+1:((2*K+1)*T+k*T),T+(k-1)*T+1:(T+k*T)) =                    1/K*hessian(3*T+1:4*T,T+1:2*T);
+H((2*K+1)*T+(k-1)*T+1:((2*K+1)*T+k*T),(K+1)*T+(k-1)*T+1:((K+1)*T+k*T)) =        1/K* hessian(3*T+1:4*T,2*T+1:3*T);
+H((2*K+1)*T+(k-1)*T+1:((2*K+1)*T+k*T),(2*K+1)*T+(k-1)*T+1:((2*K+1)*T+k*T)) =    1/K*hessian(3*T+1:4*T,3*T+1:4*T);
 
 
 end
@@ -75,14 +75,6 @@ grad = 1/K .* sum(G,1); % weighted sum over all gradients
 hessian = H;
 
 
-% TO DO:
-% The first row and column of H is not yet filled since there are different
-% values for every k and thus we also need to take the average.
-
-%* grad: wieso weighted sum? kann man das nicht gleich in einen vektor
-%  schreiben, anstatt in eine matrix? sind nicht immer verschiedene einträge
-%  größer 0?
-%
 
 end
 

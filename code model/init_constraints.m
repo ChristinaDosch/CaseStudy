@@ -38,19 +38,19 @@ A_smart = [];
 b_smart = [];
 % For SO with battery (SMART), requires declaration of K in the function call
 if nargin == 5
-    % matrix for ramping constraints:    
+    % matrix for ramping constraints: (T-1 x T+3*K*T - matrix) 
     B_tilde = [B, zeros(T-1,3*K*T)];
     % Nebendiagonale for submatrix of C:
     nd = -ones(T*K-1,1); 
         for i=1:K-1, nd(i*T) = 0; end 
-    % matrix for SOC-constraints:    
+    % matrix for SOC-constraints:  (T*K x T+3*T*K - matrix)  
     C_smart = [zeros(K*T,T), eye(K*T) + diag(nd,-1) , -0.95/C * eye(K*T), 1/C * eye(K*T)];
     % right hand vector for SOC-constraints:
     c = zeros(K*T,1);
         for i=0:K-1, c(i*T+1) = SOC_0; end
     
     % entire matrix-vector system for smart battery with discretization    
-    A_smart = [B_tilde; -B_tilde; C_smart; -C_smart];
-    b_smart = [ones(T-1,1)*delta; ones(T-1,1)*delta; c; -c];
+    A_smart = [B_tilde; -B_tilde; C_smart; -C_smart]; % (2*(T-1)+2*(T*K) x T+3*K*T - matrix)
+    b_smart = [ones(T-1,1)*delta; ones(T-1,1)*delta; c; -c]; % (T-1+T*K - vector)
 end
 end
