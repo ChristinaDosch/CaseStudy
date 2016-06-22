@@ -19,12 +19,12 @@ function [x_min, x_max, delta, SOC_min, SOC_max, A, b, A_, b_, A_smart, b_smart]
 
 % capacity bounds:
 x_min = 0;      % minimum amount of power that can be scheduled
-x_max = 0.7*P;  % maximum amount of power that can be scheduled
+x_max = 0.5*P;  % maximum amount of power that can be scheduled
 SOC_min = 0.1;  % maximum of state of charge
 SOC_max = 0.95; % minimum of state of charge
 
 % Ramping constraints for x (not capacity constraints)
-delta = 0.015 * P; % maximum deviation between two successive power values
+delta = 0.045 * P; % maximum deviation between two successive power values
 % delta = 100;
 B = [-eye(T-1) zeros(T-1,1)] + [zeros(T-1,1) eye(T-1)];
 A = [B; -B];
