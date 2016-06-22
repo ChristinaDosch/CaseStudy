@@ -18,7 +18,7 @@ E = load('sample_normal_independent.csv');
 E = 1/1000 * E; % since we need kWh (and in the samples it's in Wh)
 %K = size(E,1); % number of realizations
 %E(1,:)=mu;
-K = 1;
+K = 5;
 
 % using PVDATA2.MAT
 % for this example T = 1440 is required in init_parameters!!! (1min interv)
@@ -31,23 +31,11 @@ K = 1;
 %% Initialize Constraints
 [x_min, x_max, delta, SOC_min, SOC_max,~,~,~,~, A_smart, b_smart] = init_constraints(T,P,C,SOC_0,K);
 
-%% Determine objective function
-%% Old version:
-%F = cell(K,1);
-% determine revenue function F(x,\tilde{x}^k) for every k=1,...,K:
-%for k = 1:K 
-%x_tilde = @(x) E(k,:)+0.95*x((T+2*K*T+(k-1)*T+1):(T+2*K*T+k*T))...
-%    -x((T+K*T+(k-1)*T+1):(T+K*T+k*T)); % compute \tilde{x}^k as e^k + 0.95 \tilde{b^out,k} - \tilde{b^in,k}
-%F(k) = { @(x) obj_SO_discr(x(1:T),x_tilde(x),cost,penalty,penalty_grad,epsilon,P)};
-%end
-%
-%objfct = @(x) 1/K .* sum(cellfun(@(f)f(x),F)); % weighted (all weights=1/K) sum of F(x,e^k)
-%
-%% New version: Compute weighted sum in function obj_SO_discr_weighted_sum which also returns the gradient
+%% Determine objective function (Compute weighted sum in function obj_SO_discr_weighted_sum which also returns the gradient)
 % x \in R^(T+3*K*T) is going to be the optimization variable in this function. 
 % x = [x,SOC^1,...,SOC^K,b^{in,1},...b^{in,K},b^{out,1},...b^{out,K}]
 objfct = @(x) obj_SO_discr_weighted_sum(x,E,K,cost,penalty,penalty_grad,penalty_hess,epsilon,P);
-hess = @(x, lambda) hess_lagr_SO_discr_smart( transpose(x), E,K,cost,penalty,penalty_grad,penalty_hess,epsilon,P );
+%hess = @(x, lambda) hess_lagr_SO_discr_smart( transpose(x), E,K,cost,penalty,penalty_grad,penalty_hess,epsilon,P );
 %% Performing optimization
 x0 = zeros(1,T+3*K*T);
 x0(T+1:2*T) = SOC_0;
@@ -58,9 +46,9 @@ for i=floor(T/2)+1:T-10
    x0(i) = max(0,x0(i-1)-delta);
 end    
 tic
-options = optimoptions('fmincon','Algorithm','sqp','GradObj','on');%,'TolX',1e-1000,'MaxIter',3000,'Diagnostics','on');%,...%'SpecifyObjectiveGradient',true,...
+options = optimoptions('fmincon','Algorithm','sqp','SpecifyObjectiveGradient',true);%,'TolX',1e-1000,'MaxIter',3000,'Diagnostics','on');%,...%'SpecifyObjectiveGradient',true,...
       %'StepTolerance',1e-1000,'MaxFunEvals', 30000, 'MaxIterations', 100000);
-%options = optimoptions('fmincon','GradObj','on','Hessian','user-supplied','HessFcn',@hessianfcn,'MaxFunEvals',30000,'MaxIter',10000);%,'MaxFunEvals', 30000);
+%options = optimoptions('fmincon','SpecifyObjectiveGradient',true,'Hessian','user-supplied','HessFcn',@hessianfcn,'MaxFunEvals',30000,'MaxIter',10000);%,'MaxFunEvals', 30000);
 
 % possible options:
 % * 'ScaleProblem','obj-and-constr': causes the algorithm to normalize all constraints and the objective function
@@ -78,8 +66,8 @@ if ToPlotOrNotToPlot
          t,x_opt(1:T) + epsilon*P,'^r',...
          t,x_opt(1:T) - epsilon*P,'vr',...
          t,x_opt(T+1:2*T)*C, 'bo',... % \tilde{SOC^1}
-         t,x_opt(T+K*T+1:T+K*T+T), '-b',... % \tilde{b^in,1}
-         t,x_opt(T+2*K*T+1:T+2*K*T+T), '-g',... % \tilde{b^out,1}
+         t,x_opt(T+K*T+1:T+K*T+T), '-ob',... % \tilde{b^in,1}
+         t,x_opt(T+2*K*T+1:T+2*K*T+T), '-og',... % \tilde{b^out,1}
          [t(1) t(end)], [x_max x_max], 'k--',... % x_max
          [t(1) t(end)], [x_min x_min], 'k--') % x_min 
     legend('calculated opt. sol.',...
