@@ -18,7 +18,7 @@ E = load('sample_normal_independent.csv');
 E = 1/1000 * E; % since we need kWh (and in the samples it's in Wh)
 %K = size(E,1); % number of realizations
 %E(1,:)=mu;
-K = 5;
+K = 2;
 
 % using PVDATA2.MAT
 % for this example T = 1440 is required in init_parameters!!! (1min interv)
@@ -31,10 +31,10 @@ K = 5;
 %% Initialize Constraints
 [x_min, x_max, delta, SOC_min, SOC_max,~,~,~,~, A_smart, b_smart] = init_constraints(T,P,C,SOC_0,K);
 
-%% Determine objective function (Compute weighted sum in function obj_SO_discr_weighted_sum which also returns the gradient)
+%% Determine objective function
 % x \in R^(T+3*K*T) is going to be the optimization variable in this function. 
 % x = [x,SOC^1,...,SOC^K,b^{in,1},...b^{in,K},b^{out,1},...b^{out,K}]
-objfct = @(x) obj_SO_discr_weighted_sum(x,E,K,cost,penalty,penalty_grad,penalty_hess,epsilon,P);
+objfct = @(x) obj_SO_discr_weighted_sum(x,E,K,cost,penalty,penalty_grad,penalty_hess,epsilon,P); % contains gradient as second argument
 %hess = @(x, lambda) hess_lagr_SO_discr_smart( transpose(x), E,K,cost,penalty,penalty_grad,penalty_hess,epsilon,P );
 %% Performing optimization
 x0 = zeros(1,T+3*K*T);
@@ -46,7 +46,7 @@ for i=floor(T/2)+1:T-10
    x0(i) = max(0,x0(i-1)-delta);
 end    
 tic
-options = optimoptions('fmincon','Algorithm','sqp','SpecifyObjectiveGradient',true);%,'TolX',1e-1000,'MaxIter',3000,'Diagnostics','on');%,...%'SpecifyObjectiveGradient',true,...
+options = optimoptions('fmincon','Algorithm','sqp','SpecifyObjectiveGradient',true,'Diagnostics','on');
       %'StepTolerance',1e-1000,'MaxFunEvals', 30000, 'MaxIterations', 100000);
 %options = optimoptions('fmincon','SpecifyObjectiveGradient',true,'Hessian','user-supplied','HessFcn',@hessianfcn,'MaxFunEvals',30000,'MaxIter',10000);%,'MaxFunEvals', 30000);
 
@@ -68,14 +68,16 @@ if ToPlotOrNotToPlot
          t,x_opt(T+1:2*T)*C, 'bo',... % \tilde{SOC^1}
          t,x_opt(T+K*T+1:T+K*T+T), '-ob',... % \tilde{b^in,1}
          t,x_opt(T+2*K*T+1:T+2*K*T+T), '-og',... % \tilde{b^out,1}
+         t,E(1,:)+0.95*x_opt((T+2*K*T+1):(T+2*K*T+T))-x_opt((T+K*T+1):(T+K*T+T)),'*b',...% \tilde{x^1}
          [t(1) t(end)], [x_max x_max], 'k--',... % x_max
          [t(1) t(end)], [x_min x_min], 'k--') % x_min 
     legend('calculated opt. sol.',...
            'upper no-penalty bound',...
            'lower no-penalty bound',...
-           'SOC',...
-           'b in',...
-           'b out',...
+           'SOC,1',...
+           'b in,1',...
+           'b out,1',...
+           'x tilde 1',...
            'x_{max}, x_{min}')
     xlabel('time'), ylabel('energy, kWh')
     % size
