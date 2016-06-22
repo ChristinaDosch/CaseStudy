@@ -18,7 +18,7 @@ E = load('sample_normal_independent.csv');
 E = 1/1000 * E; % since we need kWh (and in the samples it's in Wh)
 %K = size(E,1); % number of realizations
 %E(1,:)=mu;
-K = 2;
+K = 1;
 
 % using PVDATA2.MAT
 % for this example T = 1440 is required in init_parameters!!! (1min interv)
@@ -29,7 +29,7 @@ K = 2;
 %E = reshape(PVdata2(:,1),31,1440); % array of 31 realizations with minute values from January
 
 %% Initialize Constraints
-[x_min, x_max, delta, SOC_min, SOC_max,~,~,~,~, A_smart, b_smart] = init_constraints(T,P,C,SOC_0,K);
+[x_min, x_max, delta, SOC_min, SOC_max,~,~,~,~, A_smart, b_smart] = init_constraints(T,P,C,SOC_0,K,E);
 
 %% Determine objective function
 % x \in R^(T+3*K*T) is going to be the optimization variable in this function. 
@@ -46,16 +46,16 @@ for i=floor(T/2)+1:T-10
    x0(i) = max(0,x0(i-1)-delta);
 end    
 tic
-options = optimoptions('fmincon','Algorithm','sqp','SpecifyObjectiveGradient',true,'Diagnostics','on');
-      %'StepTolerance',1e-1000,'MaxFunEvals', 30000, 'MaxIterations', 100000);
+options = optimoptions('fmincon','Algorithm','sqp','SpecifyObjectiveGradient',true,'Diagnostics','on',...
+      'StepTolerance',1e-1000,'MaxFunEvals', 30000, 'MaxIterations', 10000);
 %options = optimoptions('fmincon','SpecifyObjectiveGradient',true,'Hessian','user-supplied','HessFcn',@hessianfcn,'MaxFunEvals',30000,'MaxIter',10000);%,'MaxFunEvals', 30000);
 
 % possible options:
 % * 'ScaleProblem','obj-and-constr': causes the algorithm to normalize all constraints and the objective function
 %                                    didn't help at all
 
-[x_opt, obj_opt] = fmincon(objfct, x0, A_smart(1:2*(T-1),:), b_smart(1:2*(T-1)),... % inequality constraints
-    A_smart(2*(T-1)+1:2*(T-1)+2*(T*K),:),b_smart(2*(T-1)+1:2*(T-1)+2*(T*K)),...     % equality constraints
+[x_opt, obj_opt] = fmincon(objfct, x0, A_smart(1:2*(T-1)+K*T,:), b_smart(1:2*(T-1)+K*T),... % inequality constraints
+    A_smart(2*(T-1)+K*T+1:2*(T-1)+2*(T*K),:),b_smart(2*(T-1)+K*T+1:2*(T-1)+2*(T*K)),...     % equality constraints
     [x_min*ones(1,T), SOC_min*ones(1,K*T),0*ones(1,(2*K*T))],...                    % lower bounds
     [x_max*ones(1,T), SOC_max*ones(1,K*T),2*P*ones(1,(2*K*T))],[],options);         % upper bounds
 runningTime = toc
