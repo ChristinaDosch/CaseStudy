@@ -33,7 +33,7 @@ H = zeros(T+3*K*T,T+3*K*T);
 for k = 1:K 
 x_tilde = E(k,:)+0.95*x((T+2*K*T+(k-1)*T+1):(T+2*K*T+k*T))...
     -x((T+K*T+(k-1)*T+1):(T+K*T+k*T)); % compute \tilde{x}^k as e^k + 0.95 \tilde{b^out,k} - \tilde{b^in,k}
-[F(k),grad_SOC_b,grad_x,hessian] = obj_SO_discr(x(1:T),x_tilde,cost,penalty,penalty_grad,epsilon,P,penalty_hess);
+[F(k),grad_SOC_b,grad_x,~] = obj_SO_discr(x(1:T),x_tilde,cost,penalty,penalty_grad,epsilon,P,penalty_hess);
 
 % In the "k^th objective" F(k) only b^{in,k} and b^{out,k} appear and thus
 % only the corresponding entries in the gradient row G(k,:) are non-zero:
@@ -42,7 +42,8 @@ G(k,(T+(k-1)*T+1):(T+k*T)) = grad_SOC_b(1:T); % gradient w.r.t. SOC^k
 G(k,((K+1)*T+(k-1)*T+1):((K+1)*T+k*T)) = grad_SOC_b(T+1:2*T); % gradient w.r.t. b^in,k
 G(k,((2*K+1)*T+(k-1)*T+1):((2*K+1)*T+k*T)) = grad_SOC_b(2*T+1:3*T); % gradient w.r.t. b^out,k
 
-
+% WENN MAN HESSE HABEN WILL, MUSS MAN OBEN BEI AUFRUF VON OBJ_SO_DISCR "~"
+% DURCH HESSIAN ERSETZEN
 %H(1:T,1:T) = H(1:T,1:T)+1/K*hessian(1:T,1:T);
 %H(1:T,T+(k-1)*T+1:(T+k*T)) = H(1:T,T+(k-1)*T+1:(T+k*T))+1/K*hessian(1:T,T+1:2*T);
 %H(1:T,(K+1)*T+(k-1)*T+1:((K+1)*T+k*T)) =H(1:T,(K+1)*T+(k-1)*T+1:((K+1)*T+k*T)) +1/K* hessian(1:T,2*T+1:3*T);
@@ -71,7 +72,7 @@ end
 
 obj = 1/K .* sum(F(:,1)); % weighted (all weights=1/K)x sum of F(x,\tilde{x}^k)
 grad = 1/K .* sum(G,1); % weighted sum over all gradients
-hessian = H;
+%hessian = H;
 
 
 
