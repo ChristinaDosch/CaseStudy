@@ -29,12 +29,12 @@ K = 1;
 %E = reshape(PVdata2(:,1),31,1440); % array of 31 realizations with minute values from January
 
 %% Initialize Constraints
-[x_min, x_max, delta, SOC_min, SOC_max,~,~,~,~, A_smart, b_smart] = init_constraints(T,P,C,SOC_0,K,E);
+[x_min, x_max, delta, SOC_min, SOC_max,~,~,~,~, A_smart, b_smart] = init_constraints(T,P,C,SOC_0,K,E(1:K,:));
 
 %% Determine objective function
 % x \in R^(T+3*K*T) is going to be the optimization variable in this function. 
 % x = [x,SOC^1,...,SOC^K,b^{in,1},...b^{in,K},b^{out,1},...b^{out,K}]
-objfct = @(x) obj_SO_discr_weighted_sum(x,E,K,cost,penalty,penalty_grad,penalty_hess,epsilon,P); % contains gradient as second argument
+objfct = @(x) obj_SO_discr_weighted_sum(x,E(1:K,:),K,cost,penalty,penalty_grad,penalty_hess,epsilon,P); % contains gradient as second argument
 %hess = @(x, lambda) hess_lagr_SO_discr_smart( transpose(x), E,K,cost,penalty,penalty_grad,penalty_hess,epsilon,P );
 %% Performing optimization
 x0 = zeros(1,T+3*K*T);
@@ -47,7 +47,7 @@ for i=floor(T/2)+1:T-10
 end    
 tic
 options = optimoptions('fmincon','Algorithm','sqp','SpecifyObjectiveGradient',true,'Diagnostics','on',...
-      'StepTolerance',1e-1000,'MaxFunEvals', 30000, 'MaxIterations', 10000);
+      'StepTolerance',1e-1000,'MaxFunEvals', 3000, 'MaxIterations', 1000);
 %options = optimoptions('fmincon','SpecifyObjectiveGradient',true,'Hessian','user-supplied','HessFcn',@hessianfcn,'MaxFunEvals',30000,'MaxIter',10000);%,'MaxFunEvals', 30000);
 
 % possible options:
