@@ -16,17 +16,8 @@ if nargin == 0, ToPlotOrNotToPlot = true; end
 % for this example T = 96 is required in init_parameters!!! (15min intervalls)
 E = load('sample_normal_independent.csv');
 E = 1/1000 * E; % since we need kWh (and in the samples it's in Wh)
-%K = size(E,1); % number of realizations
-%E(1,:)=mu;
-K = 1;
-
-% using PVDATA2.MAT
-% for this example T = 1440 is required in init_parameters!!! (1min interv)
-%E = load('PVdata2');
-%E = 1/1000 * E;
-%K = 372; % number of realizations
-%E = reshape(PVdata2,372,1440); % array of K realizations (one per row) with data per minute of one day, respectively
-%E = reshape(PVdata2(:,1),31,1440); % array of 31 realizations with minute values from January
+K = 1; % number of realizations to use
+%E(1,:) = mu;
 
 %% Initialize Constraints
 [x_min, x_max, delta, SOC_min, SOC_max,~,~,~,~, A_smart, b_smart] = init_constraints(T,P,C,SOC_0,K,E(1:K,:));
@@ -37,6 +28,7 @@ K = 1;
 objfct = @(x) obj_SO_discr_weighted_sum(x,E(1:K,:),K,cost,penalty,penalty_grad,penalty_hess,epsilon,P); % contains gradient as second argument
 %hess = @(x, lambda) hess_lagr_SO_discr_smart( transpose(x), E,K,cost,penalty,penalty_grad,penalty_hess,epsilon,P );
 %% Performing optimization
+% create starting guess x0
 x0 = zeros(1,T+3*K*T);
 x0(T+1:2*T) = SOC_0;
 for i=10:floor(T/2)
@@ -44,16 +36,18 @@ for i=10:floor(T/2)
 end 
 for i=floor(T/2)+1:T-10
    x0(i) = max(0,x0(i-1)-delta);
-end    
-tic
-options = optimoptions('fmincon','Algorithm','sqp','SpecifyObjectiveGradient',true,'Diagnostics','on',...
-      'StepTolerance',1e-1000,'MaxFunEvals', 3000, 'MaxIterations', 1000);
+end
+options = optimoptions('fmincon','Algorithm','sqp','SpecifyObjectiveGradient',true,'Diagnostics','on');%,...
+    %  'StepTolerance',1e-1000,'MaxFunEvals', 3000, 'MaxIterations', 1000);
 %options = optimoptions('fmincon','SpecifyObjectiveGradient',true,'Hessian','user-supplied','HessFcn',@hessianfcn,'MaxFunEvals',30000,'MaxIter',10000);%,'MaxFunEvals', 30000);
 
 % possible options:
 % * 'ScaleProblem','obj-and-constr': causes the algorithm to normalize all constraints and the objective function
 %                                    didn't help at all
 
+
+% start the solver
+tic
 [x_opt, obj_opt] = fmincon(objfct, x0, A_smart(1:2*(T-1)+K*T,:), b_smart(1:2*(T-1)+K*T),... % inequality constraints
     A_smart(2*(T-1)+K*T+1:2*(T-1)+2*(T*K),:),b_smart(2*(T-1)+K*T+1:2*(T-1)+2*(T*K)),...     % equality constraints
     [x_min*ones(1,T), SOC_min*ones(1,K*T),0*ones(1,(2*K*T))],...                    % lower bounds
