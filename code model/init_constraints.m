@@ -26,17 +26,10 @@ SOC_max = 0.95; % minimum of state of charge
 
 % Ramping constraints for x (not capacity constraints)
 delta = 0.045 * P; % maximum deviation between two successive power values
-% delta = 100;
 B = [-eye(T-1) zeros(T-1,1)] + [zeros(T-1,1) eye(T-1)];
-%B2 = [zeros(K*T,T+K*T), eye(K*T) ,zeros(K*T,K*T)];
 A = [B; -B];
 b = ones(2*(T-1),1)*delta;
-% if nargin == 6
-% b2 = transpose(E(1,:));
-% for i = 2:K
-%     b2=[b2;transpose(E(K,:))];
-% end
-% end
+
 % Capacity constraints for SOC*C for RO
 A_ = tril(ones(T)); A_ = [A_; -A_];
 b_ = [SOC_max*C*ones(T,1) - SOC_0*C; -SOC_min*ones(T,1) + SOC_0*C];
