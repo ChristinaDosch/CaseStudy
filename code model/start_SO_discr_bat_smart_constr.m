@@ -66,8 +66,8 @@ if ToPlotOrNotToPlot
          t,x_opt(1:T) + epsilon*P,'^r',...
          t,x_opt(1:T) - epsilon*P,'vr',...
          t,x_opt(T+1:2*T)*C, 'bo',... % \tilde{SOC^1}
-         t,x_opt(T+K*T+1:T+K*T+T), '-ob',... % \tilde{b^in,1}
-         t,x_opt(T+2*K*T+1:T+2*K*T+T), '-og',... % \tilde{b^out,1}
+         t,x_opt(T+K*T+1:T+K*T+T), '-b',... % \tilde{b^in,1}
+         t,x_opt(T+2*K*T+1:T+2*K*T+T), '-g',... % \tilde{b^out,1}
          t,E(1,:)+0.95*x_opt((T+2*K*T+1):(T+2*K*T+T))-x_opt((T+K*T+1):(T+K*T+T)),'*b',...% \tilde{x^1}
          [t(1) t(end)], [x_max x_max], 'k--',... % x_max
          [t(1) t(end)], [x_min x_min], 'k--') % x_min 

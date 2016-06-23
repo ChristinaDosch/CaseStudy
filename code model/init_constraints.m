@@ -34,7 +34,7 @@ b = ones(2*(T-1),1)*delta;
 if nargin == 6
 b2 = transpose(E(1,:));
 for i = 2:K
-    b2=[b2;transpose(E(k,:))];
+    b2=[b2;transpose(E(K,:))];
 end
 end
 % Capacity constraints for SOC*C for RO
