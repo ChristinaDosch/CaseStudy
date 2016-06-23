@@ -1,5 +1,5 @@
 function [x_min, x_max, delta, SOC_min, SOC_max, A, b, A_, b_, A_smart, b_smart] = init_constraints(T,...
-    P, C, SOC_0,K,E)
+    P, C, SOC_0,K)
 %% INIT_CONSTRAINTS(T,P,C,SOC_0) returns all constraints in the form Ax<=b
 % 
 % input:   T - scalar:                  number of time steps
@@ -28,15 +28,15 @@ SOC_max = 0.95; % minimum of state of charge
 delta = 0.045 * P; % maximum deviation between two successive power values
 % delta = 100;
 B = [-eye(T-1) zeros(T-1,1)] + [zeros(T-1,1) eye(T-1)];
-B2 = [zeros(K*T,T+K*T), eye(K*T) ,zeros(K*T,K*T)];
+%B2 = [zeros(K*T,T+K*T), eye(K*T) ,zeros(K*T,K*T)];
 A = [B; -B];
 b = ones(2*(T-1),1)*delta;
-if nargin == 6
-b2 = transpose(E(1,:));
-for i = 2:K
-    b2=[b2;transpose(E(K,:))];
-end
-end
+% if nargin == 6
+% b2 = transpose(E(1,:));
+% for i = 2:K
+%     b2=[b2;transpose(E(K,:))];
+% end
+% end
 % Capacity constraints for SOC*C for RO
 A_ = tril(ones(T)); A_ = [A_; -A_];
 b_ = [SOC_max*C*ones(T,1) - SOC_0*C; -SOC_min*ones(T,1) + SOC_0*C];
@@ -44,7 +44,7 @@ b_ = [SOC_max*C*ones(T,1) - SOC_0*C; -SOC_min*ones(T,1) + SOC_0*C];
 A_smart = [];
 b_smart = [];
 % For SO with battery (SMART), requires declaration of K in the function call
-if nargin == 6
+if nargin == 5
     % matrix for ramping constraints: (T-1 x T+3*K*T - matrix) 
     B_tilde = [B, zeros(T-1,3*K*T)];
     % Nebendiagonale for submatrix of C:
@@ -57,7 +57,7 @@ if nargin == 6
         for i=0:K-1, c(i*T+1) = SOC_0; end
     
     % entire matrix-vector system for smart battery with discretization    
-    A_smart = [B_tilde; -B_tilde;B2; C_smart; -C_smart]; % (2*(T-1)+2*(T*K) x T+3*K*T - matrix)
-    b_smart = [ones(T-1,1)*delta; ones(T-1,1)*delta;b2; c; -c]; % (T-1+T*K - vector)
+    A_smart = [B_tilde; -B_tilde; C_smart; -C_smart]; % (2*(T-1)+2*(T*K) x T+3*K*T - matrix)
+    b_smart = [ones(T-1,1)*delta; ones(T-1,1)*delta; c; -c]; % (T-1+T*K - vector)
 end
 end
