@@ -12,11 +12,12 @@ if nargin == 0, ToPlotOrNotToPlot = true; end
 
 %% Load example scenarios SAMPLE_NORMAL_INDEPENDENT.CSV:
 % for this example T = 96 is required in init_parameters!!! (15min intervalls)
-E = load('sample_normal_independent.csv');
-E = 1/1000 * E; % since we need kWh (and in the samples it's in Wh)
+%E = load('sample_normal_independent.csv');
+E = load('sample_normal_sum.csv');
+E = 1/1000 * max(E, 0.2); % since we need kWh (and in the samples it's in Wh)
 K = 1; % number of realizations to use
-%E(1,:) = mu;
-
+E(1,:) = E(2,:);
+ 
 %E(1,27)=0;
 %E(1,62)=0;
 %E(1,72)=0;
@@ -42,8 +43,8 @@ for i=floor(T/2)+1:T-10
    x0(i) = max(0,x0(i-1)-delta);
 end
 
-options = optimoptions('fmincon','Algorithm','sqp','SpecifyObjectiveGradient',true,'Diagnostics','on');%,...
-     % 'StepTolerance',1e-100,'MaxFunEvals', 3000, 'MaxIterations', 3000);
+options = optimoptions('fmincon','Algorithm','sqp','SpecifyObjectiveGradient',true,'Diagnostics','on')%,...
+     %'StepTolerance',1e-1000,'MaxFunEvals', 3000, 'MaxIterations', 1000);
 %options = optimoptions('fmincon','SpecifyObjectiveGradient',true,'Hessian','user-supplied','HessFcn',@hessianfcn,'MaxFunEvals',30000,'MaxIter',10000);%,'MaxFunEvals', 30000);
 
 % start the solver
