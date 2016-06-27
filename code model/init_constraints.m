@@ -20,7 +20,7 @@ function [x_min, x_max, delta, SOC_min, SOC_max, A, b, A_, b_, A_smart, b_smart]
 
 % capacity bounds:
 x_min = 0;      % minimum amount of power that can be scheduled
-x_max = 0.5*P;  % maximum amount of power that can be scheduled
+x_max = 0.65*P;  % maximum amount of power that can be scheduled
 SOC_min = 0.1;  % maximum of state of charge
 SOC_max = 0.95; % minimum of state of charge
 
@@ -32,7 +32,7 @@ b = ones(2*(T-1),1)*delta;
 
 % Capacity constraints for SOC*C for RO
 A_ = tril(ones(T)); A_ = [A_; -A_];
-b_ = [SOC_max*C*ones(T,1) - SOC_0*C; -SOC_min*ones(T,1) + SOC_0*C];
+b_ = [SOC_max*C*ones(T,1) - SOC_0*C; -SOC_min*C*ones(T,1) + SOC_0*C];
 
 A_smart = [];
 b_smart = [];

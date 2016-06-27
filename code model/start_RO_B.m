@@ -37,7 +37,7 @@ switch SmoothOrNonSmooth
         options = optimoptions(@fmincon,'MaxFunEvals', 5000*T,'MaxIter',2000);
         tic
         [xb_opt, obj_opt] = fmincon(objfct,xb0,...
-            A, [b; b_], [], [], [x_min*ones(1,T) -100*ones(1,T)], [x_max*ones(1,T) e_l], [], options); % ???
+            A, [b; b_], [], [], [x_min*ones(1,T) -2*ones(1,T)], [x_max*ones(1,T) e_l], [], options); % ???
         runningTime = toc;
 end
 x_opt = xb_opt(1:T);
