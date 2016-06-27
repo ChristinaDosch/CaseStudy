@@ -14,7 +14,7 @@ switch nargin
     case 2, option = 1;
 end
 [T, P, cost, penalty, penalty_grad, epsilon, C, SOC_0, t, mu, sigma, lambda] = init_parameters;
-[x_min, x_max, delta, SOC_min, SOC_max, A, b, A_, b_, ~, ~] = init_constraints(T, P, C, SOC_0);
+[x_min, x_max, delta, ~, ~, A, b, A_, b_, ~, ~] = init_constraints(T, P, C, SOC_0);
 
 %% 2.) Initialize e_l, e_r for RO
 e_l = max(mu - lambda*sigma,0); %
@@ -44,6 +44,11 @@ x_opt = xb_opt(1:T);
 b_opt = xb_opt(T+1:end);
 %% 4.) Plot the solutions and data
 if ToPlotOrNotToPlot
+    % Active ramping constraints (up to 0.001)
+    arc = abs(abs(x_opt(2:end) - x_opt(1:end-1)) - delta) < 0.001;
+    arc_= [false arc];
+    arc = [arc false];
+    
     figure, hold on,
     plot(t,x_opt,'*r',... % solution computed by fmincon or patternsearch
          t,x_opt + epsilon*P,'^r',...
@@ -57,7 +62,8 @@ if ToPlotOrNotToPlot
          t, e_u, 'k+-.',... % uncertainty intervals
          [t(1) t(end)], [C C], 'b--',... % capacity
          t, e_l - b_opt, 'b+-.',... % new uncertainty intervals
-         t, e_u - b_opt, 'b+-.') % new uncertainty intervals
+         t, e_u - b_opt, 'b+-.',... % new uncertainty intervals
+         [t(arc); t(arc_)], [x_opt(arc); x_opt(arc_)],'r') % active ramping constraints
         
     legend('calculated opt. sol.',...
            'upper no-penalty bound',...
