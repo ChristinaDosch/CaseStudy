@@ -24,6 +24,7 @@ e_u = mu + lambda*sigma; %
 x0 = mu; % Starting guess for pattern search
 switch SmoothOrNonSmooth
     case 'nonsmooth',
+        options = psoptimset('MaxFunEvals', 5000*T);
         objfct = @(x) obj_RO(x,e_l,e_u,cost,penalty,penalty_grad,epsilon,P,'nonsmooth'); % Nonsmooth objective function for RO
     case 'smooth'
         objfct = @(x) obj_RO(x,e_l,e_u,cost,penalty,penalty_grad,epsilon,P,'smooth'); % Smooth objective function for RO
@@ -58,7 +59,7 @@ if ToPlotOrNotToPlot
            'upper no-penalty bound',...
            'lower no-penalty bound',...
            'x_{max}, x_{min}',...
-           'uncertainty intervals (95%)')
+           'uncertainty intervals')
     xlabel('time'), ylabel('energy, kWh')
     % size
     xlim([0 24])
