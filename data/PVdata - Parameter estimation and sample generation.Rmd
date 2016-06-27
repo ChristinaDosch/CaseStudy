@@ -297,13 +297,13 @@ lines(N_ind_sample[3,], type="l", col="blue")
 N<-10000
 N_sum_sample_1<-matrix(rep(0,24*4*N), ncol=24*4) # 1 column for 1 time interval, 1 row for 1 realization
 for(i in 1:N){
-N_sum_sample_1[i,]<-rnorm(24*4,estimates_n_ind[1,], 1/2*estimates_n_ind[2,])
+N_sum_sample_1[i,]<-rnorm(24*4,estimates_n_ind[1,], 1/4*estimates_n_ind[2,])
 }
 
 
 N_sum_sample_2<-matrix(rep(0,8*N), ncol=8) # 1 column for 1 time interval, 1 row for 1 realization
 for(i in 1:N){
-N_sum_sample_2[i,]<-rnorm(8,estimates_n_sum3[1,], 1/2*estimates_n_sum3[2,])
+N_sum_sample_2[i,]<-rnorm(8,estimates_n_sum3[1,], 2*estimates_n_sum3[2,])
 }
 
 
@@ -317,6 +317,7 @@ for(i in 1:8){
    N_sum_sample[,i]<-N_sum_sample[,i]+N_sum_sample_1[,i]
    }
 N_sum_sample<-N_sum_sample*1/2
+write.csv(N_sum_sample,"sample_normal_sum.csv", row.names=FALSE)
 ```
 
 To visualize, the first three realizations that were generated, look like this: 
@@ -324,6 +325,7 @@ To visualize, the first three realizations that were generated, look like this:
 plot(N_sum_sample[1,], type="l", xlim=c(25,75), ylab="radiation", xlab="time [15min]")
 lines(N_sum_sample[2,], type="l", col="red")
 lines(N_sum_sample[3,], type="l", col="blue")
+lines(N_sum_sample[4,], type="l", col="green")
 
 ```
 
