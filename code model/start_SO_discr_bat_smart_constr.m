@@ -35,7 +35,7 @@ objfct = @(x) obj_SO_discr_weighted_sum(x,E(1:K,:),K,cost,penalty,penalty_grad,p
 
 %% Performing optimization
 % create starting guess x0
-x0 = zeros(1,T+3*K*T);
+x0 = zeros(1,(1+3*K)*T);
 x0(T+1:2*T) = SOC_0;
 for i=10:floor(T/2)
    x0(i) = min(x0(i-1)+delta,x_max); 
