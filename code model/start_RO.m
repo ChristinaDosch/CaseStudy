@@ -46,6 +46,11 @@ switch SmoothOrNonSmooth
 end
 %% 4.) Plot the solutions and data
 if ToPlotOrNotToPlot
+    % Active ramping constraints (up to 0.001)
+    arc = abs(abs(x_opt(2:end) - x_opt(1:end-1)) - delta) < 0.001;
+    arc_= [false arc];
+    arc = [arc false];
+    % Plot
     figure, hold on,
     plot(t,x_opt,'*r',... % solution computed by ga or patternsearch
          t,x_opt + epsilon*P,'^r',...
@@ -53,12 +58,13 @@ if ToPlotOrNotToPlot
          [t(1) t(end)], [x_max x_max], 'k--',... % x_max
          t, e_l, 'k+-.', t, e_u, 'k+-.',... % uncertainty intervals
          [t(1) t(end)], [x_min x_min], 'k--',... % x_min
-         t,mu,'ko') % centers of uncertainty intervals
+         t,mu,'ko',... % centers of uncertainty intervals
+         [t(arc); t(arc_)], [x_opt(arc); x_opt(arc_)],'r') % active ramping constraints
     legend('calculated opt. sol.',...
            'upper no-penalty bound',...
            'lower no-penalty bound',...
            'x_{max}, x_{min}',...
-           'uncertainty intervals (95%)')
+           'uncertainty intervals')
     xlabel('time'), ylabel('energy, kWh')
     % size
     xlim([0 24])

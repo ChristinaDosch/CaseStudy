@@ -51,6 +51,7 @@ switch switcher
         e_l = e_l + 0.95*b_out;
         [obj, gradX, ~, ~] = medium_objective(x,e_l,e_u,cost,penalty,penalty_grad,epsilon,P,SmoothOrNonSmooth);
         obj = sum(obj, 2);
+        gradB = [];
     case ['nonsmooth' 2]
         b_in = max(b,0);
         b_out = max(-b,0);
@@ -58,6 +59,7 @@ switch switcher
         e_l = e_l - b_in + 0.95*b_out;
         [obj, gradX, ~, ~] = medium_objective(x,e_l,e_u,cost,penalty,penalty_grad,epsilon,P,SmoothOrNonSmooth);
         obj = sum(obj, 2);
+        gradB = [];
     case ['smooth' 1]
         [b_in, g_in] = smooth_ppart(b,0.05);
         [b_out, g_out] = smooth_ppart(-b,0.05);
@@ -135,6 +137,8 @@ switch SmoothOrNonSmooth
         gradX(I) = 0;
         I = x>x2;
         gradX(I) = penalty_grad(x(I));
+        gradE_l = [];
+        gradE_u = [];
     case 'smooth'
         % Objective
         [obj_caseL, grad_caseL_x, grad_caseL_e] = small_objective_smooth(x,e_l,cost,penalty,penalty_grad,epsilon,P);
