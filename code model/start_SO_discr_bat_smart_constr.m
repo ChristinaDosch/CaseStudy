@@ -1,4 +1,4 @@
-function [x_opt, obj_opt, runningTime] = start_SO_discr_bat_smart_constr(ToPlotOrNotToPlot)
+function [x_opt, obj_opt, runningTime, exitflag, output] = start_SO_discr_bat_smart_constr(ToPlotOrNotToPlot)
 %% DISCRETIZATION APPROACH with BATTERY SMART APPROACH
 % This script solves our well known optimization problem using the
 % discretization approach and including
@@ -13,11 +13,16 @@ if nargin == 0, ToPlotOrNotToPlot = true; end
 %% Load example scenarios SAMPLE_NORMAL_INDEPENDENT.CSV:
 % for this example T = 96 is required in init_parameters!!! (15min intervalls)
 
-%E = load('sample_normal_independent.csv');
-E = load('sample_normal_sum.csv');
+E = load('sample_normal_independent.csv');
+%E = load('sample_normal_sum.csv');
 E = 1/1000 * max(E, 0.2); % since we need kWh (and in the samples it's in Wh)
+E_good = zeros(11,96); % contains 11 "good" samples
+E_good(1:3,:) = E(2:4,:);
+E_good(4,:) = E(6,:);
+E_good(5:9,:) = E(8:12,:);
+E_good(10:11,:) = E(14:15,:);
+E = E_good;
 K = 1; % number of realizations to use
-E(1,:) = E(2,:);
 
 %% Initialize Constraints
 [x_min, x_max, delta, SOC_min, SOC_max,~,~,~,~, A_smart, b_smart] = init_constraints(T,P,C,SOC_0,K);
@@ -30,7 +35,7 @@ objfct = @(x) obj_SO_discr_weighted_sum(x,E(1:K,:),K,cost,penalty,penalty_grad,p
 
 %% Performing optimization
 % create starting guess x0
-x0 = zeros(1,T+3*K*T);
+x0 = zeros(1,(1+3*K)*T);
 x0(T+1:2*T) = SOC_0;
 for i=10:floor(T/2)
    x0(i) = min(x0(i-1)+delta,x_max); 
@@ -47,7 +52,7 @@ options = optimoptions('fmincon','Algorithm','sqp','GradObj','on','Diagnostics',
 
 % start the solver
 tic
-[x_opt, obj_opt] = fmincon(objfct, x0, A_smart(1:2*(T-1),:), b_smart(1:2*(T-1)),... % inequality constraints 
+[x_opt, obj_opt, exitflag, output] = fmincon(objfct, x0, A_smart(1:2*(T-1),:), b_smart(1:2*(T-1)),... % inequality constraints 
     A_smart(2*(T-1)+1:2*(T-1)+(T*K),:),b_smart(2*(T-1)+1:2*(T-1)+(T*K)),...         % equality constraints
     [x_min*ones(1,T), SOC_min*ones(1,K*T),0*ones(1,(2*K*T))],...                    % lower bounds
     [x_max*ones(1,T), SOC_max*ones(1,K*T),b2,2*P*ones(1,K*T)],[],options);        % upper bounds
@@ -59,8 +64,8 @@ if ToPlotOrNotToPlot
          t,x_opt(1:T) + epsilon*P,'^r',...
          t,x_opt(1:T) - epsilon*P,'vr',...
          t,x_opt(T+1:2*T)*C, 'bo',... % \tilde{SOC^1}
-         t,x_opt(T+K*T+1:T+K*T+T), '-b',... % \tilde{b^in,1}
-         t,x_opt(T+2*K*T+1:T+2*K*T+T), '-g',... % \tilde{b^out,1}
+         t,x_opt(T+K*T+1:T+K*T+T), '-ob',... % \tilde{b^in,1}
+         t,x_opt(T+2*K*T+1:T+2*K*T+T), '-og',... % \tilde{b^out,1}
          t,E(1,:)+0.95*x_opt((T+2*K*T+1):(T+2*K*T+T))-x_opt((T+K*T+1):(T+K*T+T)),'*b',...% \tilde{x^1}
          [t(1) t(end)], [x_max x_max], 'k--',... % x_max
          [t(1) t(end)], [x_min x_min], 'k--') % x_min 

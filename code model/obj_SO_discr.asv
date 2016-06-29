@@ -1,4 +1,5 @@
-function [obj,grad_SOC_b,grad_x,hessian] = obj_SO_discr(x,e,cost,penalty,penalty_grad,epsilon,P,~)
+function [obj,grad_SOC_b,grad_x,hessian] = obj_SO_discr(x,e,cost,penalty,penalty_grad,epsilon,P,penalty_hess)
+function [obj,grad_SOC_b,grad_x,hessian] = obj_SO_discr(x,e,cost,penalty,penalty_grad,epsilon,P,penalty_hess)
 %function [obj,grad] = obj_SO_discr(x,e,cost,penalty,penalty_grad,P)
 % Calculates the objective function -F(x,E) as in 1.5 Objective function
 % Since F(x,E) = \sum_{i=1}^T F^{(i)}(x_i,E_i) (see also 1.5), obj_SO_discr
@@ -32,8 +33,8 @@ if s(1) ~= 1, error('x schedules for than one day'); end
 %% Computation of the objective
 E = ones(s(1),1) * e;                        % E is an n by m matrix with e in each row
 Cost = ones(s(1),1) * cost;                  % C is an n by m matrix with cost in each row
-[yp,gradp,~,~] = smooth_ppart((x - epsilon*P) - E,1E-3,5);
-[yc,gradc,~,~] = smooth_ppart(E - (x + epsilon*P),1E-3,5);
+[yp,gradp,hessp,~] = smooth_ppart((x - epsilon*P) - E,1E-3,5);
+[yc,gradc,hessc,~] = smooth_ppart(E - (x + epsilon*P),1E-3,5);
 
 obj = penalty(yp) + yc.*Cost - E.*Cost;  
 obj = sum(obj,2); % sum of all single revenue values
@@ -47,7 +48,7 @@ grad_x_tilde = [zeros(s(1),T), -1 * ones(s(1),T), 0.95 * ones(s(1),T)];
 grad_SOC_b = - penalty_grad([yp,yp,yp]).*[gradp, gradp, gradp].*grad_x_tilde + grad_x_tilde.*Cost.*[gradc, gradc, gradc] - grad_x_tilde.*Cost ;
 
 %% Computation of the hessian w.r.t. [x,SOC,b^in,b^out]
-hessian = 0;
+
 % hessian(1:T,1:T) = ones(T,1)*(penalty_hess(yp).*gradp.*gradp + penalty_grad(yp).*hessp + cost.*hessp);
 % hessian(1:T,2*T+1:3*T) = ones(T,1)*(penalty_hess(yp).*gradp.*1.*gradp + penalty_grad(yp).*hessp + cost.*hessp);
 % hessian(1:T,3*T+1:4*T) = ones(T,1)*(penalty_hess(yp).*gradp.*(-0.95).*gradp + penalty_grad(yp).*hessp + cost.*hessp);
