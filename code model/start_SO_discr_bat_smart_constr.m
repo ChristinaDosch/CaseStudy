@@ -15,7 +15,7 @@ if nargin == 0, ToPlotOrNotToPlot = true; end
 
 E = load('sample_normal_independent.csv');
 %E = load('sample_normal_sum.csv');
-E = 1/1000 * max(E, 0.2); % since we need kWh (and in the samples it's in Wh)
+E = 1/1000 * max(E, 0); % since we need kWh (and in the samples it's in Wh)
 % select "good" samples: 
 E_good = zeros(11,96); E_good(1:3,:) = E(2:4,:); E_good(4,:) = E(6,:); E_good(5:9,:) = E(8:12,:); E_good(10:11,:) = E(14:15,:);
 E = E_good;
@@ -28,7 +28,7 @@ E = E_good;
 %end
 %E = E_short;
 
-K = 11; % number of realizations to use
+K = 1; % number of realizations to use
 
 %% Initialize Constraints
 [x_min, x_max, delta, SOC_min, SOC_max,~,~,~,~, A_smart, b_smart] = init_constraints(T,P,C,SOC_0,K);
