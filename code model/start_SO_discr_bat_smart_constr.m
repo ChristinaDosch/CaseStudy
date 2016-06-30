@@ -22,6 +22,10 @@ E_good(4,:) = E(6,:);
 E_good(5:9,:) = E(8:12,:);
 E_good(10:11,:) = E(14:15,:);
 E = E_good;
+% E=zeros(11,48);
+%  for i=1:T
+%    E(:,i)=E_good(:,i*2); 
+%  end
 K = 1; % number of realizations to use
 
 %% Initialize Constraints
