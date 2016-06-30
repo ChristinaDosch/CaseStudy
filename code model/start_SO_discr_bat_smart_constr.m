@@ -16,13 +16,19 @@ if nargin == 0, ToPlotOrNotToPlot = true; end
 E = load('sample_normal_independent.csv');
 %E = load('sample_normal_sum.csv');
 E = 1/1000 * max(E, 0.2); % since we need kWh (and in the samples it's in Wh)
-E_good = zeros(11,96); % contains 11 "good" samples
-E_good(1:3,:) = E(2:4,:);
-E_good(4,:) = E(6,:);
-E_good(5:9,:) = E(8:12,:);
-E_good(10:11,:) = E(14:15,:);
+% select "good" samples: 
+E_good = zeros(11,96); E_good(1:3,:) = E(2:4,:); E_good(4,:) = E(6,:); E_good(5:9,:) = E(8:12,:); E_good(10:11,:) = E(14:15,:);
 E = E_good;
-K = 1; % number of realizations to use
+
+% E_good for only T = 25 realizations
+%E_short = zeros(11,25);
+%E_short(1) = 0;
+%for i = 1:24
+%E_short(:,i+1) = 0.25*(E(:,(i-1)*4+1)+E(:,(i-1)*4+2)+E(:,(i-1)*4+3)+E(:,(i-1)*4+4));
+%end
+%E = E_short;
+
+K = 11; % number of realizations to use
 
 %% Initialize Constraints
 [x_min, x_max, delta, SOC_min, SOC_max,~,~,~,~, A_smart, b_smart] = init_constraints(T,P,C,SOC_0,K);
@@ -84,9 +90,9 @@ if ToPlotOrNotToPlot
     ylim([0 v(4)]);
     % info-box at the top left corner
     text(0.05*v(2),0.98*v(4),['optimal value = ', num2str(obj_opt)])
-    text(0.05*v(2),0.93*v(4),['cost = ', num2str(cost)])
+    text(0.05*v(2),0.93*v(4),['cost = ', num2str(cost(1))])
     text(0.05*v(2),0.90*v(4),['penalty = ', func2str(penalty)])
-    text(0.05*v(2),0.87*v(4),['[x_{min} x_{max}] = ', '[', num2str(x_min), ' ', num2str(x_max), ']'])
+    text(0.05*v(2),0.87*v(4),['[x_{min}, x_{max}] = ', '[', num2str(x_min), ', ', num2str(x_max), ']'])
     text(0.05*v(2),0.84*v(4),['\Delta = ', num2str(delta)])
     title('SO discretization smart')
     hold off
