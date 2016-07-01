@@ -20,6 +20,15 @@ E = 1/1000 * max(E, 0); % since we need kWh (and in the samples it's in Wh)
 E_good = zeros(11,96); E_good(1:3,:) = E(2:4,:); E_good(4,:) = E(6,:); E_good(5:9,:) = E(8:12,:); E_good(10:11,:) = E(14:15,:);
 E = E_good;
 
+%Martina's good samples: 
+% E_good = zeros(11,96); 
+% E_good(1,:) = E(5,:); 
+% E_good(2,:) = E(10,:); 
+% E_good(3,:) = E(16,:); 
+% E_good(4,:) = E(21,:);
+% E_good(5,:) = E(28,:);
+% E = E_good;
+
 % E_good for only T = 25 realizations
 %E_short = zeros(11,25);
 %E_short(1) = 0;
