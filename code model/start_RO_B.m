@@ -28,16 +28,16 @@ objfct = @(xb) obj_RO_B(xb,e_l,e_u,cost,penalty,penalty_grad,epsilon,P,SmoothOrN
 A = [A zeros(size(A,1),size(A_,2)); zeros(size(A_,1),size(A,2)) A_];
 switch SmoothOrNonSmooth
     case 'nonsmooth',
-        options = psoptimset('MaxFunEvals', 5000*T);
+        options = psoptimset('MaxFunEvals', 10000*T);
         tic
         [xb_opt, obj_opt] = patternsearch(objfct,xb0,...
-            A, [b; b_], [], [], [x_min*ones(1,T) -100*ones(1,T)], [x_max*ones(1,T) e_l], options); % pattern search
+            A, [b; b_], [], [], [x_min*ones(1,T) -C*ones(1,T)], [x_max*ones(1,T) e_l], options); % pattern search
         runningTime = toc;
     case 'smooth',
         options = optimoptions(@fmincon,'MaxFunEvals', 5000*T,'MaxIter',2000);
         tic
         [xb_opt, obj_opt] = fmincon(objfct,xb0,...
-            A, [b; b_], [], [], [x_min*ones(1,T) -2*ones(1,T)], [x_max*ones(1,T) e_l], [], options); % ???
+            A, [b; b_], [], [], [x_min*ones(1,T) -C*ones(1,T)], [x_max*ones(1,T) e_l], [], options); % ???
         runningTime = toc;
 end
 x_opt = xb_opt(1:T);
@@ -84,6 +84,6 @@ if ToPlotOrNotToPlot
     text(0.05*v(2),0.85*v(4),['[x_{min} x_{max}] = ', '[', num2str(x_min), ' ', num2str(x_max), ']'])
     text(0.05*v(2),0.81*v(4),['\Delta = ', num2str(delta)])
     text(0.05*v(2),0.77*v(4),['C = ', num2str(C)])
-    title('RO')
+    title(['RO, battery, ', SmoothOrNonSmooth, ', option ', num2str(option)])
     hold off
 end
