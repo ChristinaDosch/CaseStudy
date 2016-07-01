@@ -65,29 +65,38 @@ tic
 runningTime = toc
 %% Plot the solutions and data
 if ToPlotOrNotToPlot
+    
+    % Active ramping constraints (up to 0.001)
+    x_x_opt = x_opt(1:T);
+    arc = abs(abs(x_x_opt(2:end) - x_x_opt(1:end-1)) - delta) < 0.001;
+    arc_= [false arc];
+    arc = [arc false];    
+    
     figure, hold on,
     plot(t,x_opt(1:T),'*r',... % solution computed by fmincon
-         t,x_opt(1:T) + epsilon*P,'^r',...
-         t,x_opt(1:T) - epsilon*P,'vr',...
-         t,x_opt(T+1:2*T)*C, 'bo',... % \tilde{SOC^1}
-         t,x_opt(T+K*T+1:T+K*T+T), '-ob',... % \tilde{b^in,1}
-         t,x_opt(T+2*K*T+1:T+2*K*T+T), '-og',... % \tilde{b^out,1}
-         t,E(1,:)+0.95*x_opt((T+2*K*T+1):(T+2*K*T+T))-x_opt((T+K*T+1):(T+K*T+T)),'*b',...% \tilde{x^1}
+         t,mu,'-k',... % (estimated) expected value
+         [t; t], [zeros(1,T); x_opt(T+K*T+1:T+K*T+T) - x_opt(T+2*K*T+1:T+2*K*T+T)], '-b',... % b^in - b^out, sodass Strich nach oben, wenn Batterie beladen wird und Strich nach unten, wenn Batterie entladen wird
          [t(1) t(end)], [x_max x_max], 'k--',... % x_max
-         [t(1) t(end)], [x_min x_min], 'k--') % x_min 
+         [t(1) t(end)], [x_min x_min], 'k--',...) % x_min 
+         t,E(1,:)+0.95*x_opt((T+2*K*T+1):(T+2*K*T+T))-x_opt((T+K*T+1):(T+K*T+T)),'*b',...% \tilde{x^1}
+         [t(arc); t(arc_)], [x_x_opt(arc); x_x_opt(arc_)],'r') % active ramping constraints
+     %t,x_opt(1:T) + epsilon*P,'^r',...
+     %t,x_opt(1:T) - epsilon*P,'vr',...    
+     %t,x_opt(T+K*T+1:T+K*T+T), '-ob',... % \tilde{b^in,1}         
+     %t,x_opt(T+2*K*T+1:T+2*K*T+T), '-og',... % \tilde{b^out,1}        
+     %t,E(1,:)+0.95*x_opt((T+2*K*T+1):(T+2*K*T+T))-x_opt((T+K*T+1):(T+K*T+T)),'*b',...% \tilde{x^1}
     legend('calculated opt. sol.',...
-           'upper no-penalty bound',...
-           'lower no-penalty bound',...
-           'SOC,1',...
-           'b in,1',...
-           'b out,1',...
-           'x tilde 1',...
+           'expected value',... 
+           'battery usage',...
            'x_{max}, x_{min}')
     xlabel('time'), ylabel('energy, kWh')
+    %'upper no-penalty bound',...
+    %'lower no-penalty bound',...
+    
     % size
     xlim([0 24]);
     v = axis;
-    ylim([0 v(4)]);
+    ylim([-1 v(4)]);
     % info-box at the top left corner
     text(0.05*v(2),0.98*v(4),['optimal value = ', num2str(obj_opt)])
     text(0.05*v(2),0.93*v(4),['cost = ', num2str(cost(1))])
