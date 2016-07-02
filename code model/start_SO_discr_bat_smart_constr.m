@@ -17,7 +17,8 @@ E = load('sample_normal_independent.csv');
 %E = load('sample_normal_sum.csv');
 E = 1/1000 * max(E, 0); % since we need kWh (and in the samples it's in Wh)
 % select "good" samples: 
-E_good = zeros(11,96); E_good(1:3,:) = E(2:4,:); E_good(4,:) = E(6,:); E_good(5:9,:) = E(8:12,:); E_good(10:11,:) = E(14:15,:);
+%old good samples that turned out to be bad: E_good = zeros(11,96); E_good(1:3,:) = E(2:4,:); E_good(4,:) = E(6,:); E_good(5:9,:) = E(8:12,:); E_good(10:11,:) = E(14:15,:);
+E_good = zeros(4,96); E_good(1,:) = E(2,:); E_good(2,:) = E(6,:); E_good(3,:) = E(9,:); E_good(4,:) = E(15,:);
 E = E_good;
 
 %Martina's good samples: 
@@ -37,7 +38,7 @@ E = E_good;
 %end
 %E = E_short;
 
-K = 1; % number of realizations to use
+K = 4; % number of realizations to use
 
 %% Initialize Constraints
 [x_min, x_max, delta, SOC_min, SOC_max,~,~,~,~, A_smart, b_smart] = init_constraints(T,P,C,SOC_0,K);
@@ -84,9 +85,9 @@ if ToPlotOrNotToPlot
     figure, hold on,
     plot(t,x_opt(1:T),'*r',... % solution computed by fmincon
          t,mu,'-k',... % (estimated) expected value
-         [t; t], [zeros(1,T); x_opt(T+K*T+1:T+K*T+T) - x_opt(T+2*K*T+1:T+2*K*T+T)], '-b',... % b^in - b^out, sodass Strich nach oben, wenn Batterie beladen wird und Strich nach unten, wenn Batterie entladen wird
          [t(1) t(end)], [x_max x_max], 'k--',... % x_max
-         [t(1) t(end)], [x_min x_min], 'k--',...) % x_min 
+         [t(1) t(end)], [x_min x_min], 'k--',...) % x_min    
+         [t; t], [zeros(1,T); x_opt(T+K*T+1:T+K*T+T) - x_opt(T+2*K*T+1:T+2*K*T+T)], '-b',... % b^in - b^out, sodass Strich nach oben, wenn Batterie beladen wird und Strich nach unten, wenn Batterie entladen wird
          t,E(1,:)+0.95*x_opt((T+2*K*T+1):(T+2*K*T+T))-x_opt((T+K*T+1):(T+K*T+T)),'*b',...% \tilde{x^1}
          [t(arc); t(arc_)], [x_x_opt(arc); x_x_opt(arc_)],'r') % active ramping constraints
      %t,x_opt(1:T) + epsilon*P,'^r',...
@@ -96,8 +97,8 @@ if ToPlotOrNotToPlot
      %t,E(1,:)+0.95*x_opt((T+2*K*T+1):(T+2*K*T+T))-x_opt((T+K*T+1):(T+K*T+T)),'*b',...% \tilde{x^1}
     legend('calculated opt. sol.',...
            'expected value',... 
-           'battery usage',...
-           'x_{max}, x_{min}')
+           'x_{max}, x_{min}',...
+           'battery usage')
     xlabel('time'), ylabel('energy, kWh')
     %'upper no-penalty bound',...
     %'lower no-penalty bound',...
