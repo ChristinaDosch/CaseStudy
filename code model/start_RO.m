@@ -13,9 +13,9 @@ switch nargin
     case 1, SmoothOrNonSmooth = 'nonsmooth';
 end
 
-[T, P, cost, penalty, penalty_grad, epsilon, C, SOC_0, t, mu, sigma, lambda, ~] = init_parameters;
-[x_min, x_max, delta, ~, ~, A, b, ~, ~, ~, ~] = init_constraints(T, P, C, SOC_0);
-
+[T, P, cost, penalty, penalty_grad, epsilon, C, SOC_0, t, mu, sigma, lambda, ~] = init_parameters_inout;
+[x_min, x_max, delta, ~, ~, A, b] = init_constraints_inout(T, P, C, SOC_0);
+A = A(:,1:T);
 %% 2.) Initialize e_l, e_r for RO
 e_l = max(mu - lambda*sigma,0); %
 e_u = mu + lambda*sigma; %
@@ -50,15 +50,14 @@ if ToPlotOrNotToPlot
     arc = abs(abs(x_opt(2:end) - x_opt(1:end-1)) - delta) < 0.001;
     arc_= [false arc];
     arc = [arc false];
+    
     % Plot
     figure, hold on,
-    plot(t,x_opt,'*r',... % solution computed by ga or patternsearch
-         t,x_opt + epsilon*P,'^r',...
-         t,x_opt - epsilon*P,'vr',...
+    plot(t,x_opt,'*r',... % solution computed by interior point (fmincon) or patternsearch
          [t(1) t(end)], [x_max x_max], 'k--',... % x_max
-         t, e_l, 'k+-.', t, e_u, 'k+-.',... % uncertainty intervals
+         t, e_l, 'k-.', t, e_u, 'k-.',... % uncertainty intervals
          [t(1) t(end)], [x_min x_min], 'k--',... % x_min
-         t,mu,'ko',... % centers of uncertainty intervals
+         t,mu,'k',... % centers of uncertainty intervals
          [t(arc); t(arc_)], [x_opt(arc); x_opt(arc_)],'r') % active ramping constraints
     legend('calculated opt. sol.',...
            'upper no-penalty bound',...

@@ -41,7 +41,7 @@ objfct = @(xb) obj_RO_B_inout(xb,e_l,e_u,cost,penalty,penalty_grad,epsilon,P,Smo
 
 switch SmoothOrNonSmooth
     case 'nonsmooth',
-        options = psoptimset('MaxFunEvals', 5000*T);
+        options = psoptimset('MaxFunEvals', 5000*T, 'TolMesh', 1e-8);
         tic
         [xb_opt, obj_opt] = patternsearch(objfct,xb0,...
             A, b, [], [], [x_min*ones(1,T) zeros(1,2*T)], [x_max*ones(1,T) e_l C*ones(1,T)], options); % pattern search
@@ -58,10 +58,12 @@ b_in_opt = xb_opt(T+1:2*T);
 b_out_opt = xb_opt(2*T+1:3*T);
 
 % Complementrarity check for b_in_opt and b_out_opt
-if all(b_in_opt.*b_out_opt == zeros(1,T)),
-    display('Complementrarity check passed, either b_in_opt or b_out_opt is nonzero at each hour');
+cl = sum(b_in_opt.*b_out_opt);
+if cl < 1e-6,
+    display('Complementrarity check passed up to a 1e-6 tolerance, either b_in_opt or b_out_opt is nonzero at each hour')
 else
-    display('Complementrarity check for b_in_opt and b_out_opt failed');
+    display('Complementrarity check for b_in_opt and b_out_opt failed')
+    display(['Complementrarity lack = ', num2str(cl)])
 end
 
 %% 4.) Plot the solutions and data
@@ -72,26 +74,24 @@ if ToPlotOrNotToPlot
     arc = [arc false];
     
     figure, hold on,
-    plot(t,x_opt,'*r',... % solution computed by fmincon or patternsearch
-         t,x_opt + epsilon*P,'^r',...
-         t,x_opt - epsilon*P,'vr',...
-         [t(1) t(end)], [x_max x_max], 'k--',... % x_max
-         t, e_l, 'k+-.',... % uncertainty intervals
-         t, cumsum(0.95*b_in_opt - b_out_opt) + SOC_0*C, 'bo',... % battary load
-         [t; t], [zeros(1,T); b_in_opt], '-b',... % battery usage b_in_opt (charge)
+    plot(t,x_opt,'*b') % solution computed by fmincon or patternsearch
+%     plot(t,x_opt + epsilon*P,'^r',...
+%          t,x_opt - epsilon*P,'vr')
+    plot([t(1) t(end)], [x_max x_max], 'k--',... % x_max
+         t, e_l, 'k-.') % uncertainty intervals
+    plot(t, cumsum(0.95*b_in_opt - b_out_opt) + SOC_0*C, 'bo', 'MarkerSize', 4, 'MarkerFaceColor', 'b') % battary load
+    plot([t; t], [zeros(1,T); b_in_opt], '-b',... % battery usage b_in_opt (charge)
          [t; t], [zeros(1,T); -b_out_opt], '-b',... % battery usage b_out_opt (discharge)
          [t(1) t(end)], [x_min x_min], 'k--',... % x_min
-         t,mu,'ko',... % centers of uncertainty intervals
-         t, e_u, 'k+-.',... % uncertainty intervals
+         t,mu,'k',... % centers of uncertainty intervals
+         t, e_u, 'k-.',... % uncertainty intervals
          [t(1) t(end)], [C*SOC_max C*SOC_max], 'b--',... % 95% of capacity
-         [t(1) t(end)], [C*SOC_min C*SOC_min], 'b--',... % 10% of capacity
-         t, e_l - (b_in_opt - 0.95*b_out_opt), 'b+-.',... % new uncertainty intervals
-         t, e_u - (b_in_opt - 0.95*b_out_opt), 'b+-.',... % new uncertainty intervals
-         [t(arc); t(arc_)], [x_opt(arc); x_opt(arc_)],'r') % active ramping constraints
+         [t(1) t(end)], [C*SOC_min C*SOC_min], 'b--') % 10% of capacity
+%     plot(t, e_l - (b_in_opt - 0.95*b_out_opt), 'b+-.',... % new uncertainty intervals
+%          t, e_u - (b_in_opt - 0.95*b_out_opt), 'b+-.') % new uncertainty intervals
+    plot([t(arc); t(arc_)], [x_opt(arc); x_opt(arc_)],'b') % active ramping constraints
         
     legend('calculated opt. sol.',...
-           'upper no-penalty bound',...
-           'lower no-penalty bound',...
            'x_{max}, x_{min}',...
            'uncertainty intervals',...
            'state of charge',...
@@ -100,7 +100,7 @@ if ToPlotOrNotToPlot
     % size
     xlim([0 24])
     v = axis;
-    ylim([-1 v(4)]);
+%     ylim([-1 v(4)]);
     % info-box at the top left corner
     text(0.05*v(2),0.98*v(4),['optimal value = ', num2str(obj_opt)])
     text(0.05*v(2),0.93*v(4),['cost = ', num2str(cost)])
