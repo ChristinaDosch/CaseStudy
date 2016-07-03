@@ -9,7 +9,7 @@ function [T, P, cost, penalty, penalty_grad, epsilon, C, SOC_0, t, mu, sigma, la
 P = 3.8;             % nominal power of the PV element
 epsilon = 0.05;
 cost = ones(1,T)*5;   % cost(j) is a price for an energy unit during j's hour
-% cost(16*4:22*4) = 2*cost(16*4:22*4);
+% cost(18*4:22*4) = 2*cost(18*4:22*4);
 
 penalty = @(x) x.^2;  % quadratic penalty
 penalty_grad = @(x) 2*x; % derivative of the penalty function
@@ -18,8 +18,8 @@ penalty_hess = @(x) 2; % Hessian of the penalty function
 % penalty_grad = @(x) 10*ones(size(x)); % derivative of the penalty function
 % penalty_hess = @(x) zeros(size(x)); % Hessian of the penalty function
 C = 2.6;              % battery capacity
-% SOC_0 = 0.25;         % state of charge (SOC) at day break
-SOC_0 = 0.7;
+SOC_0 = 0.25;         % state of charge (SOC) at day break
+% SOC_0 = 0.7;
 t = linspace(0,24,T);
 
 % pd = makedist('Normal');
@@ -38,4 +38,5 @@ sigma = sigma(floor(linspace(1,length(sigma),T)));
 % mu = 1e-3*gamma(1+1./shape) .* scale;
 % sigma = 1e-6*(gamma(1+2./shape) - gamma(1+1./shape).^2) .* (scale.^2);
 
-lambda = 1.645;        % lambda*sigma is the width of the 90%-confidence intervals in RO (for normal distribution)
+lambda = 1.645; % lambda*sigma is the width of the 90%-confidence intervals in RO (for normal distribution)
+% lambda = 1; % lambda*sigma is the width of the 68,27%-confidence intervals in RO (for normal distribution)

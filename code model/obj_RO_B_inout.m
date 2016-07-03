@@ -59,7 +59,7 @@ switch option
         obj = sum(obj, 2);
         gradB_in = -gradE_l - gradE_u;
         gradB_out= 0.95*gradE_l + 0.95*gradE_u;
-    otherwise, error('Something wrong with or option')
+    otherwise, error('Something wrong with option')
 end
 grad = [gradX gradB_in gradB_out];
 end
