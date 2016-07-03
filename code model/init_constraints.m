@@ -20,7 +20,7 @@ function [x_min, x_max, delta, SOC_min, SOC_max, A, b, A_, b_, A_smart, b_smart]
 
 % capacity bounds:
 x_min = 0;      % minimum amount of power that can be scheduled
-x_max = 0.7*P;  % maximum amount of power that can be scheduled
+x_max = 0.7*P;  % maximum amount of power that can be scheduled, 0.7*3.8=2.66
 SOC_min = 0.1;  % maximum of state of charge
 SOC_max = 0.95; % minimum of state of charge
 
