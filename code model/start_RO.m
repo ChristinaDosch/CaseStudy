@@ -59,8 +59,8 @@ X = ones(N,1)*x_opt;
     obj_true = sum(-Cost.*E + penalty(max(zeros(N,T), (X - P*epsilon) - E)) + max(zeros(N,T), E - (X + P*epsilon)).*Cost, 2);
 
 %% 5.) Plot the solutions and data
-display('5.) Plot the solutions and data')
 if ToPlotOrNotToPlot
+    display('5.) Plot the solutions and data')
     % Active ramping constraints (up to 0.001)
     arc = abs(abs(x_opt(2:end) - x_opt(1:end-1)) - delta) < 0.001;
     arc_= [false arc];

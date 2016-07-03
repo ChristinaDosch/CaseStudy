@@ -1,4 +1,4 @@
-function [obj1, obj2] = start_RO_comparison(...
+function [obj1, obj2] = start_comparison(...
     x1, x2,...
     ToPlotOrNotToPlot, my_title,...
     b_in1, b_out1, b_in2, b_out2)
@@ -32,7 +32,7 @@ switch nargin
 end
 
 e_l = max(mu - lambda*sigma, 0);
-e_u = mu + lambda*sigma;
+% e_u = mu + lambda*sigma;
 
 %% Solving optimization plroblems
 % [xb_opt1, obj_opt1, runningTime1] = start_RO(false,'nonsmooth');
@@ -74,21 +74,22 @@ if ToPlotOrNotToPlot,
     figure, hold on
         plot(t, x1, '*r', t, x2, '*b',... % provided solutions
              [t(1) t(end)], [x_max x_max], 'k--',... % x_max
-             t, e_l, 'k-.', t, e_u, 'k-.') % uncertainty intervals
+             t, e_l, 'k-.') % uncertainty intervals
         if battery1,
-            plot(t, cumsum(0.95*b_in1 - b_out1) + SOC_0*C, 'ro', 'MarkerSize', 4, 'MarkerFaceColor', 'r') % battery load
+            plot(t, cumsum(0.95*b_in1 - b_out1) + SOC_0*C, 'ro', 'MarkerSize', 4, 'MarkerFaceColor', 'r',...
+                 [t; t], [zeros(1,T); b_in1], '-r',... % battery usage b_in1 (charge)
+                 [t; t], [zeros(1,T); -b_out1], '-r') % battery usage b_out1 (discharge)) % battery load
         end
         if battery2,
-            plot(t, cumsum(0.95*b_in2 - b_out2) + SOC_0*C, 'bo', 'MarkerSize', 4, 'MarkerFaceColor', 'b') % battery load
+            plot(t, cumsum(0.95*b_in2 - b_out2) + SOC_0*C, 'bo', 'MarkerSize', 4, 'MarkerFaceColor', 'b',...
+                 [t; t], [zeros(1,T); b_in2], '-b',... % battery usage b_in2 (charge)
+                 [t; t], [zeros(1,T); -b_out2], '-b') % battery usage b_out2 (discharge)) % battery load
         end
-        plot([t; t], [zeros(1,T); b_in1], '-b',... % battery usage b_in1 (charge)
-             [t; t], [zeros(1,T); -b_out1], '-b',... % battery usage b_out1 (discharge)
-             [t; t], [zeros(1,T); b_in2], '-r',... % battery usage b_in2 (charge)
-             [t; t], [zeros(1,T); -b_out2], '-r',... % battery usage b_out2 (discharge)
-             [t(1) t(end)], [x_min x_min], 'k--',... % x_min
-             t,mu,'k',... % centers of uncertainty intervals
-             [t(1) t(end)], [C*SOC_max C*SOC_max], 'b--',... % max load
-             [t(1) t(end)], [C*SOC_min C*SOC_min], 'b--',... % min load
+        if battery1 || battery2,
+            plot([t(1) t(end)], [C*SOC_max C*SOC_max], 'b--',... % max load
+                 [t(1) t(end)], [C*SOC_min C*SOC_min], 'b--') % min load
+        end
+        plot(t,mu,'k',... % centers of uncertainty intervals
              [t(arc1); t(arc_1)], [x1(arc1); x1(arc_1)],'r', [t(arc2); t(arc_2)], [x2(arc2); x2(arc_2)],'b')
     % info-box at the top left corner
     v = axis;
