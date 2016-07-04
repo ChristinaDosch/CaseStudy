@@ -70,8 +70,11 @@ options = optimoptions('fmincon','Algorithm','sqp','GradObj','on','Diagnostics',
 tic
 [x_opt, obj_opt, exitflag, output] = fmincon(objfct, x0, A_smart(1:2*(T-1),:), b_smart(1:2*(T-1)),... % inequality constraints 
     A_smart(2*(T-1)+1:2*(T-1)+(T*K),:),b_smart(2*(T-1)+1:2*(T-1)+(T*K)),...         % equality constraints
-    [x_min*ones(1,T), SOC_min*ones(1,K*T),0*ones(1,(2*K*T))],...                    % lower bounds
-    [x_max*ones(1,T), SOC_max*ones(1,K*T),b2,2*P*ones(1,K*T)],[],options);        % upper bounds
+     [x_min*ones(1,T), SOC_min*ones(1,K*T),0*ones(1,(2*K*T))],...                    % lower bounds
+     [x_max*ones(1,T), SOC_max*ones(1,K*T),b2,2*P*ones(1,K*T)],[],options);        % upper bounds
+%      [x_min*ones(1,T), SOC_0*ones(1,K*T),0*ones(1,(2*K*T))],...                    % lower bounds
+%      [x_max*ones(1,T), SOC_0*ones(1,K*T),0*ones(1,2*K*T)],[],options);        % upper bounds
+
 runningTime = toc
 %% Plot the solutions and data
 if ToPlotOrNotToPlot
