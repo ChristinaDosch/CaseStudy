@@ -50,32 +50,34 @@ x_x_opt_noBat = x_opt_noBat(1:T);
          [t; t], [zeros(1,T); x_opt_bat(T+K*T+1:T+K*T+T) - x_opt_bat(T+2*K*T+1:T+2*K*T+T)], '-b',... % b^in - b^out, sodass Strich nach oben, wenn Batterie beladen wird und Strich nach unten, wenn Batterie entladen wird
          [t(1) t(end)], [x_min x_min], 'k--',...) % x_min 
          [t(arc); t(arc_)], [x_x_opt_bat(arc); x_x_opt_bat(arc_)],'b',... % active ramping constraints for battery schedule
-         [t(arc); t(arc_)], [x_x_opt_noBat(arc); x_x_opt_noBat(arc_)],'r');
+         [t(arc); t(arc_)], [x_x_opt_noBat(arc); x_x_opt_noBat(arc_)],'r', 'markers',8);
      %t,E(1,:)+0.95*x_opt((T+2*K*T+1):(T+2*K*T+T))-x_opt((T+K*T+1):(T+K*T+T)),'*b',...% \tilde{x^1}
      %t,x_opt(1:T) + epsilon*P,'^r',...
      %t,x_opt(1:T) - epsilon*P,'vr',...    
      %t,x_opt(T+K*T+1:T+K*T+T), '-ob',... % \tilde{b^in,1}         
-     %t,x_opt(T+2*K*T+1:T+2*K*T+T), '-og',... % \tilde{b^out,1}        
-         legend('optimal sol. with battery',...
+     %t,x_opt(T+2*K*T+1:T+2*K*T+T), '-og',... % \tilde{b^out,1} 
+    fs = 15;
+    set(gca,'FontSize',fs);
+    legend1 = legend('optimal sol. with battery',...
            'optimal sol. without battery',...% 'first sample',...
            'expected value',... 
            'x_{max}, x_{min}',...
            'battery usage')
-    xlabel('time'), ylabel('energy in kWh')
+    set(legend1,'Fontsize',fs)
+    xlabel('time', 'Fontsize',fs), ylabel('energy in kWh', 'Fontsize',fs)
     %'upper no-penalty bound',...
     %'lower no-penalty bound',...
-    
     % size
     xlim([0 24]);
     v = axis;
     ylim([-1 v(4)+0.5]);
     % info-box at the top left corner
-    text(0.05*v(2),0.98*(v(4)+0.5),['cost = ', num2str(cost(1))])
-    text(0.05*v(2),0.95*(v(4)+0.5),'penalty = 7x^2')
+    text(0.03*v(2),0.98*(v(4)+0.5),['cost = ', num2str(cost(1))], 'Fontsize',fs)
+    text(0.03*v(2),0.935*(v(4)+0.5),'penalty = 7x^2', 'Fontsize',fs)
     %text(0.05*v(2),0.87*v(4),['[x_{min}, x_{max}] = ', '[', num2str(x_min), ', ', num2str(x_max), ']'])
-    text(0.05*v(2),0.905*(v(4)+0.5),['\Delta = ', num2str(delta)])
-    text(0.05*v(2),0.85*(v(4)+0.5),'optimal obj. value with battery = ')
-    text(0.243*v(2),0.85*(v(4)+0.5), num2str(abs(obj_opt_bat)),'color','b')
-    text(0.05*v(2),0.81*(v(4)+0.5),'optimal obj. value without battery = ')
-    text(0.243*v(2),0.81*(v(4)+0.5),num2str(abs(obj_opt_noBat)),'color','r')
-    title('SO discretization approach with (blue) and without (red) battery','Fontsize',18)
+    text(0.03*v(2),0.87*(v(4)+0.5),['\Delta = ', num2str(delta)], 'Fontsize',fs)
+    text(0.03*v(2),0.79*(v(4)+0.5),'optimal obj. value with battery = ', 'Fontsize',fs)
+    text(0.3*v(2),0.79*(v(4)+0.5), num2str(abs(obj_opt_bat)),'color','b', 'Fontsize',fs)
+    text(0.03*v(2),0.74*(v(4)+0.5),'optimal obj. value without battery = ', 'Fontsize',fs)
+    text(0.326*v(2),0.74*(v(4)+0.5),num2str(abs(obj_opt_noBat)),'color','r', 'Fontsize',fs)
+    %title('SO discretization approach with (blue) and without (red) battery','Fontsize',18)
