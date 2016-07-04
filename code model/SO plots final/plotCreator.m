@@ -8,6 +8,7 @@
 % * decide whether you wanna have x_min and x_max displayed in the info box
 % * should cost=5 be changed to cost=5x to be consistend with the penalty term?
 % * should the optimal obj. values be positive (since we speak of a maximization problem during the talk)
+% * adapt the value K!
 
 %% load corresponding x_opts and obj_opts
 load('T=96_battery_K=3_Penalty7.mat')
