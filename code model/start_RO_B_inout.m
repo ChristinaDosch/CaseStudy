@@ -102,8 +102,8 @@ if ToPlotOrNotToPlot
          [t(1) t(end)], [x_min x_min], 'k--',... % x_min
          [t(1) t(end)], [C*SOC_max C*SOC_max], 'b--',... % 95% of capacity
          [t(1) t(end)], [C*SOC_min C*SOC_min], 'b--') % 10% of capacity
-%     plot(t, e_l - (b_in_opt - 0.95*b_out_opt), 'b+-.',... % new uncertainty intervals
-%          t, e_u - (b_in_opt - 0.95*b_out_opt), 'b+-.') % new uncertainty intervals
+    plot(t, e_l - (b_in_opt - 0.95*b_out_opt), 'b+-.',... % new uncertainty intervals
+         t, e_u - (b_in_opt - 0.95*b_out_opt), 'b+-.') % new uncertainty intervals
     plot([t(arc); t(arc_)], [x_opt(arc); x_opt(arc_)],'b') % active ramping constraints
         
     legend('calculated opt. sol.',...
