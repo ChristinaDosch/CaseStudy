@@ -25,11 +25,13 @@ E = E_good;
 
 %Martina's good samples: 
 % E_good = zeros(11,96); 
-% E_good(1,:) = E(5,:); 
+% E_good(1,:) = E(2,:);% E(5,:); 
 % E_good(2,:) = E(10,:); 
 % E_good(3,:) = E(16,:); 
 % E_good(4,:) = E(21,:);
 % E_good(5,:) = E(28,:);
+% E_good(6,:) = E(29,:);% not nec. good
+% E_good(7,:) = E(30,:);% not nec. good
 % E = E_good;
 
 % E_good for only T = 25 realizations
@@ -74,8 +76,8 @@ tic
     A_smart(2*(T-1)+1:2*(T-1)+(T*K),:),b_smart(2*(T-1)+1:2*(T-1)+(T*K)),...         % equality constraints
      [x_min*ones(1,T), SOC_min*ones(1,K*T),0*ones(1,(2*K*T))],...                    % lower bounds
      [x_max*ones(1,T), SOC_max*ones(1,K*T),b2,2*P*ones(1,K*T)],[],options);        % upper bounds
-%      [x_min*ones(1,T), SOC_0*ones(1,K*T),0*ones(1,(2*K*T))],...  % lower bounds without battery
-%      [x_max*ones(1,T), SOC_0*ones(1,K*T),0*ones(1,2*K*T)],[],options); % upper bounds without battery
+ %    [x_min*ones(1,T), SOC_0*ones(1,K*T),0*ones(1,(2*K*T))],...  % lower bounds without battery
+ %    [x_max*ones(1,T), SOC_0*ones(1,K*T),0*ones(1,2*K*T)],[],options); % upper bounds without battery
 
 runningTime = toc
 %% Plot the solutions and data
@@ -89,7 +91,7 @@ if ToPlotOrNotToPlot
     
     figure, hold on,
     plot(t,x_opt(1:T),'*r',... % solution computed by fmincon
-         t,mu,'-k',... % (estimated) expected value
+         t, E(1,:), '-k',...%t,mu,'-k',... % (estimated) expected value
          [t(1) t(end)], [x_max x_max], 'k--',... % x_max
          [t; t], [zeros(1,T); x_opt(T+K*T+1:T+K*T+T) - x_opt(T+2*K*T+1:T+2*K*T+T)], '-b',... % b^in - b^out, sodass Strich nach oben, wenn Batterie beladen wird und Strich nach unten, wenn Batterie entladen wird
          t,E(1,:)+0.95*x_opt((T+2*K*T+1):(T+2*K*T+T))-x_opt((T+K*T+1):(T+K*T+T)),'*b',...% \tilde{x^1}
@@ -101,7 +103,7 @@ if ToPlotOrNotToPlot
      %t,x_opt(T+2*K*T+1:T+2*K*T+T), '-og',... % \tilde{b^out,1}        
      %t,E(1,:)+0.95*x_opt((T+2*K*T+1):(T+2*K*T+T))-x_opt((T+K*T+1):(T+K*T+T)),'*b',...% \tilde{x^1}
     %set(h,{'markers'},{12;5;9})
-    fs = 15;
+    fs = 16.5;
     set(gca,'FontSize',fs);
     legend1= legend('calculated opt. sol.',...
            'expected value',... 
@@ -117,10 +119,10 @@ if ToPlotOrNotToPlot
     v = axis;
      ylim([-1 v(4)+0.5]);
     % info-box at the top left corner
-    text(0.03*v(2),0.98*(v(4)+0.5),['cost = ', num2str(cost(1))], 'Fontsize',fs)
-    text(0.03*v(2),0.935*(v(4)+0.5),['penalty = x^2'], 'Fontsize',fs)
-    text(0.03*v(2),0.87*(v(4)+0.5),['\Delta = ', num2str(delta)], 'Fontsize',fs)
-    text(0.03*v(2),0.80*(v(4)+0.5),['optimal value = ', num2str(-obj_opt)], 'Fontsize',fs)
+    %text(0.03*v(2),0.98*(v(4)+0.5),['cost = ', num2str(cost(1))], 'Fontsize',fs)
+    %text(0.03*v(2),0.935*(v(4)+0.5),['penalty = x^2'], 'Fontsize',fs)
+    %text(0.03*v(2),0.87*(v(4)+0.5),['\Delta = ', num2str(delta)], 'Fontsize',fs)
+    text(0.03*v(2),0.91*(v(4)+0.5),['optimal value = ', num2str(-obj_opt)], 'Fontsize',fs)
    % text(0.05*v(2),0.87*v(4),['[x_{min}, x_{max}] = ', '[', num2str(x_min), ', ', num2str(x_max), ']'])
     %title('SO discretization smart','Fontsize',18)
     hold off
