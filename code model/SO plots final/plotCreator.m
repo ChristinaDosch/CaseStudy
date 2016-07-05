@@ -1,21 +1,21 @@
 %% Before you run this file:
-% * load corresponding results you wanna plot 
+% * load corresponding results you wanna plot
 % * decide whether you want to include the first sample in your plot (and
 %      check if the E that is loaded here is indeed the E you used for your
 %      calculations)
 % * decide whether you want to make the 10th schedule value to 0 artificially
 % * change the penalty function in the info box
 % * decide whether you wanna have x_min and x_max displayed in the info box
-% * should cost=5 be changed to cost=5x to be consistend with the penalty term?
+% * should cost=5 be changed to cost=5x to be consistent with the penalty term?
 % * should the optimal obj. values be positive (since we speak of a maximization problem during the talk)
 % * adapt the value K!
 
 %% load corresponding x_opts and obj_opts
-load('T=96_battery_K=3_Penalty7.mat')
+load('T=96_battery_K=3_Penalty5.mat')
 x_opt_bat = x_opt;
 obj_opt_bat = obj_opt;
 
-load('T=96_noBattery_K=3_Penalty7_STEPSIZE.mat')
+load('T=96_noBattery_K=3_Penalty5.mat')
 x_opt_noBat = x_opt;
 obj_opt_noBat = obj_opt;
 
@@ -73,7 +73,7 @@ x_x_opt_noBat = x_opt_noBat(1:T);
     ylim([-1 v(4)+0.5]);
     % info-box at the top left corner
     text(0.03*v(2),0.98*(v(4)+0.5),['cost = ', num2str(cost(1))], 'Fontsize',fs)
-    text(0.03*v(2),0.935*(v(4)+0.5),'penalty = 7x^2', 'Fontsize',fs)
+    text(0.03*v(2),0.935*(v(4)+0.5),'penalty = 5x^2', 'Fontsize',fs)
     %text(0.05*v(2),0.87*v(4),['[x_{min}, x_{max}] = ', '[', num2str(x_min), ', ', num2str(x_max), ']'])
     text(0.03*v(2),0.87*(v(4)+0.5),['\Delta = ', num2str(delta)], 'Fontsize',fs)
     text(0.03*v(2),0.79*(v(4)+0.5),'optimal obj. value with battery = ', 'Fontsize',fs)

@@ -72,36 +72,39 @@ arc2 = [arc2 false];
 if ToPlotOrNotToPlot,
     % main plot with the optimal solutions
     figure, hold on
-        plot(t, x1, '*r', t, x2, '*b',... % provided solutions
+        plot(t, x2, '*r', t, x1, '*b',... % provided solutions
              [t(1) t(end)], [x_max x_max], 'k--',... % x_max
+             [t(1) t(end)], [x_min x_min], 'k--',... % x_min
              t, e_l, 'k-.') % uncertainty intervals
         if battery1,
-            plot(t, cumsum(0.95*b_in1 - b_out1) + SOC_0*C, 'ro', 'MarkerSize', 4, 'MarkerFaceColor', 'r',...
-                 [t; t], [zeros(1,T); b_in1], '-r',... % battery usage b_in1 (charge)
-                 [t; t], [zeros(1,T); -b_out1], '-r') % battery usage b_out1 (discharge)) % battery load
+            plot(t, cumsum(0.95*b_in1 - b_out1) + SOC_0*C, 'bo', 'MarkerSize', 4, 'MarkerFaceColor', 'b')
+            plot([t; t], [zeros(1,T); b_in1], '-b',... % battery usage b_in1 (charge)
+                 [t; t], [zeros(1,T); -b_out1], '-b') % battery usage b_out1 (discharge)) % battery load
         end
         if battery2,
-            plot(t, cumsum(0.95*b_in2 - b_out2) + SOC_0*C, 'bo', 'MarkerSize', 4, 'MarkerFaceColor', 'b',...
-                 [t; t], [zeros(1,T); b_in2], '-b',... % battery usage b_in2 (charge)
-                 [t; t], [zeros(1,T); -b_out2], '-b') % battery usage b_out2 (discharge)) % battery load
+            plot(t, cumsum(0.95*b_in2 - b_out2) + SOC_0*C, 'bo', 'MarkerSize', 4, 'MarkerFaceColor', 'r',...
+                 [t; t], [zeros(1,T); b_in2], '-r',... % battery usage b_in2 (charge)
+                 [t; t], [zeros(1,T); -b_out2], '-r') % battery usage b_out2 (discharge)) % battery load
         end
         if battery1 || battery2,
             plot([t(1) t(end)], [C*SOC_max C*SOC_max], 'b--',... % max load
                  [t(1) t(end)], [C*SOC_min C*SOC_min], 'b--') % min load
         end
         plot(t,mu,'k',... % centers of uncertainty intervals
-             [t(arc1); t(arc_1)], [x1(arc1); x1(arc_1)],'r', [t(arc2); t(arc_2)], [x2(arc2); x2(arc_2)],'b')
+             [t(arc1); t(arc_1)], [x1(arc1); x1(arc_1)],'b', [t(arc2); t(arc_2)], [x2(arc2); x2(arc_2)],'r')
+        plot(t,cost/4.5,'g')
     % info-box at the top left corner
+    xlim([0 24])
     v = axis;
-    text(0.05*v(2),0.98*v(4),['true mean obj. value = ', num2str(mean(obj1)), ' (red), ', num2str(mean(obj2)), ' (blue)'])
-    text(0.05*v(2),0.94*v(4),['true worst obj. value = ', num2str(max(obj1)), ' (red), ', num2str(max(obj2)), ' (blue)'])
-    if all(cost == cost(1)), cost_label = ['constant ', num2str(cost(1))];
-    else cost_label = 'variable'; end
-    text(0.05*v(2),0.85*v(4),['cost ', cost_label])
-    text(0.05*v(2),0.81*v(4),['penalty = ', func2str(penalty)])
-    text(0.05*v(2),0.77*v(4),['[x_{min} x_{max}] = ', '[', num2str(x_min), ' ', num2str(x_max), ']'])
-    text(0.05*v(2),0.74*v(4),['\Delta = ', num2str(delta)])
-    text(0.05*v(2),0.71*v(4),['C = ', num2str(C)])
+    text(0.05*v(2),0.98*v(4),['true mean obj. value = ', num2str(-mean(obj1)), ' (blue), ', num2str(-mean(obj2)), ' (red)'])
+    text(0.05*v(2),0.94*v(4),['true worst obj. value = ', num2str(-max(obj1)), ' (blue), ', num2str(-max(obj2)), ' (red)'])
+%     if all(cost == cost(1)), cost_label = ['constant ', num2str(cost(1))];
+%     else cost_label = 'variable'; end
+%     text(0.05*v(2),0.85*v(4),['cost ', cost_label])
+%     text(0.05*v(2),0.81*v(4),['penalty = ', func2str(penalty)])
+%     text(0.05*v(2),0.77*v(4),['[x_{min} x_{max}] = ', '[', num2str(x_min), ' ', num2str(x_max), ']'])
+    text(0.05*v(2),0.90*v(4),['\Delta = ', num2str(delta)])
+%     text(0.05*v(2),0.71*v(4),['C = ', num2str(C)])
     title(my_title)
     hold off
 %     % plot with realizations

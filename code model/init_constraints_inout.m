@@ -23,8 +23,8 @@ SOC_max = 0.95; % minimum of state of charge
 
 % Ramping constraints for x (not capacity constraints)
 % delta = 0.045 * P; % maximum deviation between two successive power values in case of T=96
-% delta = 0.02*P;
-delta = 0.01*P;
+delta = 0.02*P;
+% delta = 0.01*P;
 
 if T == 25, delta = 4*delta; end % ... in case of T=25
 
