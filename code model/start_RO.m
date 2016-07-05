@@ -68,12 +68,12 @@ if ToPlotOrNotToPlot
     
     % Plot
     figure, hold on,
-    plot(t,x_opt,'*b',... % solution computed by interior point (fmincon) or patternsearch
+    plot(t,x_opt,'*r',... % solution computed by interior point (fmincon) or patternsearch
          t,mu,'k',... % centers of uncertainty intervals
          [t(1) t(end)], [x_max x_max], 'k--',... % x_max
          t, e_l, 'k-.',... % uncertainty intervals
          [t(1) t(end)], [x_min x_min], 'k--',... % x_min
-         [t(arc); t(arc_)], [x_opt(arc); x_opt(arc_)],'b') % active ramping constraints
+         [t(arc); t(arc_)], [x_opt(arc); x_opt(arc_)],'r') % active ramping constraints
     legend('calculated opt. sol.',...
            'expected solar radiation',...
            'x_{max}, x_{min}',...
@@ -84,13 +84,13 @@ if ToPlotOrNotToPlot
     v = axis;
     ylim([0 v(4)]);
     % info-box at the top left corner
-    text(0.05*v(2),0.98*v(4),['true mean obj. value = ', num2str(mean(obj_true))])
-    text(0.05*v(2),0.94*v(4),['true max obj. value = ', num2str(max(obj_true))])
-    text(0.05*v(2),0.90*v(4),['optimal value = ', num2str(obj_opt)])
-    text(0.05*v(2),0.86*v(4),['cost = ', num2str(cost)])
-    text(0.05*v(2),0.82*v(4),['penalty = ', func2str(penalty)])
-    text(0.05*v(2),0.78*v(4),['[x_{min} x_{max}] = ', '[', num2str(x_min), ' ', num2str(x_max), ']'])
-    text(0.05*v(2),0.74*v(4),['\Delta = ', num2str(delta)])
+    text(0.05*v(2),0.98*v(4),['true mean obj. value = ', num2str(-mean(obj_true))])
+    text(0.05*v(2),0.94*v(4),['true worst obj. value = ', num2str(-max(obj_true))])
+    text(0.05*v(2),0.90*v(4),['optimal obj. value = ', num2str(-obj_opt)])
+%     text(0.05*v(2),0.86*v(4),['cost = ', num2str(cost)])
+%     text(0.05*v(2),0.82*v(4),['penalty = ', func2str(penalty)])
+%     text(0.05*v(2),0.78*v(4),['[x_{min} x_{max}] = ', '[', num2str(x_min), ' ', num2str(x_max), ']'])
+    text(0.05*v(2),0.85*v(4),['\Delta = ', num2str(delta)])
     title(['RO, ' SmoothOrNonSmooth])
     hold off
 end

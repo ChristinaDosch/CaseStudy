@@ -36,7 +36,7 @@ while any(A*xb0' > b) && (k<1000)
     k = k+1;
 end
 if k == 1000, error('failed to find an admissible starting point'), end
-display([num2str(k), ' attempts was needed to find a feaseble starting point']);
+display([num2str(k), ' attempts were needed to find a feaseble starting point']);
 objfct = @(xb) obj_RO_B_inout(xb,e_l,e_u,cost,penalty,penalty_grad,epsilon,P,SmoothOrNonSmooth,option); % Objective function for RO
 
 %% 3.) Performing optimization using RO
@@ -118,14 +118,14 @@ if ToPlotOrNotToPlot
     v = axis;
 %     ylim([-1 v(4)]);
     % info-box at the top left corner
-    text(0.05*v(2),0.98*v(4),['true mean obj. value = ', num2str(mean(obj_true))])
-    text(0.05*v(2),0.94*v(4),['true max obj. value = ', num2str(max(obj_true))])
-    text(0.05*v(2),0.90*v(4),['optimal obj. value = ', num2str(obj_opt)])
-    text(0.05*v(2),0.86*v(4),['cost = ', num2str(cost)])
-    text(0.05*v(2),0.82*v(4),['penalty = ', func2str(penalty)])
-    text(0.05*v(2),0.78*v(4),['[x_{min} x_{max}] = ', '[', num2str(x_min), ' ', num2str(x_max), ']'])
-    text(0.05*v(2),0.74*v(4),['\Delta = ', num2str(delta)])
-    text(0.05*v(2),0.70*v(4),['C = ', num2str(C)])
+    text(0.05*v(2),0.98*v(4),['true mean obj. value = ', num2str(-mean(obj_true))])
+    text(0.05*v(2),0.94*v(4),['true worst obj. value = ', num2str(-max(obj_true))])
+    text(0.05*v(2),0.90*v(4),['optimal obj. value = ', num2str(-obj_opt)])
+%     text(0.05*v(2),0.86*v(4),['cost = ', num2str(cost)])
+%     text(0.05*v(2),0.82*v(4),['penalty = ', func2str(penalty)])
+%     text(0.05*v(2),0.78*v(4),['[x_{min} x_{max}] = ', '[', num2str(x_min), ' ', num2str(x_max), ']'])
+    text(0.05*v(2),0.85*v(4),['\Delta = ', num2str(delta)])
+%     text(0.05*v(2),0.70*v(4),['C = ', num2str(C)])
     title(['RO inout, battery, ', SmoothOrNonSmooth, ', option ', num2str(option)])
     hold off
 end
