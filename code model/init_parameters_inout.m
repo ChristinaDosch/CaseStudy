@@ -9,7 +9,7 @@ function [T, P, cost, penalty, penalty_grad, epsilon, C, SOC_0, t, mu, sigma, la
 P = 3.8;             % nominal power of the PV element
 epsilon = 0.05;
 cost = ones(1,T)*5;   % cost(j) is a price for an energy unit during j's hour
-load('price')
+% load('price')
 % cost(18*4:22*4) = 2*cost(18*4:22*4);
 
 penalty = @(x) x.^2;  % quadratic penalty
