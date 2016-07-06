@@ -9,7 +9,7 @@ function [T, P, cost, penalty, penalty_grad, epsilon, C, SOC_0, t, mu, sigma, la
 P = 3.8;             % nominal power of the PV element
 epsilon = 0.05;
 cost = ones(1,T)*5;   % cost(j) is a price for an energy unit during j's hour
-% load('price')
+load('realistic pricing')
 % cost(18*4:22*4) = 2*cost(18*4:22*4);
 
 penalty = @(x) x.^2;  % quadratic penalty
@@ -39,5 +39,5 @@ sigma = sigma(floor(linspace(1,length(sigma),T)));
 % mu = 1e-3*gamma(1+1./shape) .* scale;
 % sigma = 1e-6*(gamma(1+2./shape) - gamma(1+1./shape).^2) .* (scale.^2);
 
-% lambda = 1.645; % lambda*sigma is the width of the 90%-confidence intervals in RO (for normal distribution)
-lambda = 0.675; % lambda*sigma is the width of the 50%-confidence intervals in RO (for normal distribution)
+lambda = 1.645; % lambda*sigma is the width of the 90%-confidence intervals in RO (for normal distribution)
+% lambda = 0.675; % lambda*sigma is the width of the 50%-confidence intervals in RO (for normal distribution)
