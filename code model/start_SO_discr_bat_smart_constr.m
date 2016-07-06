@@ -90,7 +90,7 @@ if ToPlotOrNotToPlot
     arc = [arc false];    
     
     figure, hold on,
-    plot(t,x_opt(1:T),'*r',... % solution computed by fmincon
+    plot(t,x_opt(1:T),'*b',... % solution computed by fmincon
          t, E(1,:), '-k',...%t,mu,'-k',... % (estimated) expected value
          [t(1) t(end)], [x_max x_max], 'k--',... % x_max
          [t; t], [zeros(1,T); x_opt(T+K*T+1:T+K*T+T) - x_opt(T+2*K*T+1:T+2*K*T+T)], '-b',... % b^in - b^out, sodass Strich nach oben, wenn Batterie beladen wird und Strich nach unten, wenn Batterie entladen wird
@@ -110,7 +110,7 @@ if ToPlotOrNotToPlot
            'x_{max}, x_{min}',...
            'battery usage');
     set(legend1,'Fontsize',fs)
-    xlabel('time', 'Fontsize',fs), ylabel('energy, kWh', 'Fontsize',fs)
+    xlabel('time in h', 'Fontsize',fs), ylabel('energy in MWh', 'Fontsize',fs)
     %'upper no-penalty bound',...
     %'lower no-penalty bound',...
     
@@ -122,8 +122,8 @@ if ToPlotOrNotToPlot
     %text(0.03*v(2),0.98*(v(4)+0.5),['cost = ', num2str(cost(1))], 'Fontsize',fs)
     %text(0.03*v(2),0.935*(v(4)+0.5),['penalty = x^2'], 'Fontsize',fs)
     %text(0.03*v(2),0.87*(v(4)+0.5),['\Delta = ', num2str(delta)], 'Fontsize',fs)
-    text(0.03*v(2),0.91*(v(4)+0.5),['optimal value = ', num2str(-obj_opt)], 'Fontsize',fs)
-   % text(0.05*v(2),0.87*v(4),['[x_{min}, x_{max}] = ', '[', num2str(x_min), ', ', num2str(x_max), ']'])
+    text(0.03*v(2),0.91*(v(4)+0.5),['optimal value = ', num2str(-obj_opt*10), ' €'], 'Fontsize',fs)
+    % text(0.05*v(2),0.87*v(4),['[x_{min}, x_{max}] = ', '[', num2str(x_min), ', ', num2str(x_max), ']'])
     %title('SO discretization smart','Fontsize',18)
     hold off
 end
