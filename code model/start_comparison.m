@@ -45,7 +45,7 @@ e_l = max(mu - lambda*sigma, 0);
 % x_opt2 = xb_opt2(1:T);
 % b_opt2 = xb_opt2(T+1:end);
 %% Computing true objective
-N = 10000;
+N = 100000;
 Cost = ones(N,1) * cost;
 B_in1 = ones(N,1) * b_in1;
 B_out1 = ones(N,1) * b_out1;
@@ -92,7 +92,7 @@ if ToPlotOrNotToPlot,
         end
         plot(t,mu,'k',... % centers of uncertainty intervals
              [t(arc1); t(arc_1)], [x1(arc1); x1(arc_1)],'b', [t(arc2); t(arc_2)], [x2(arc2); x2(arc_2)],'r')
-        plot(t,cost/4.5,'g')
+%         plot(t,cost/4.5,'g') % plots prices
     % info-box at the top left corner
     xlim([0 24])
     v = axis;

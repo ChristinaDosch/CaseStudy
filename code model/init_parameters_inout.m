@@ -39,5 +39,5 @@ sigma = sigma(floor(linspace(1,length(sigma),T)));
 % mu = 1e-3*gamma(1+1./shape) .* scale;
 % sigma = 1e-6*(gamma(1+2./shape) - gamma(1+1./shape).^2) .* (scale.^2);
 
-lambda = 1.645; % lambda*sigma is the width of the 90%-confidence intervals in RO (for normal distribution)
-% lambda = 1; % lambda*sigma is the width of the 68,27%-confidence intervals in RO (for normal distribution)
+% lambda = 1.645; % lambda*sigma is the width of the 90%-confidence intervals in RO (for normal distribution)
+lambda = 0.675; % lambda*sigma is the width of the 50%-confidence intervals in RO (for normal distribution)
