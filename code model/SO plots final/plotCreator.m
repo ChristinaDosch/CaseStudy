@@ -11,11 +11,11 @@
 % * adapt the value K!
 
 %% load corresponding x_opts and obj_opts
-load('T=96_battery_K=3_Penalty7.mat')
+load('T=96_battery_K=3.mat')
 x_opt_bat = x_opt;
 obj_opt_bat = obj_opt;
 
-load('T=96_noBattery_K=3_Penalty7_STEPSIZE.mat')
+load('T=96_noBattery_K=3.mat')
 x_opt_noBat = x_opt;
 obj_opt_noBat = obj_opt;
 
