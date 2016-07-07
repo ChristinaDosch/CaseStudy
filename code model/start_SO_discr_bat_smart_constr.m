@@ -83,7 +83,8 @@ runningTime = toc
 %% Plot the solutions and data
 if ToPlotOrNotToPlot
     
-    % Active ramping constraints (up to 0.001)
+    % Active ramping constraints (up to 0.001);
+    x_opt(10)=0.01;
     x_x_opt = x_opt(1:T);
     arc = abs(abs(x_x_opt(2:end) - x_x_opt(1:end-1)) - delta) < 0.001;
     arc_= [false arc];
@@ -93,10 +94,9 @@ if ToPlotOrNotToPlot
     plot(t,x_opt(1:T),'*b',... % solution computed by fmincon
          t, E(1,:), '-k',...%t,mu,'-k',... % (estimated) expected value
          [t(1) t(end)], [x_max x_max], 'k--',... % x_max
-         [t; t], [zeros(1,T); x_opt(T+K*T+1:T+K*T+T) - x_opt(T+2*K*T+1:T+2*K*T+T)], '-b',... % b^in - b^out, sodass Strich nach oben, wenn Batterie beladen wird und Strich nach unten, wenn Batterie entladen wird
-         t,E(1,:)+0.95*x_opt((T+2*K*T+1):(T+2*K*T+T))-x_opt((T+K*T+1):(T+K*T+T)),'*b',...% \tilde{x^1}
+         [t; t], [zeros(1,T); x_opt(T+K*T+1:T+K*T+T) - x_opt(T+2*K*T+1:T+2*K*T+T)], '-b',... % b^in - b^out, sodass Strich nach oben, wenn Batterie beladen wird und Strich nach unten, wenn Batterie entladen wird%t,E(1,:)+0.95*x_opt((T+2*K*T+1):(T+2*K*T+T))-x_opt((T+K*T+1):(T+K*T+T)),'*b',...% \tilde{x^1}
          [t(1) t(end)], [x_min x_min], 'k--',...) % x_min  
-         [t(arc); t(arc_)], [x_x_opt(arc); x_x_opt(arc_)],'r', 'markers',8); % active ramping constraints
+         [t(arc); t(arc_)], [x_x_opt(arc); x_x_opt(arc_)],'b', 'markers',8); % active ramping constraints
      %t,x_opt(1:T) + epsilon*P,'^r',...
      %t,x_opt(1:T) - epsilon*P,'vr',...    
      %t,x_opt(T+K*T+1:T+K*T+T), '-ob',... % \tilde{b^in,1}         
