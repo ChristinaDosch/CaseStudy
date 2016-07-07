@@ -13,8 +13,8 @@ if nargin == 0, ToPlotOrNotToPlot = true; end
 %% Load example scenarios SAMPLE_NORMAL_INDEPENDENT.CSV:
 % for this example T = 96 is required in init_parameters!!! (15min intervalls)
 
-E = load('sample_normal_independent.csv');
-%E = load('sample_normal_sum.csv');
+%E = load('sample_normal_independent.csv');
+E = load('sample_normal_sum.csv');
 E = 1/1000 * max(E, 0); % since we need kWh (and in the samples it's in Wh)
 % Sarah's "good" samples: 
 E_good = zeros(10,96); E_good(1,:) = E(2,:); E_good(2,:) = E(6,:);
@@ -122,7 +122,9 @@ if ToPlotOrNotToPlot
     %text(0.03*v(2),0.98*(v(4)+0.5),['cost = ', num2str(cost(1))], 'Fontsize',fs)
     %text(0.03*v(2),0.935*(v(4)+0.5),['penalty = x^2'], 'Fontsize',fs)
     %text(0.03*v(2),0.87*(v(4)+0.5),['\Delta = ', num2str(delta)], 'Fontsize',fs)
-    text(0.03*v(2),0.91*(v(4)+0.5),['optimal value = ', num2str(-obj_opt*10), ' €'], 'Fontsize',fs)
+    %text(0.03*v(2),0.91*(v(4)+0.5),['optimal value = ', num2str(-obj_opt*10), ' €'], 'color','b','Fontsize',fs)
+    text(0.03*v(2),0.91*(v(4)+0.5),'optimal obj. value with battery = ', 'Fontsize',fs)
+    text(0.33*v(2),0.91*(v(4)+0.5),[num2str(-obj_opt*10),' €'],'color','b', 'Fontsize',fs)
     % text(0.05*v(2),0.87*v(4),['[x_{min}, x_{max}] = ', '[', num2str(x_min), ', ', num2str(x_max), ']'])
     %title('SO discretization smart','Fontsize',18)
     hold off
