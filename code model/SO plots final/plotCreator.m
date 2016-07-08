@@ -11,11 +11,11 @@
 % * adapt the value K!
 
 %% load corresponding x_opts and obj_opts
-load('T=96_battery_K=3.mat')
+load('T=96_battery_K=3_Penalty7.mat')
 x_opt_bat = x_opt;
 obj_opt_bat = obj_opt;
 
-load('T=96_noBattery_K=3.mat')
+load('T=96_noBattery_K=3_Penalty7_STEPSIZE.mat')
 x_opt_noBat = x_opt;
 obj_opt_noBat = obj_opt;
 
@@ -56,7 +56,7 @@ x_x_opt_noBat = x_opt_noBat(1:T);
      %t,x_opt(1:T) - epsilon*P,'vr',...    
      %t,x_opt(T+K*T+1:T+K*T+T), '-ob',... % \tilde{b^in,1}         
      %t,x_opt(T+2*K*T+1:T+2*K*T+T), '-og',... % \tilde{b^out,1} 
-    fs = 16.5;
+    fs = 17.5;
     set(gca,'FontSize',fs);
    legend1 = legend('optimal sol. with battery',...
           'optimal sol. without battery',...% 'first sample',...
@@ -76,7 +76,7 @@ x_x_opt_noBat = x_opt_noBat(1:T);
     %text(0.03*v(2),0.935*(v(4)+0.5),'penalty = 7x^2', 'Fontsize',fs)
     %text(0.03*v(2),0.87*(v(4)+0.5),['\Delta = ', num2str(delta)], 'Fontsize',fs)
     text(0.03*v(2),0.95*(v(4)+0.5),'optimal obj. value with battery = ', 'Fontsize',fs)
-    text(0.33*v(2),0.95*(v(4)+0.5), [num2str(abs(obj_opt_bat)*10),' €'],'color','b', 'Fontsize',fs)
+    text(0.345*v(2),0.95*(v(4)+0.5), [num2str(abs(obj_opt_bat)*10),' €'],'color','b', 'Fontsize',fs)
     text(0.03*v(2),0.885*(v(4)+0.5),'optimal obj. value without battery = ', 'Fontsize',fs)
-    text(0.36*v(2),0.885*(v(4)+0.5),[num2str(abs(obj_opt_noBat)*10),' €'],'color','r', 'Fontsize',fs)
+    text(0.375*v(2),0.885*(v(4)+0.5),[num2str(abs(obj_opt_noBat)*10),' €'],'color','r', 'Fontsize',fs)
     %title('SO discretization approach with (blue) and without (red) battery','Fontsize',18)

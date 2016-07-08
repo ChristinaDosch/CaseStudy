@@ -103,7 +103,7 @@ if ToPlotOrNotToPlot
      %t,x_opt(T+2*K*T+1:T+2*K*T+T), '-og',... % \tilde{b^out,1}        
      %t,E(1,:)+0.95*x_opt((T+2*K*T+1):(T+2*K*T+T))-x_opt((T+K*T+1):(T+K*T+T)),'*b',...% \tilde{x^1}
     %set(h,{'markers'},{12;5;9})
-    fs = 16.5;
+    fs = 17.5;
     set(gca,'FontSize',fs);
     legend1= legend('calculated opt. sol.',...
            'expected value',... 
@@ -124,7 +124,7 @@ if ToPlotOrNotToPlot
     %text(0.03*v(2),0.87*(v(4)+0.5),['\Delta = ', num2str(delta)], 'Fontsize',fs)
     %text(0.03*v(2),0.91*(v(4)+0.5),['optimal value = ', num2str(-obj_opt*10), ' €'], 'color','b','Fontsize',fs)
     text(0.03*v(2),0.91*(v(4)+0.5),'optimal obj. value with battery = ', 'Fontsize',fs)
-    text(0.33*v(2),0.91*(v(4)+0.5),[num2str(-obj_opt*10),' €'],'color','b', 'Fontsize',fs)
+    text(0.345*v(2),0.91*(v(4)+0.5),[num2str(-obj_opt*10),' €'],'color','b', 'Fontsize',fs)
     % text(0.05*v(2),0.87*v(4),['[x_{min}, x_{max}] = ', '[', num2str(x_min), ', ', num2str(x_max), ']'])
     %title('SO discretization smart','Fontsize',18)
     hold off
