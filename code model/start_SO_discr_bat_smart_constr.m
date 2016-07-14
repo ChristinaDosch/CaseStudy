@@ -8,7 +8,7 @@ function [x_opt, obj_opt, runningTime, exitflag, output] = start_SO_discr_bat_sm
 
 %% Initialize parameters
 if nargin == 0, ToPlotOrNotToPlot = true; end
-[T, P, cost, penalty, penalty_grad, epsilon, C, SOC_0, t, mu, ~, ~, penalty_hess] = init_parameters;
+[T, P, cost, penalty, penalty_grad, epsilon, C, SOC_0, t, ~, ~, ~, penalty_hess] = init_parameters;
 
 %% Load example scenarios SAMPLE_NORMAL_INDEPENDENT.CSV:
 % for this example T = 96 is required in init_parameters!!! (15min intervalls)
@@ -16,25 +16,8 @@ if nargin == 0, ToPlotOrNotToPlot = true; end
 %E = load('sample_normal_independent.csv');
 E = load('sample_normal_sum.csv');
 E = 1/1000 * max(E, 0); % since we need kWh (and in the samples it's in Wh)
-% Sarah's "good" samples: 
-E_good = zeros(10,96); E_good(1,:) = E(2,:); E_good(2,:) = E(6,:);
-E_good(3,:) = E(9,:); E_good(4,:) = E(15,:); E_good(5,:) = E(17,:);
-E_good(6,:) = E(18,:); E_good(7,:) = E(20,:); E_good(8,:) = E(23,:);
-E_good(9,:) = E(25,:); E_good(10,:) = E(26,:);
-E = E_good;
 
-%Martina's good samples: 
-% E_good = zeros(11,96); 
-% E_good(1,:) = E(2,:);% E(5,:); 
-% E_good(2,:) = E(10,:); 
-% E_good(3,:) = E(16,:); 
-% E_good(4,:) = E(21,:);
-% E_good(5,:) = E(28,:);
-% E_good(6,:) = E(29,:);% not nec. good
-% E_good(7,:) = E(30,:);% not nec. good
-% E = E_good;
-
-% E_good for only T = 25 realizations
+%E for only T = 25 realizations
 %E_short = zeros(11,25);
 %E_short(1) = 0;
 %for i = 1:24

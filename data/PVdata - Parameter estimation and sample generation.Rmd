@@ -1,7 +1,7 @@
 ---
 title: "PV data - Parameter estimation and sample generation"
 #author: "Martina Kuchlbauer"
-date: "Tuesday, May 17, 2016"
+date: "May-July 2016"
 output:
   pdf_document:
     number_sections: yes
@@ -175,7 +175,7 @@ for (i in 1:(8)){
 #   }
 ```
 
-Now let's compute mean and standard error of the distribution of $\frac{1}{4} X+Y+Z+W$:
+Now let's compute mean and standard error of the distribution of $\frac{1}{4} (X+Y+Z+W)$:
 ```{r}
 mu<-rep(0,24*4)
 std<-rep(0,24*4)
@@ -399,7 +399,7 @@ lines(W_ind_sample[3,], type="l", col="blue")
 
 ```
 
-Just to visualize what our original data look like: 
+Just to visualize what our historical data look like: 
 
 ```{r}
 plot(PV1quh[10,], type="l", xlim=c(25,75), ylab="radiation", xlab="time [15min]")
